@@ -1,0 +1,171 @@
+\chapter{Distributed Erlang}
+\label{distribution}
+
+A \textbf{distributed Erlang system} consists of a number of Erlang
+runtime systems communicating with each other. Each such runtime
+system is called a \textbf{node}. Nodes can reside on the same
+processor or on different processors connected through a network. The
+standard distribution mechanism is implemented using TCP/IP sockets
+but other mechanisms could also be implemented.
+
+Message passing between processes at different nodes, as well as links
+and monitors, is transparent when using Pids. However, registered
+names are local to each node. A registered process at a particular
+node is referred to as \texttt{\{Name,Node\}}.
+
+The Erlang Port Mapper Daemon \textbf{epmd} is automatically started
+at every host where an Erlang node is started. It is responsible for
+mapping the symbolic node names to machine addresses.
+
+
+\section{Nodes}
+A \textbf{node} is an executing Erlang runtime system which has been
+given a name, using the command line flag \texttt{-name} (long names)
+or \texttt{-sname} (short names).
+
+The format of the node name is an atom \texttt{Name@Host} where
+\texttt{Name} is the name given by the user and \texttt{Host} is the
+full host name if long names are used, or the first part of the host
+name if short names are used. \texttt{node()} returns the name of the
+node. Nodes with long node names cannot communicate with nodes with
+short node names.
+
+
+\section{Node connections}
+The nodes in a distributed Erlang system are loosely connected. The
+first time the name of another node is used, a connection attempt to
+that node will be made. If a node A connects to node B, and node B has
+a connection to node C, then node A will also try to connect to node
+C. This feature can be turned off by the command line flag:
+
+\begin{erlang}
+-connect_all false.
+\end{erlang}
+
+
+If a node goes down, all connections to that node are removed. The
+BIF:
+
+\begin{erlang}
+erlang:disconnect(Node)
+\end{erlang}
+
+disconnects Node. The BIF \texttt{nodes()} returns the list of
+currently connected (visible) nodes.
+
+
+\section{Hidden nodes}
+It is sometimes useful to connect to a node without also connecting to
+all other nodes. For this purpose, a \textbf{hidden node} may be
+used. A hidden node is a node started with the command line flag
+-hidden. Connections between hidden nodes and other nodes must be set
+up explicitly. Hidden nodes do not show up in the list of nodes
+returned by nodes(). Instead, nodes(hidden) or nodes(connected) must
+be used. A hidden node will not be included in the set of nodes that
+the module global keeps track of.
+
+A \textbf{C node} is a C program written to act as a hidden node in a
+distributed Erlang system. The library \texttt{erl\_interface}
+contains functions for this purpose.
+
+
+\section{Cookies}
+Each node has its own \textbf{magic cookie}, which is an atom. The
+Erlang network authentication server (auth) reads the cookie in the
+file \texttt{\$HOME/.erlang.cookie}. If the file does not exist, it
+will be created with contents as a random string.
+
+The UNIX permissions mode of the file is set to octal 400 (read-only
+by user). The cookie of the local node is set using the BIF
+\texttt{erlang:set\_cookie(node(), Cookie)}.
+
+The current node is only allowed to communicate with another node
+\texttt{Node2} with a different cookie \texttt{Cookie2} if it knows
+the value of this cookie and calls the BIF
+\texttt{erlang:set\_cookie(Node2, Cookie2)}.
+
+
+\section{Distribution BIFs}
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{156pt}|>{\raggedright}p{170pt}|}
+\hline
+\multicolumn{2}{|p{326pt}|}{Distribution BIFs}\tabularnewline
+\hline
+\texttt{node()}  & Returns the name of the current node. Allowed in guards\tabularnewline
+\hline
+\texttt{is\_alive()}  & Returns true if the runtime system is a node and can connect to
+other nodes, false otherwise\tabularnewline
+\hline
+\texttt{erlang:get\_cookie()}  & Returns the magic cookie of the current node\tabularnewline
+\hline
+\texttt{set\_cookie(Node, Cookie)} & Sets the magic cookie used when connecting to Node.
+If Node is the current node, Cookie will be used when connecting to all new nodes\tabularnewline
+\hline
+\texttt{nodes()}  & Returns a list of all visible nodes that the current node is connected
+to\tabularnewline
+\hline
+\texttt{nodes(connected \textbar{} hidden)}  & Returns a list not only of visible nodes,
+but also hidden nodes and previously known nodes, etc. \tabularnewline
+\hline
+\texttt{monitor\_node(Node, true\textbar{}false)}  & Monitors the status of Node. A message
+\texttt{\{nodedown, Node\}} is received if the connection to it is lost\tabularnewline
+\hline
+\texttt{node(Pid\textbar{}Ref\textbar{}Port)}  & Returns the node where the argument is
+located\tabularnewline
+\hline
+\texttt{erlang:disconnect\_node(Node)}  & Forces the disconnection of a node\tabularnewline
+\hline
+\texttt{spawn[\_link\textbar{}\_opt](Node, Module, Function, Args)}  & Creates a process
+at a remote node\tabularnewline
+\hline
+\texttt{spawn[\_link\textbar{}\_opt](Node, Fun)}  & Creates a process at a remote node\tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+
+\section{Distribution command line flags}
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{102pt}|>{\raggedright}p{224pt}|}
+\hline
+\multicolumn{2}{|p{326pt}|}{Distribution command line flags}\tabularnewline
+\hline
+\texttt{-connect\_all false}  & Only explicit connection set-ups will be used. \tabularnewline
+\hline
+\texttt{-hidden}  & Makes a node into a hidden node. \tabularnewline
+\hline
+\texttt{-name Name}  & Makes a runtime system into a node, using long node names. \tabularnewline
+\hline
+\texttt{-setcookie Cookie}  & Same as calling \linebreak{}
+\texttt{erlang:set\_cookie(node(), Cookie))}\tabularnewline
+\hline
+\texttt{-sname Name}  & Makes a runtime system into a node, using short node names. \tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+
+\section{Distribution modules}
+There are several modules available useful for distributed programming.
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{93pt}|>{\raggedright}p{233pt}|}
+\hline
+\multicolumn{2}{|p{326pt}|}{Kernel modules useful for distribution}\tabularnewline
+\hline
+\texttt{global}  & A global name registration facility\tabularnewline
+\hline
+\texttt{global\_group}  & Grouping nodes to global name registration groups\tabularnewline
+\hline
+\texttt{net\_adm}  & Various net administration routines\tabularnewline
+\hline
+\texttt{net\_kernel}  & Erlang networking kernel\tabularnewline
+\hline
+\multicolumn{2}{|p{326pt}|}{S{\large{}TDLIB modules useful for distribution}}\tabularnewline
+\hline
+\texttt{slave}  & Start and control of slave nodes\tabularnewline
+\hline
+\end{tabular}
+\end{center}
