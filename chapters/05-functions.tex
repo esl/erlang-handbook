@@ -522,7 +522,7 @@ recursion in the following manner
 
  \begin{erlang}
 fact(N) when N>1 -> fact(N, N-1);
-fact(N) when N=1; N=0 -> 1.
+fact(N) when N==1; N==0 -> 1.
 
 fact(F,0) -> F;                 % The variable F is used as an accumulator
 fact(F,N) -> fact(F*N, N-1).
