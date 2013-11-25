@@ -145,7 +145,7 @@ The fields need not be in the same order as in the record
 definition. Fields omitted will get their respective default
 values. If the final clause is used, omitted fields will get the value
 \texttt{ExprL}. Fields without default values and that are omitted
-will get the value undefined.
+will have an undefined value.
 
 The value of a field is retrieved using the expression
 \texttt{Variable\#Rec.Field}
@@ -166,7 +166,7 @@ erixon\}} \\
 \texttt{P\#person.age} $\Rightarrow$ \texttt{44} \\
 \texttt{P\#person.employed} $\Rightarrow$ \texttt{erixon}
 
-When working with records in the Erlang shell, functions \texttt{rd(RecordName, RecordDefinition)} and \texttt{rr(Module)} could be used to define and load record definitions. Refer to the Erlang Reference Manual for more information.
+When working with records in the Erlang shell, the functions \texttt{rd(RecordName, RecordDefinition)} and \texttt{rr(Module)} could be used to define and load record definitions. Refer to the Erlang Reference Manual for more information.
 
 
 \subsection{Lists}

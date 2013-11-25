@@ -20,3 +20,6 @@ view:
 	pdflatex --shell-escape  $<
 	pdflatex --shell-escape  $<
 
+# dependencies for individual chapters
+ErlangHandbook.pdf: chapters/*.tex
+
