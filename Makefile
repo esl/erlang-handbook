@@ -4,7 +4,7 @@ REV=`git log -n1 | grep 'Date:' | sed 's/Date:   //g'`
 all: $(DOC).pdf
 
 release: clean $(DOC).pdf
-	mv $(DOC).pdf output
+	mv -f $(DOC).pdf output/
 	git add output/$(DOC).pdf
 	git commit -m "release: $(REV)"
 	git push
@@ -21,5 +21,5 @@ view:
 	pdflatex --shell-escape  $<
 
 # dependencies for individual chapters
-ErlangHandbook.pdf: chapters/*.tex
+$(DOC).pdf: chapters/*.tex
 
