@@ -291,8 +291,11 @@ also at other nodes.
 \section{Process priorities}
 The BIF \texttt{process\_flag(priority, Prio)} defines the priority of
 the current process. \texttt{Prio} may have the value \texttt{normal},
-which is the default, or \texttt{high} or \texttt{low}. This should be
-used very sparingly.
+which is the default, \texttt{low}, \texttt{high} or \texttt{max}. 
+
+Modifying a process priority is discouraged and should only be done in 
+special circumstances. A problem that requires changing processes 
+priorities can generally be solved by another approach.
 
 
 \section{Process dictionary}
