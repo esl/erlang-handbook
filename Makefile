@@ -19,6 +19,7 @@ view:
 %.pdf: %.tex
 	pdflatex --shell-escape  $<
 	pdflatex --shell-escape  $<
+	pdflatex --shell-escape  $<
 
 # dependencies for individual chapters
 $(DOC).pdf: chapters/*.tex
