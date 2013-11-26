@@ -3,9 +3,9 @@
 \section{Module syntax}
 
 An Erlang program is made up of \textbf{modules} where each module is
-a text file with the extension \textbf{.erl}. For a small program like
-a course example, all modules would reside in one directory. A module
-consists of module attributes and function definitions.
+a text file with the extension \textbf{.erl}. For small programs, all
+modules typically reside in one directory.
+A module consists of module attributes and function definitions.
 
 \begin{erlang}
 -module(demo).
@@ -16,26 +16,26 @@ double(X) -> times(X, 2).
 times(X, N) -> X * N.
 \end{erlang}
 
-The module \texttt{demo} consists of the function \texttt{times/2}
+The above module \texttt{demo} consists of the function \texttt{times/2}
 which is local to the module and the function \texttt{double/1} which
-can be called from outside the module.
+is exported and can be called from outside the module.
 
-\texttt{demo:double(10)} $\Rightarrow$ \texttt{20}
+\texttt{demo:double(10)} $\Rightarrow$ \texttt{20}\hfill
 (the arrow $\Rightarrow$ should be read as ``resulting in'')
 
-\texttt{double/1} means the function double with \textit{one}
+\texttt{double/1} means the function ``double'' with \textit{one}
 argument. A function \texttt{double/2} taking \textit{two} arguments
 is regarded as a different function. The number of arguments is called
 the \textbf{arity} of the function.
 
 
 \section{Module attributes}
-A \textbf{module attribute} defines a certain property of a module. A
-module attribute consists of a \textbf{tag} and a \textbf{value}:
+A \textbf{module attribute} defines a certain property of a module and
+consists of a \textbf{tag} and a \textbf{value}:
 
 \texttt{-Tag(Value).}
 
-\textbf{Tag} must be an atom, while \textbf{Value} must be a literal
+\texttt{Tag} must be an atom, while \texttt{Value} must be a literal
 term (see chapter \ref{datatypes}). Any module attribute can be specified. The
 attributes are stored in the compiled code and can be retrieved by
 calling the function \texttt{Module:module\_info(attributes).}
@@ -50,27 +50,27 @@ declaration.
 	-module(Module).
 	\end{erlangim}
 	This attribute is mandatory and must be specified first. It
-        defines the name of the module. The name Module, an atom,
-        should be the same as the file name without the extension erl.
+        defines the name of the module. The name Module, an atom (see section \ref{datatypes:atom}),
+        should be the same as the filename without the `\texttt{.erl}' extension.
 
 	\item \begin{erlangim}
 	-export([Func1/Arity1, ..., FuncN/ArityN]).
 	\end{erlangim}
-	 This attribute specifies which functions in the module that
-         can be called from outside the module. Each function name
-         FuncX is an atom and ArityX an integer.
+	This attribute specifies which functions in the module that
+        can be called from outside the module. Each function name
+        \texttt{FuncX} is an atom and \texttt{ArityX} an integer.
 
 	\item \begin{erlangim}
 	-import(Module,[Func1/Arity1, ..., FuncN/ArityN]).
 	\end{erlangim}
-	This attribute defines a Module from which a list of functions
-        are imported.
+	This attribute indicates a \texttt{Module} from which a list of functions
+        are imported.  For example:
 
-	\item \begin{erlangim}
+	\begin{erlangim}
 	-import(demo, [double/1]).
 	\end{erlangim}
-	This means that it is possible to write double(10) instead of
-        the longer demo:double(10) which can be practical if the
+	This means that it is possible to write \texttt{double(10)} instead of
+        the longer \texttt{demo:double(10)} which can be impractical if the
         function is used frequently.
 
 	\item \begin{erlangim}
@@ -90,14 +90,14 @@ declaration.
 	This attribute either specifies a user defined behaviour or
         one of the OTP standard behaviours \texttt{gen\_server},
         \texttt{gen\_fsm}, \texttt{gen\_event} or
-        \texttt{supervisor}. The spelling behavior is also accepted.
+        \texttt{supervisor}. The spelling ``behavior'' is also accepted.
 
 \end{itemize}
 
 
 \subsection{Macro and record definitions}
 
-Records and macros are defined in the same way as module attributes
+Records and macros are defined in the same way as module attributes:
 
 \begin{erlang}
 -record(Record,Fields).
@@ -107,11 +107,11 @@ Records and macros are defined in the same way as module attributes
 
 Records and macro definitions are also allowed between functions, as
 long as the definition comes before its first use. (About records see
-section \ref{datatypes:record} and about macros see chapter \ref{macros})
+section \ref{datatypes:record} and about macros see chapter \ref{macros}.)
 
 \subsection{File inclusion}
 
-File inclusion is specified in the same way as module attributes.
+File inclusion is specified in the same way as module attributes:
 
 \begin{erlang}
 -include(File).
@@ -130,16 +130,16 @@ for include files.
 -include("/home/user/proj/my_records.hrl").
 \end{erlang}
 
-File may start with a path component \texttt{\$Var} then the value of
-the environment variable \texttt{Var} returned by
-\texttt{os:getenv(Var)} is substituted for \texttt{\$Var}.
+If \texttt{File} starts with a path component \texttt{\$Var}, then the value of
+the environment variable \texttt{Var} (returned by
+\texttt{os:getenv(Var)}) is substituted for \texttt{\$Var}.
 
 \begin{erlang}
 -include("$PROJ_ROOT/my_records.hrl").
 \end{erlang}
 %%$ texmaker parser bug
 
-\texttt{include\_lib} is similar to \texttt{include}, but then the
+\texttt{include\_lib} is similar to \texttt{include}, but the
 first path component is assumed to be the name of an application.
 
 \begin{erlang}
@@ -148,7 +148,7 @@ first path component is assumed to be the name of an application.
 
 The code server uses \texttt{code:lib\_dir(kernel)} to find the
 directory of the current (latest) version of \texttt{kernel}, and then
-the subdirectory include is searched for the file \texttt{file.hrl}.
+the subdirectory \texttt{include} is searched for the file \texttt{file.hrl}.
 
 
 \section{Comments}
@@ -161,8 +161,9 @@ end-of-line. The terminating end-of-line has the effect of a blank.
 \section{Character Set}
 Erlang handles the full Latin-1 (ISO-8859-1) character set. Thus all
 Latin-1 printable characters can be used and displayed without the
-escape backslash. Atoms and variables can use all Latin-1 letters.
+escape backslash. Atoms and variables can use all Latin-1 characters.
 
+\vspace*{12pt}
 \begin{center}
 \begin{tabular}{|>{\raggedright}p{52pt}|>{\raggedright}p{53pt}|>{\raggedright}p{103pt}|>{\raggedright}p{87pt}|}
 \hline
@@ -205,9 +206,11 @@ characters\tabularnewline
 \end{tabular}
 \end{center}
 
+% because of where this lands, force a page break to avoid orphan.
+\newpage
 \section{Reserved words}
 
-\vspace{12pt}
+%\vspace{12pt}
 
 The following are reserved words in Erlang:
 
