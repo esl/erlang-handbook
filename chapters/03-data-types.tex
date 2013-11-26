@@ -6,10 +6,9 @@
 \subsection{Atoms}
 \label{datatypes:atom}
 An \textbf{atom} is a symbolic name, also known as a
-\textit{literal}. They begin with a lower-case letter or must be
-enclosed within single quotes (') if it contains other characters than
-alphanumeric characters, underscore (\texttt{\_}) or commercial at
-(\texttt{@}).
+\textit{literal}.  Atoms begin with a lower-case letter, and may contain alphanumeric characters, underscores (\texttt{\_}) or at-signs (\texttt{@}).
+Alternatively atoms can be specified by enclosing them in single quotes (\texttt{'}), necessary when they start with an uppercase character or contain
+characters other than underscores and at-signs.  For example:
 
 \texttt{hello}
 
@@ -20,50 +19,46 @@ alphanumeric characters, underscore (\texttt{\_}) or commercial at
 \texttt{'phone number'}
 
 \texttt{'Anything inside quotes \textbackslash n\textbackslash 012'}
-(see section \ref{datatypes:escapeseq})
+\hfill(see section \ref{datatypes:escapeseq})
 
 
 \subsection{Booleans}
 \label{datatypes:boolean}
-There is no \textbf{boolean} data type in Erlang. The atoms true and
-false are used instead.
+There is no \textbf{boolean} data type in Erlang. The atoms \texttt{true} and
+\texttt{false} are used instead.
 
-\texttt{2 =< 3} $\Rightarrow$ \texttt{true} \\
-\texttt{true or false} $\Rightarrow$ \texttt{true}
+\texttt{2 =< 3} \resultingin \texttt{true} \\
+\texttt{true or false} \resultingin \texttt{true}
 
 
 \subsection{Integers}
 \label{datatypes:integer}
 In addition to the normal way of writing \textbf{integers} Erlang
-provides further notations. \$Char is the Latin-1 numeric value of the
-character Char and Base\#Value is an integer of the base Base, which
-must be an integer in the range 2..36. Also escape sequences are
-allowed.
+provides further notations. \texttt{\$Char} is the Latin-1 numeric value of the
+character `\texttt{Char}' (that may be an escape sequence) and \texttt{Base\#Value} is an integer in base \texttt{Base}, which
+must be an integer in the range $2..36$.
 
-
-\texttt{42} $\Rightarrow$ \texttt{42} \\
-\$A  $\Rightarrow$ \texttt{65} \\
-\texttt{\$\textbackslash n} $\Rightarrow$  \texttt{10}
-(see section \ref{datatypes:escapeseq}) \\
-\texttt{2\#101} $\Rightarrow$ \texttt{5} \\
-\texttt{16\#1f} $\Rightarrow$ \texttt{31}
+\texttt{42} \resultingin \texttt{42} \\
+\$A  \resultingin \texttt{65} \\
+\texttt{\$\textbackslash n} \resultingin \texttt{10}\hfill(see section \ref{datatypes:escapeseq}) \\
+\texttt{2\#101} \resultingin \texttt{5} \\
+\texttt{16\#1f} \resultingin \texttt{31}
 
 
 \subsection{Floats}
 \label{datatypes:float}
-A \textbf{float} is a real number written like \texttt{Num[eExp]}
+A \textbf{float} is a real number written \texttt{Num}[\texttt{eExp}]
 where \texttt{Num} is a decimal number between 0.01 and 10000 and
-\texttt{Exp} is a signed integer.
+\texttt{Exp} (optional) is a signed integer specifying the power-of-10 exponent.  For example:
 
-\texttt{2.3e-3} $\Rightarrow$ \texttt{2.30000e-3}
+\texttt{2.3e-3} \resultingin \texttt{2.30000e-3}\hfill
 (corresponding to 2.3*10\textsuperscript{-3})
 
 
 \subsection{References}
 \label{datatypes:reference}
 A \textbf{reference} is a term which is unique in an Erlang runtime
-system, created by the \textit{BIF} (see section \ref{functions:bifs})
-\texttt{make\_ref/0}
+system, created by the built-in function \texttt{make\_ref/0}.  (For more information on built-in functions, or \textit{BIF}s, see section \ref{functions:bifs}.)
 
 
 \subsection{Ports}
@@ -79,7 +74,7 @@ chapter \ref{processes}).
 
 \subsection{Funs}
 \label{datatypes:fun}
-A fun identifies a \textbf{functional object} (see section
+A \textit{fun} identifies a \textbf{functional object} (see section
 \ref{functions:funs}).
 
 
@@ -100,29 +95,28 @@ number of elements is called the \textbf{size} of the tuple.
 \hline
 \multicolumn{2}{|p{321pt}|}{BIFs to manipulate tuples}\tabularnewline
 \hline
-size(Tuple) & Returns the size of Tuple\tabularnewline
+\texttt{size(Tuple)} & Returns the size of \texttt{Tuple}\tabularnewline
 \hline
-element(N,Tuple) & Returns the N\textsuperscript{th} element in Tuple\tabularnewline
+\texttt{element(N,Tuple)} & Returns the \texttt{N}\textsuperscript{th} element in \texttt{Tuple}\tabularnewline
 \hline
-setelement(N,Tuple,Expr) & Returns a new tuple copied from Tuple except that the
-N\textsuperscript{th} element is replaced by Expr\tabularnewline
+\texttt{setelement(N,Tuple,Expr)} & Returns a new tuple copied from \texttt{Tuple} except that the
+\texttt{N}\textsuperscript{th} element is replaced by \texttt{Expr}\tabularnewline
 \hline
 \end{tabular}
 \end{center}
 
-\texttt{P = \{adam, 24, \{july, 29\}\}} $\Rightarrow$ \texttt{P} is bound to \texttt{\{adam, 24, \{july, 29\}\}} \\
-\texttt{element(1, P)} $\Rightarrow$ \texttt{adam} \\
-\texttt{element(3, P)} $\Rightarrow$ \texttt{ \{july,29\}} \\
-\texttt{P2 = setelement(2, P, 25)} $\Rightarrow$ \texttt{\{adam, 25, \{july, 29\}\}} \\
-\texttt{size(P)} $\Rightarrow$ \texttt{3} \\
-\texttt{size(\{\})} $\Rightarrow$ \texttt{0} \\
+\texttt{P = \{adam, 24, \{july, 29\}\}} \resultingin \texttt{P} is bound to \texttt{\{adam, 24, \{july, 29\}\}} \\
+\texttt{element(1, P)} \resultingin \texttt{adam} \\
+\texttt{element(3, P)} \resultingin \texttt{ \{july,29\}} \\
+\texttt{P2 = setelement(2, P, 25)} \resultingin \texttt{P2} is bound to \texttt{\{adam, 25, \{july, 29\}\}} \\
+\texttt{size(P)} \resultingin \texttt{3} \\
+\texttt{size(\{\})} \resultingin \texttt{0} \\
 
 
 \subsection{Records}
 \label{datatypes:record}
-A \textbf{record} is a \textit{named tuple} with named elements,
-called \textbf{fields}. A record named \texttt{Rec} is defined as a
-module attribute.
+A \textbf{record} is a \textit{named tuple} with named elements
+called \textbf{fields}.  A record type is defined as a module attribute, for example:
 
 \begin{erlang}
 -record(Rec, {Field1 [= Value1],
@@ -132,8 +126,8 @@ module attribute.
 
 \texttt{Rec} and \texttt{Fields} are atoms and each \texttt{FieldX}
 can be given an optional default \texttt{ValueX}. This definition may
-be placed among the functions of a module but before it is used. If a record is used by several modules it is advisable to put it in a
-separate file for inclusion.
+be placed amongst the functions of a module, but only before it is used.  If a record type is
+used by several modules it is advisable to put it in a separate file for inclusion.
 
 A new record of type \texttt{Rec} is created using an expression like this:
 
@@ -148,7 +142,7 @@ values. If the final clause is used, omitted fields will get the value
 will have an undefined value.
 
 The value of a field is retrieved using the expression
-\texttt{Variable\#Rec.Field}
+``\texttt{Variable\#Rec.Field}''.
 
 \begin{erlang}
 -module(employee).
@@ -159,14 +153,15 @@ new(Name, Age) -> #person{name=Name, age=Age}.
 \end{erlang}
 
 The function \texttt{employee:new/2} can be used in another module
-which must also include the same record definition of person.
+which must also include the same record definition of \texttt{person}.
 
-\texttt{\{P = employee:new(ernie,44)\}} $\Rightarrow$ \texttt{\{person, ernie, 44,
+\texttt{\{P = employee:new(ernie,44)\}} \resultingin \texttt{\{person, ernie, 44,
 erixon\}} \\
-\texttt{P\#person.age} $\Rightarrow$ \texttt{44} \\
-\texttt{P\#person.employed} $\Rightarrow$ \texttt{erixon}
+\texttt{P\#person.age} \resultingin \texttt{44} \\
+\texttt{P\#person.employed} \resultingin \texttt{erixon}
 
-When working with records in the Erlang shell, the functions \texttt{rd(RecordName, RecordDefinition)} and \texttt{rr(Module)} could be used to define and load record definitions. Refer to the Erlang Reference Manual for more information.
+When working with records in the Erlang shell, the functions \texttt{rd(RecordName, RecordDefinition)} and \texttt{rr(Module)} can be used to
+define and load record definitions.  Refer to the \textit{Erlang Reference Manual} for more information.
 
 
 \subsection{Lists}
@@ -177,37 +172,37 @@ number of \textbf{terms} enclosed within square brackets.
 \texttt{[Term1,...,TermN]}
 
 Each term \texttt{TermX} in the list is called an
-\textbf{element}. The number of elements is called the \textbf{length}
-of the list. The first element is called the \textbf{head} of the list
-and the remainder from the 2\textsuperscript{nd} element on is called
-the \textbf{tail} of the list.
+\textbf{element}.  The \textbf{length} of a list refers to the number of elements.  Common in functional programming,
+the first element is called the \textbf{head} of the list
+and the remainder (from the 2\textsuperscript{nd} element onwards) is called
+the \textbf{tail} of the list.  Note that individual elements within a list do not have to have the same type, although it is common (and perhaps good)
+practice to do so --- where mixed types are involved, \textbf{records} are more commonly used.
 
 \begin{center}
 \begin{tabular}{|>{\raggedright}p{90pt}|>{\raggedright}p{230pt}|}
 \hline
 \multicolumn{2}{|p{321pt}|}{BIFs to manipulate lists}\tabularnewline
 \hline
-length(List) & Returns the length of List\tabularnewline
+\texttt{length(List)} & Returns the length of \texttt{List}\tabularnewline
 \hline
-hd(List) & Returns the 1\textsuperscript{st} element of List\tabularnewline
+\texttt{hd(List)} & Returns the 1\textsuperscript{st} (head) element of \texttt{List}\tabularnewline
 \hline
-tl(List) & Returns List with the 1\textsuperscript{st} element removed\tabularnewline
+\texttt{tl(List)} & Returns \texttt{List} with the 1\textsuperscript{st} element removed (tail)\tabularnewline
 \hline
 \end{tabular}
 \end{center}
 
-The vertical bar operator (\textbar{}) separates the remainder of a
-list.
+The vertical bar operator (\textbar{}) separates the leading elements of a list (one or more) from the remainder.  For example:
 
-\texttt{[H | T]  = [1, 2, 3, 4, 5]} $\Rightarrow$ \texttt{H=1} and \texttt{T=[2, 3, 4, 5]} \\
-\texttt{[X, Y | Z] = [a, b, c, d, e]} $\Rightarrow$ \texttt{X=a}, \texttt{Y=b} and \texttt{Z=[c, d, e]}
+\texttt{[H | T]  = [1, 2, 3, 4, 5]} \resultingin \texttt{H=1} and \texttt{T=[2, 3, 4, 5]} \\
+\texttt{[X, Y | Z] = [a, b, c, d, e]} \resultingin \texttt{X=a}, \texttt{Y=b} and \texttt{Z=[c, d, e]}
 
-Implicitly a list will end by an empty list, i.e. \texttt{[a, b]} is
-the same as \texttt{[a, b | []]}. A list looking like \texttt{[a, b |
-c]} is \textbf{badly formed} and should be avoided. Lists lend
-themselves naturally to recursive programming, for example the
-following functions where the first computes the sum of a list and the
-second returns a list where each element has been multiplied by 2.
+Implicitly a list will end with an empty list, i.e.~\texttt{[a, b]} is
+the same as \texttt{[a, b | []]}.  A list looking like \texttt{[a, b | c]}
+is \textbf{badly formed} and should be avoided (because the atom '\texttt{c}' is \textit{not} a list).
+Lists lend themselves naturally to recursive functional programming.  For example, the following
+function `\texttt{sum}' computes the sum of a list, and `\texttt{double}' multiplies each element in a list by 2, constructing and returning a new list
+as it goes.
 
 \begin{erlang}
 sum([]) -> 0;
@@ -217,23 +212,26 @@ double([]) -> [];
 double([H | T]) -> [H*2 | double(T)].
 \end{erlang}
 
-The operator \texttt{++} appends the second argument to the first and
-returns the resulting list. The operator \texttt{--} produces a list
-which is a copy of the first argument except that for each element in
-the second argument, the first occurrence of this element (if any) is
+The above definitions introduce \textit{pattern matching}, described in chapter \ref{patterns}.  Patterns of this form are common in recursive programming,
+explicitly providing a ``base case'' (for the empty list in these examples).
+
+For working with lists, the operator \texttt{++} joins two lists together (appends the second argument to the first) and
+returns the resulting list.  The operator \texttt{--} produces a list that
+is a copy of its first argument, except that for each element in
+the second argument, the first occurrence of this element (if any) in the resulting list is
 removed.
 
-\texttt{[1,2,3] ++ [4,5]} $\Rightarrow$ \texttt{[1,2,3,4,5]}
-\texttt{[1,2,3,2,1,2] -- [2,1,2]} $\Rightarrow$ \texttt{[3,1,2]}
+\texttt{[1,2,3] ++ [4,5]} \resultingin \texttt{[1,2,3,4,5]}
+\texttt{[1,2,3,2,1,2] -- [2,1,2]} \resultingin \texttt{[3,1,2]}
 
 A collection of list processing functions can be found in the
-\texttt{STDLIB} module lists.
+\texttt{STDLIB} module \texttt{lists}.
 
 
 \subsection{Strings}
 \label{datatypes:string}
 \textbf{Strings} are character strings enclosed within double quotes
-but are, in fact, stored as lists.
+but are, in fact, stored as lists of characters.
 
 \texttt{"abcdefghi"} is the same as \texttt{[97,98,99,100,101,102,103,104,105]}
 
@@ -242,7 +240,7 @@ but are, in fact, stored as lists.
 Two adjacent strings will be concatenated into one at compile-time and
 do not incur any runtime overhead.
 
-\texttt{"string"} \texttt{"42"} $\Rightarrow$ \texttt{"string42"}
+\texttt{"string" "42"} \resultingin \texttt{"string42"}
 
 
 \subsection{Binaries}
@@ -250,44 +248,50 @@ do not incur any runtime overhead.
 A binary is a chunk of untyped memory by default a sequence of 8-bit
 bytes.
 
-\texttt{<<Elem1,...,ElemN>>}
+\texttt{<}\texttt{<Elem1,...,ElemN>}\texttt{>}
 
-Each \texttt{ElemX} is specified as
-\texttt{Value[:Size][/TypeSpecifierList]}.
+Each \texttt{ElemX} is specified as \texttt{Value}[\texttt{:Size}][\texttt{/TypeSpecifierList}].
 
 \begin{center}
-\begin{tabular}{|>{\raggedright}p{45pt}|>{\raggedright}p{28pt}|>{\raggedright}p{81pt}|>{\raggedright}p{147pt}|}
+\begin{tabular}{|>{\raggedright}p{73pt}|>{\raggedright}p{81pt}|>{\raggedright}p{147pt}|}
 \hline
-\multicolumn{4}{|p{297pt}|}{{\large{}Element specification}}\tabularnewline
+\multicolumn{3}{|p{297pt}|}{{\large{}Element specification}}\tabularnewline
 \hline
-\multicolumn{2}{|p{75pt}|}{Value} & Size & TypeSpecifierList\tabularnewline
+\texttt{Value} & \texttt{Size} & \texttt{TypeSpecifierList}\tabularnewline
 \hline
-\multicolumn{2}{|p{75pt}|}{Should evaluate to an integer, float or binary} & Should
+Should evaluate to an integer, float or binary & Should
 evaluate to an integer & A sequence of optional type specifiers, in any order,
 separated by hyphens (-)\tabularnewline
 \hline
-\multicolumn{4}{|p{297pt}|}{T{\large{}ype specifiers}}\tabularnewline
+\end{tabular}
+\end{center}
+
+% page break at this point, so turned into two chunks.
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{47pt}|>{\raggedright}p{115pt}|>{\raggedright}p{147pt}|}
 \hline
-Type & \multicolumn{2}{p{120pt}|}{integer \textbar{} float \textbar{} binary} & Default
-is integer\tabularnewline
+\multicolumn{3}{|p{297pt}|}{T{\large{}ype specifiers}}\tabularnewline
 \hline
-Signedness & \multicolumn{2}{p{120pt}|}{signed \textbar{} unsigned} & Default is
-signed\tabularnewline
+Type & \texttt{integer} \textbar{} \texttt{float} \textbar{} \texttt{binary} & Default
+is \texttt{integer}\tabularnewline
 \hline
-Endianness & \multicolumn{2}{p{120pt}|}{big \textbar{} little \textbar{} native} & CPU
-dependent. Default is big\tabularnewline
+Signedness & \texttt{signed} \textbar{} \texttt{unsigned} & Default is
+\texttt{signed}\tabularnewline
 \hline
-Unit & \multicolumn{2}{p{120pt}|}{unit:IntegerLiteral} & Allowed range is 1..256.
-Default is 1 for integer and float and 8 for binary\tabularnewline
+Endianness & \texttt{big} \textbar{} \texttt{little} \textbar{} \texttt{native} & CPU
+dependent. Default is \texttt{big}\tabularnewline
+\hline
+Unit & \texttt{unit:}\textit{IntegerLiteral} & Allowed range is $1..256$.
+Default is 1 for integer and float, and 8 for binary\tabularnewline
 \hline
 \end{tabular}
 \end{center}
 
 The value of \texttt{Size} multiplied by the unit gives the number of
 bits for the segment. Each segment can consist of zero or more bits
-but the total number of bits must be a multiple of \texttt{8}, or a
+but the total number of bits must be a multiple of 8, or a
 \texttt{badarg} run-time error will occur. Also, a segment of type
-binary must have a size evenly divisible by \texttt{8}.
+binary must have a size evenly divisible by 8.
 
 Binaries cannot be nested.
 
@@ -320,7 +324,7 @@ Escape sequences are allowed in strings and quoted atoms.
 \hline
 \textbackslash{}n & New line\tabularnewline
 \hline
-\textbackslash{}r & carriage Return\tabularnewline
+\textbackslash{}r & Carriage return\tabularnewline
 \hline
 \textbackslash{}s & Space\tabularnewline
 \hline
@@ -347,12 +351,12 @@ A to control Z\tabularnewline
 \end{center}
 
 \section{Type conversions}
-There are a number of BIFs for type conversions.
+There are a number of built-in functions for type conversion:
 
 \begin{center}
-\begin{tabular}{|>{\raggedright}p{63pt}|>{\raggedright}p{21pt}|>{\raggedright}p{21pt}|>{\raggedright}p{21pt}|>{\raggedright}p{21pt}|>{\raggedright}p{21pt}|>{\raggedright}p{21pt}|>{\raggedright}p{21pt}|>{\raggedright}p{22pt}|}
+\begin{tabular}{|>{\raggedright}p{63pt}|>{\raggedright}p{21pt}|>{\raggedright}p{25pt}|>{\raggedright}p{21pt}|>{\raggedright}p{21pt}|>{\raggedright}p{21pt}|>{\raggedright}p{21pt}|>{\raggedright}p{21pt}|>{\raggedright}p{24pt}|}
 \hline
-\multicolumn{9}{|p{237pt}|}{T{\large{}ype conversions}}\tabularnewline
+\multicolumn{9}{|p{243pt}|}{T{\large{}ype conversions}}\tabularnewline
 \hline
  & atom & integer & float & pid & fun & tuple & list & binary\tabularnewline
 \hline
