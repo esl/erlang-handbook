@@ -7,7 +7,7 @@
 \textbf{Variables} are introduced as arguments to a function or as a
 result of pattern matching. Variables begin with an uppercase letter
 or underscore (\texttt{\_}) and may contain alphanumeric characters,
-underscore and commercial at (\texttt{@}). Variables can only be bound
+underscores and at-signs (\texttt{@}). Variables can only be bound
 (assigned) once.
 
 \begin{erlang}
@@ -17,7 +17,7 @@ AnObjectOrientatedVariableName
 _Height
 \end{erlang}
 
-An \textbf{anonymous variable} is denoted by underscore (\texttt{\_})
+An \textbf{anonymous variable} is denoted by a single underscore (\texttt{\_})
 and can be used when a variable is required but its value can be
 ignored.
 
@@ -28,14 +28,14 @@ ignored.
 Variables beginning with underscore like \texttt{\_Height} are normal
 variables, not anonymous. They are however ignored by the compiler in
 the sense that they will not generate any warnings for unused
-variables. Thus it is possible to write
+variables. Thus it is possible to write:
 
 \begin{erlang}
 member(_Elem, []) ->
     false.
 \end{erlang}
 
-instead of
+instead of:
 
 \begin{erlang}
 member(_, []) ->
@@ -48,7 +48,7 @@ The \textit{scope} for a variable is its function clause. Variables
 bound in a branch of an \texttt{if}, \texttt{case}, or
 \texttt{receive} expression must be bound in all branches to have a
 value outside the expression, otherwise they will be regarded as
-\textit{unsafe} outside the expression.
+\textit{unsafe} (possibly undefined) outside the expression.
 
 
 \section{Pattern Matching}
@@ -88,7 +88,7 @@ answer
 
 \subsection{Match operator (\texttt{=}) in patterns}
 If \texttt{Pattern1} and \texttt{Pattern2} are valid patterns, then
-the following is also a valid pattern
+the following is also a valid pattern:
 
 \begin{erlang}
 Pattern1 = Pattern2
@@ -96,7 +96,7 @@ Pattern1 = Pattern2
 
 The \texttt{=} introduces an \textbf{alias} which when matched against an
 expression, both \texttt{Pattern1} and \texttt{Pattern2} are matched
-against it. The purpose is to avoid reconstruction of terms.
+against it. The purpose of this is to avoid the reconstruction of terms.
 
 \begin{erlang}
 foo({connect,From,To,Number,Options}, To) ->
@@ -105,7 +105,7 @@ foo({connect,From,To,Number,Options}, To) ->
     ...;
 \end{erlang}
 
-which can be written more efficiently as
+which can be written more efficiently as:
 
 \begin{erlang}
 foo({connect,From,To,Number,Options} = Signal, To) ->
@@ -115,19 +115,19 @@ foo({connect,From,To,Number,Options} = Signal, To) ->
 
 
 \subsection{String prefix in patterns}
-When matching strings, the following is a valid pattern
+When matching strings, the following is a valid pattern:
 
 \begin{erlang}
 f("prefix" ++ Str) -> ...
 \end{erlang}
 
-which is equivalent to and easier to read than
+which is equivalent to and easier to read than:
 
 \begin{erlang}
 f([$p,$r,$e,$f,$i,$x | Str]) -> ...
 \end{erlang}
 
-You can only use strings as prefix expressions, \texttt{Str ++ "postfix"} is not allowed. 
+You can only use strings as prefix expressions; patterns such as \texttt{Str ++ "postfix"} are not allowed. 
 
 \subsection{Expressions in patterns}
 An arithmetic expression can be used within a pattern, provided it
@@ -139,7 +139,6 @@ case {Value, Result} of
     {?Threshold+1, ok} -> ...   % ?Threshold is a macro
 \end{erlang}
 
-
 \subsection{Matching binaries}
 
 \begin{erlang}
@@ -149,8 +148,9 @@ Bin = <<1, 2, 3>>               % <<1,2,3>> All elements are 8-bit bytes
 <<F, G/binary>> = Bin           % F=1 and G=<<2,3>>
 \end{erlang}
 
-In the last line, variable \texttt{G} of unspecified size matches the
+In the last line, the variable \texttt{G} of unspecified size matches the
 rest of the binary \texttt{Bin}.
 
 Always put a space between (\texttt{=}) and (\verb|<<|) so as to
 avoid confusion with the (\texttt{=<}) operator.
+
