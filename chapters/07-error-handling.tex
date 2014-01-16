@@ -12,7 +12,8 @@ are known as \textbf{exceptions}.
 \hline
 \multicolumn{2}{|p{326pt}|}{Exception classes}\tabularnewline
 \hline
-\texttt{error} & Run-time error for example when applying an operator to the wrong types of arguments. Run-time errors can be emulated by calling the BIFs \texttt{erlang:error(Reason)} or \texttt{erlang:error(Reason, Args)} \tabularnewline
+\texttt{error} & Run-time error for example when applying an operator to the wrong types of arguments. Run-time errors can be raised by calling
+	the BIFs \texttt{erlang:error(Reason)} or \texttt{erlang:error(Reason, Args)} \tabularnewline
 \hline
 \texttt{exit}  & The process calls \texttt{exit(Reason)}, see section \ref{processes:termination}\tabularnewline
 \hline
@@ -29,11 +30,11 @@ and a stack. The stack trace can be retrieved using the BIF
 \texttt{erlang:get\_stacktrace/0}.
 
 Run-time errors and other exceptions can be prevented from causing the
-process to terminate by using the expressions catch or try.
+process to terminate by using the expressions \texttt{try} and \texttt{catch}.
 
-For exceptions of class error, for example normal run-time errors, the
+For exceptions of class \texttt{error}, for example normal run-time errors, the
 \textbf{exit reason} is a tuple \texttt{\{Reason, Stack\}} where
-Reason is a term indicating which type of error.
+\texttt{Reason} is a term indicating which type of error.
 
 \begin{center}
 \begin{tabular}{|>{\raggedright}p{100pt}|>{\raggedright}p{226pt}|}
@@ -44,33 +45,33 @@ Reason is a term indicating which type of error.
 \hline
 \texttt{badarith}  & Argument is of wrong type in an arithmetic expression. \tabularnewline
 \hline
-\texttt{\{badmatch, Value\}}  & Evaluation of a match expression failed. Value did not match.
+\texttt{\{badmatch, Value\}}  & Evaluation of a match expression failed. \texttt{Value} did not match.
 \tabularnewline
 \hline
 \texttt{function\_clause}  & No matching function clause is found when evaluating a function
 call. \tabularnewline
 \hline
 \texttt{\{case\_clause, Value\}}  & No matching branch is found when evaluating a case expression.
-Value did not match. \tabularnewline
+\texttt{Value} did not match. \tabularnewline
 \hline
-\texttt{if\_clause}  & No true branch is found when evaluating an if expression. \tabularnewline
+\texttt{if\_clause}  & No true branch is found when evaluating an \texttt{if} expression. \tabularnewline
 \hline
 \texttt{\{try\_clause, Value\}}  & No matching branch is found when evaluating the of section
-of a \texttt{try} expression. Value did not match. \tabularnewline
+of a \texttt{try} expression. \texttt{Value} did not match. \tabularnewline
 \hline
 \texttt{undef}  & The function cannot be found when evaluating a function call\tabularnewline
 \hline
-\texttt{\{badfun, Fun\}}  & There is something wrong with a Fun\tabularnewline
+\texttt{\{badfun, Fun\}}  & There is something wrong with \texttt{Fun}\tabularnewline
 \hline
-\texttt{\{badarity, Fun\}}  & A fun is applied to the wrong number of arguments. Fun describes
+\texttt{\{badarity, Fun\}}  & A fun is applied to the wrong number of arguments. \texttt{Fun} describes
 it and the arguments\tabularnewline
 \hline
-\texttt{timeout\_value}  & The timeout value in a receive..after expression is evaluated
+\texttt{timeout\_value}  & The timeout value in a \texttt{receive}$...$\texttt{after} expression is evaluated
 to something else than an integer or infinity\tabularnewline
 \hline
-\texttt{noproc}  & Trying to link to a non-existing process\tabularnewline
+\texttt{noproc}  & Trying to link to a non-existant process\tabularnewline
 \hline
-\texttt{\{nocatch, Value\}}  & Trying to evaluate a throw outside a catch. Value is the thrown
+\texttt{\{nocatch, Value\}}  & Trying to evaluate a \texttt{throw} outside of a \texttt{catch}. \texttt{Value} is the thrown
 term\tabularnewline
 \hline
 \texttt{system\_limit}  & A system limit has been reached\tabularnewline
@@ -78,10 +79,10 @@ term\tabularnewline
 \end{tabular}
 \end{center}
 
-Stack is the stack of function calls being evaluated when the error
+\texttt{Stack} is the stack of function calls being evaluated when the error
 occurred, given as a list of tuples \texttt{\{Module, Name, Arity\}}
 with the most recent function call first.  The most recent function
-call tuple may in some cases be \texttt{\{Module, Name, Args\}}
+call tuple may in some cases be \texttt{\{Module, Name, Args\}}.
 
 
 \section{Catch and throw}
@@ -104,32 +105,32 @@ the process. If the exception is caused by a function call
 the exception is caused by calling \texttt{throw(Term)} then
 \texttt{Term} will be returned.
 
-\texttt{catch 1+2} $\Rightarrow$ \texttt{3}\\
-\texttt{catch 1+a } $\Rightarrow$ \texttt{\{'EXIT',\{badarith,[...]\}\}}
+\texttt{catch 1+2} \resultingin \texttt{3}\\
+\texttt{catch 1+a } \resultingin \texttt{\{'EXIT',\{badarith,[...]\}\}}
 
 \texttt{catch} has low precedence and catch subexpressions often need
 to be enclosed in a block expression or in parentheses.
 
-\texttt{A = (catch 1+2)} $\Rightarrow$ \texttt{3}
+\texttt{A = (catch 1+2)} \resultingin \texttt{3}
 
 The BIF \texttt{throw(Expr)} is used for \textit{non-local} return
-from a function. It must be evaluated within a catch, which returns
+from a function. It must be evaluated within a \texttt{catch}, which returns
 the result from evaluating \texttt{Expr}.
 
-\texttt{catch begin 1,2,3,throw(four),5,6 end}  $\Rightarrow$  \texttt{four}
+\texttt{catch begin 1,2,3,throw(four),5,6 end} \resultingin \texttt{four}
 
-If \texttt{throw/1} is not evaluated within a catch, a
+If \texttt{throw/1} is not evaluated within a \texttt{catch}, a
 \texttt{nocatch} run-time error will occur.
 
-A catch will not prevent a process from terminating due to an exit
+A \texttt{catch} will not prevent a process from terminating due to an exit
 signal from another linked process (unless it has been set to trap
 exits).
 
 
 \section{Try}
 \label{errorhandling:try}
-The try expression is able to distinguish between different exception
-classes. The following example emulates \texttt{catch Expr}:
+The \texttt{try} expression is able to distinguish between different exception
+classes.  The following example emulates the behaviour of \texttt{catch Expr}:
 
 \begin{erlang}
 try Expr
@@ -155,26 +156,26 @@ try Expr [of
 end
 \end{erlang}
 
-There has to be at least a \texttt{catch} or an \texttt{after}
+There has to be at least one \texttt{catch} or an \texttt{after}
 clause. There may be an \texttt{of} clause following the \texttt{Expr}
 which adds a \texttt{case} expression on the value of \texttt{Expr}.
 
 \texttt{try} returns the value of \texttt{Expr} unless an exception
 occurs during its evaluation. Then the exception is \textit{caught}
 and the patterns \texttt{ExceptionPattern} with the right exception
-Class are sequentially matched against the caught exception. An
-omitted Class is shorthand for throw. If a match succeeds and the
+\texttt{Class} are sequentially matched against the caught exception. An
+omitted \texttt{Class} is shorthand for \texttt{throw}. If a match succeeds and the
 optional guard sequence \texttt{ExceptionGuardSeq} is true, the
-corresponding \texttt{ExceptionBody} is evaluated to become the return
+corresponding \texttt{ExceptionBody} is evaluated and becomes the return
 value.
 
-If there is no matching \texttt{ExceptionPattern} of the right Class
+If there is no matching \texttt{ExceptionPattern} of the right \texttt{Class}
 with a true guard sequence, the exception is passed on as if
-\texttt{Expr} had not been enclosed in a try expression. An exception
+\texttt{Expr} had not been enclosed in a \texttt{try} expression. An exception
 occurring during the evaluation of an \texttt{ExceptionBody} it is not
 caught.
 
-If none of the of Patterns match, a \texttt{try\_clause} run-time
+If none of the of \texttt{Patterns} match, a \texttt{try\_clause} run-time
 error will occur.
 
 If defined then \texttt{AfterBody} is always evaluated \textbf{last}
@@ -199,3 +200,4 @@ itself is not caught, so if the \texttt{AfterBody} is evaluated due to
 an exception in \texttt{Expr}, \texttt{Body} or
 \texttt{ExceptionBody}, that exception is lost and masked by the new
 exception.
+
