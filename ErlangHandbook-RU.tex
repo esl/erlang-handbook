@@ -1,7 +1,8 @@
 % !TEX encoding = UTF-8 Unicode
 %% NOTE: Due to using fontspec and UTF8 to avoid encoding problems and stuff, Russian
 %% version of this document builds using xe(la)tex and TexStudio
-\documentclass[oneside]{book}
+\documentclass[russian,14pt,oneside]{book}
+\usepackage{extsizes} % additional font sizes for documentclass
 
 %%%%%%
 %% package includes
@@ -60,7 +61,7 @@
 
 \vspace*{70pt}
 \includegraphics[scale=0.3]{includes/erlang-logo.png}\\[0.8\baselineskip]
-{\Huge \sffamily HANDBOOK}\\
+{\Huge \sffamily НАСТОЛЬНАЯ КНИГА}\\
 \vspace{250pt}
 {\LARGE \sffamily Бьярн Дэкер (Bjarne D\"acker)}\par
 {\LARGE \sffamily Роберт Вирдинг (Robert Virding)}\par
@@ -72,53 +73,58 @@
 %% Info Page
 \clearpage
 \thispagestyle{empty}
-{\Huge Erlang Handbook}\\[0.1\baselineskip]
-\hspace{10pt}{\large{by Bjarne Däcker and Robert Virding}}
+{\Huge Настольная книга по Erlang}\\[0.1\baselineskip]
+\hspace{10pt}{\large{Бьярн Дэкер (Bjarne Däcker) и Роберт Вирдинг (Robert Virding)}}
 
 \vspace{20pt}
-{\Large \textbf{Revision:}\\[0.2\baselineskip]
+{\Large \textbf{Версия:}\\[0.2\baselineskip]
 \immediate\write18{git log -n1 | grep 'Date:' | sed 's/Date:   //g' > _revision.tex}
 \input{_revision}
 \immediate\write18{rm _revision.tex}
 }
 
 \vspace{20pt}
-{\large Latest version of this handbook can be found at:\\
+{\large Последняя версия этой книги находится по адресу:\\
 \url{http://opensource.erlang-solutions.com/erlang-handbook}}
 
 \vfill
 
-\textbf{Editor}\\[0.1\baselineskip]
+\textbf{Главный редактор}\\[0.1\baselineskip]
 %\begin{tabular}{@{\hspace{3ex}}p{42em}}
-Omer Kilic
+Омер Килич (Omer Kilic)
 %\end{tabular}
 
-\textbf{Contributors}\\[0.1\baselineskip]
+\textbf{Прочие участники}\\[0.1\baselineskip]
 %\begin{tabular}{@{\hspace{3ex}}p{42em}}
-The list of contributors can be found \href{https://github.com/esl/erlang-handbook/graphs/contributors}{on the project repository}.
+Список людей, которые помогли с изменениями и исправлениями находится
+\href{https://github.com/esl/erlang-handbook/graphs/contributors}{в репозитории 
+проекта}.
 %\end{tabular}
 
 \vspace{20pt}
-\textbf{Conventions}\\
-Syntax specifications are set using \texttt{this monotype font}. Square brackets
-([ ]) enclose optional parts. Terms beginning with an uppercase letter like
-\textit{Integer} shall then be replaced by some suitable value. Terms beginning
-with a lowercase letter like \texttt{end} are reserved words in Erlang. A
-vertical bar (\textbar{}) separates alternatives, like Integer \textbar{} Float.
+\textbf{Соглашения}\\
+Спецификации синтаксиса задаются с помощью \texttt{этого моноширинного шрифта}.
+В квадратные скобки ([ ]) заключаются необязательные части. Термы, начинающиеся
+с заглавной буквы, как например \textit{Integer} должны быть заменены на 
+какое-нибудь подходящее значение. Термы, начинающиеся со строчной буквы, как
+например \texttt{end}, являются зарезервированными словами языка Erlang. 
+Вертикальная черта (\textbar{}) разделяет альтернативные варианты, как например 
+Integer \textbar{} Float.
 
 \vspace{20pt}
-\textbf{Errata and Improvements}\\
-This is a live document so please file corrections and suggestions for
-improvement about the content using the issue tracker at
-\url{https://github.com/esl/erlang-handbook}. You may also fork this repository
-and send a pull request with your suggested fixes and improvements. New
-revisions of this document will be published after major corrections.
+\textbf{Ошибки и улучшения}\\
+Это живой документ, пожалуйста присылайте исправления и рекомендации по улучшению
+содержимого используя систему учёта задач Github по адресу
+\url{https://github.com/esl/erlang-handbook}. Вы также можете создать свою ветвь
+репозитория (fork) и прислать нам запрос на соединение ветвей (pull request) с
+вашими предлагаемыми исправлениями и предложениями. Новые ревизии этого документа
+будут публиковаться по мере накопления больших изменений.
 
 \vspace{20pt}
-\includegraphics[scale=0.7]{includes/cc-by-sa.png}\\ This text is made available
-under a Creative Commons Attribution-ShareAlike 3.0 License. You are free to
-copy, distribute and transmit it under the license terms defined at
-\url{http://creativecommons.org/licenses/by-sa/3.0}
+\includegraphics[scale=0.7]{includes/cc-by-sa.png}\\ Этот текст доступен согласно
+условиям лицензии Creative Commons Attribution-ShareAlike 3.0 License. Вы имеете
+право копировать, распространять и передавать эту книгу по условиям лицензии, 
+описанным по адресу \url{http://creativecommons.org/licenses/by-sa/3.0}
 
 \newpage
 
@@ -132,8 +138,7 @@ copy, distribute and transmit it under the license terms defined at
 %% Chapters
 
 \input{chapters-RU/01-background}
-
-%\input{chapters-RU/02-structure-of-an-erlang-program}
+\input{chapters-RU/02-structure-of-an-erlang-program}
 %\input{chapters-RU/03-data-types}
 %\input{chapters-RU/04-pattern-matching}
 %\input{chapters-RU/05-functions}
