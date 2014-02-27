@@ -10,9 +10,10 @@
 \ifxetex
     \usepackage{fontspec}
     \defaultfontfeatures{Scale=MatchLowercase,Mapping=tex-text}
-    \setmainfont{Fira Sans}
-    \setsansfont{Fira Sans}
-    \setmonofont{Fira Mono}
+    \setmainfont[Path=fonts/,ItalicFont=PTF56F.ttf,
+    BoldFont=PTF75F.ttf]{PTF55F.ttf}
+    \setmonofont[Ligatures={NoRequired,NoCommon,NoContextual}]{Fira Mono}
+    %\setmonofont[Path=fonts/,BoldFont=PTM75F.ttf]{PTM55F.ttf}
 \else
 	\usepackage[utf8]{inputenc}
 	\usepackage[T2A]{fontenc}
@@ -40,7 +41,7 @@
 
 %%%%%%
 %% hacks and macros
-\newminted[erlang]{erlang}{xleftmargin=1cm,xrightmargin=1cm,frame=single,framerule=1pt}
+\newminted[erlang]{erlang}{xleftmargin=0cm,xrightmargin=0cm,frame=single,framerule=1pt}
 
 %% hack to fix the margin issue in \item s in 1.2.1
 \newminted[erlangim]{erlang}{xleftmargin=-1.5cm}
@@ -63,8 +64,8 @@
 \includegraphics[scale=0.3]{includes/erlang-logo.png}\\[0.8\baselineskip]
 {\Huge \sffamily НАСТОЛЬНАЯ КНИГА}\\
 \vspace{250pt}
-{\LARGE \sffamily Бьярн Дэкер (Bjarne D\"acker)}\par
-{\LARGE \sffamily Роберт Вирдинг (Robert Virding)}\par
+{\LARGE Бьярн Дэкер (Bjarne D\"acker)}\par
+{\LARGE Роберт Вирдинг (Robert Virding)}\par
 
 \end{titlepage}
 
@@ -139,9 +140,9 @@ Integer \textbar{} Float.
 
 %\input{chapters-RU/01-background}
 %\input{chapters-RU/02-structure-of-an-erlang-program}
-\input{chapters-RU/03-data-types}
+%\input{chapters-RU/03-data-types}
 %\input{chapters-RU/04-pattern-matching}
-%\input{chapters-RU/05-functions}
+\input{chapters-RU/05-functions}
 %\input{chapters-RU/06-processes}
 %\input{chapters-RU/07-error-handling}
 %\input{chapters-RU/08-distributed-erlang}

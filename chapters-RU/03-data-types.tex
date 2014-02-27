@@ -14,13 +14,12 @@
 (\texttt{'}), это необходимо, если атом начинается с заглавной буквы, или содержит
 другие символы, кроме подчёркиваний и at (\texttt{@}). Например:
 
-\texttt{hello}
-
-\texttt{phone\_number}
-
-\texttt{'Monday'}
-
-\texttt{'phone number'}
+\begin{verbatim}
+hello
+phone_number
+'Monday'
+'phone number'
+\end{verbatim}
 
 \texttt{'Anything inside quotes \textbackslash n\textbackslash 012'}
 \hfill(см. раздел \ref{datatypes:escapeseq})
@@ -54,11 +53,11 @@
 \subsection{Действительные с плавающей точкой}
 \label{datatypes:float}
 
-Действительное число \textbf{с плавающей точкой} записывается, как 
-\texttt{Num}[\texttt{eExp}], где \texttt{Num} --- это десятичное число в диапазоне 
-от 0.01 до 10000 и \texttt{Exp} (необязательное) --- это целое число со знаком,
-указывающее экспоненту (степень десятки, на которую множится основание Num). 
-Например:
+Действительное число \textbf{с плавающей точкой} записывается, как\linebreak
+\texttt{Основание}[\texttt{"e"Экспонента}], где \texttt{Основание} --- это
+действительное число в диапазоне от 0.01 до 10000 и \texttt{Экспонента} 
+(необязательное) --- это целое число со знаком, указывающее экспоненту (степень
+десятки, на которую множится \texttt{Основание}). Например:
 
 \texttt{2.3e-3} \resultingin \texttt{2.30000e-3}\hfill
 (соответствует $2.3 \cdot 10^{-3}$)
@@ -104,64 +103,72 @@
 \textbf{Кортеж} --- это составной тип данных, который содержит \textbf{фиксированное 
 количество термов}, заключённое \{в фигурные скобки\}. Например:
 
-\texttt{\{Term1,...,TermN\}}
+\texttt{\{Терм1,...,ТермN\}}
 
-Каждый из \texttt{TermX} в кортеже называется \textbf{элементом}. Количество 
+Каждый из \texttt{ТермX} в кортеже называется \textbf{элементом}. Количество 
 элементов называется \textbf{размером} данного кортежа.
 
 \begin{center}
-\begin{tabular}{|>{\raggedright}p{134pt}|>{\raggedright}p{186pt}|}
+\begin{tabular}{|>{\raggedright}p{220pt}|>{\raggedright}p{230pt}|}
 \hline
-\multicolumn{2}{|p{321pt}|}{BIFs to manipulate tuples}\tabularnewline
+\multicolumn{2}{|p{321pt}|}{BIF-функции для работы с кортежами}\tabularnewline
 \hline
-\texttt{size(Tuple)} & Returns the size of \texttt{Tuple}\tabularnewline
+\texttt{size(Кортеж)} & 
+Возвращает размер \texttt{Кортежа}\tabularnewline
 \hline
-\texttt{element(N,Tuple)} & Returns the \texttt{N}\textsuperscript{th} element in \texttt{Tuple}\tabularnewline
+\texttt{element(N,Кортеж)} &
+Возвращает \texttt{N}\textsuperscript{ый} элемент в \texttt{Кортеже} 
+\tabularnewline
 \hline
-\texttt{setelement(N,Tuple,Expr)} & Returns a new tuple copied from \texttt{Tuple} except that the
-\texttt{N}\textsuperscript{th} element is replaced by \texttt{Expr}\tabularnewline
+\texttt{setelement(N,Кортеж1,Выражение)} &
+Возвращает новый кортеж, скопированный из \texttt{Кортеж1}, в котором 
+\texttt{N}\textsuperscript{ый} элемент заменён новым значением 
+\texttt{Выражение}\tabularnewline
 \hline
 \end{tabular}
 \end{center}
 
-\texttt{P = \{adam, 24, \{july, 29\}\}} \resultingin \texttt{P} is bound to \texttt{\{adam, 24, \{july, 29\}\}} \\
+\texttt{P = \{adam, 24, \{july, 29\}\}} \resultingin \texttt{P} связано с \texttt{\{adam, 24, \{july, 29\}\}} \\
 \texttt{element(1, P)} \resultingin \texttt{adam} \\
 \texttt{element(3, P)} \resultingin \texttt{ \{july,29\}} \\
-\texttt{P2 = setelement(2, P, 25)} \resultingin \texttt{P2} is bound to \texttt{\{adam, 25, \{july, 29\}\}} \\
+\texttt{P2 = setelement(2, P, 25)} \resultingin \texttt{P2} связано с \texttt{\{adam, 25, \{july, 29\}\}} \\
 \texttt{size(P)} \resultingin \texttt{3} \\
 \texttt{size(\{\})} \resultingin \texttt{0} \\
 
 
-\subsection{Records}
+\subsection{Записи}
 \label{datatypes:record}
-A \textbf{record} is a \textit{named tuple} with named elements
-called \textbf{fields}.  A record type is defined as a module attribute, for example:
 
-\begin{erlang}
--record(Rec, {Field1 [= Value1],
-              ...
-              FieldN [= ValueN]}).
-\end{erlang}
+\textbf{Запись} это \textit{именованный кортеж}, имеющий именованные элементы,
+которые называются \textbf{полями}. Тип записи определяется в виде атрибута 
+модуля, например:
 
-\texttt{Rec} and \texttt{Fields} are atoms and each \texttt{FieldX}
-can be given an optional default \texttt{ValueX}. This definition may
-be placed amongst the functions of a module, but only before it is used.  If a record type is
-used by several modules it is advisable to put it in a separate file for inclusion.
+\begin{verbatim}
+-record(Запись, {Поле1 [= Значение1],
+                 ...
+                 ПолеN [= ЗначениеN]}).
+\end{verbatim}
 
-A new record of type \texttt{Rec} is created using an expression like this:
+Здесь имя записи \texttt{Запись} и имена полей \texttt{ПолеХ} --- атомы и каждое
+\texttt{ПолеX} может получить необязательное значение по умолчанию
+\texttt{ЗначениеX}. Это определение может быть помещено в любом месте модуля между
+определениями функций, но обязательно до первого использования. Если тип записи
+используется в нескольких модулях, рекомендуется поместить его в отдельный файл
+для включения.
 
-\begin{erlang}
-#Rec{Field1=Expr1, ..., FieldK=ExprK [, _=ExprL]}
-\end{erlang}
+Новая запись с типом \texttt{Запись} создаётся с помощью следующего выражения:
 
-The fields need not be in the same order as in the record
-definition. Fields omitted will get their respective default
-values. If the final clause is used, omitted fields will get the value
-\texttt{ExprL}. Fields without default values and that are omitted
-will have an undefined value.
+\begin{verbatim}
+#Запись{Поле1=Выражение1, ..., ПолеK=ВыражениеK [, _=ВыражениеL]}
+\end{verbatim}
 
-The value of a field is retrieved using the expression
-``\texttt{Variable\#Rec.Field}''.
+Поля не обязательно должны идти в том же порядке, как и в определении записи.
+Пропущенные поля получат свои соответствующие значения по умолчанию. Если 
+использована последняя запись (подчёркивание равно \texttt{ВыражениеL}), то все
+оставшиеся поля получат значение \texttt{ВыражениеL}. Поля без значений по
+умолчанию и пропущенные поля получат значение \texttt{undefined}.
+
+Значение поля можно получить используя выражение \texttt{Переменная\#Запись.Поле}.
 
 \begin{erlang}
 -module(employee).
@@ -171,57 +178,72 @@ The value of a field is retrieved using the expression
 new(Name, Age) -> #person{name=Name, age=Age}.
 \end{erlang}
 
-The function \texttt{employee:new/2} can be used in another module
-which must also include the same record definition of \texttt{person}.
+Здесь функция \texttt{employee:new/2} может быть использована в другом модуле,
+который также должен включить файл, содержащий определение использованной здесь
+записи \texttt{person}.
 
 \texttt{\{P = employee:new(ernie,44)\}} \resultingin \texttt{\{person, ernie, 44,
 erixon\}} \\
 \texttt{P\#person.age} \resultingin \texttt{44} \\
 \texttt{P\#person.employed} \resultingin \texttt{erixon}
 
-When working with records in the Erlang shell, the functions \texttt{rd(RecordName, RecordDefinition)} and \texttt{rr(Module)} can be used to
-define and load record definitions.  Refer to the \textit{Erlang Reference Manual} for more information.
+При работе с записями в интерпретаторе Erlang, можно использовать функции\linebreak
+\texttt{rd(ИмяЗаписи, ОпределениеЗаписи)} и \texttt{rr(Модуль)} для того, чтобы
+определить или загрузить новые определения записей. Подробнее читайте в
+документации\linebreak\textit{Erlang Reference Manual}.
 
 
-\subsection{Lists}
+
+\subsection{Списки}
 \label{datatypes:list}
-A \textbf{list} is a compound data type that holds a \textit{variable}
-number of \textbf{terms} enclosed within square brackets.
 
-\texttt{[Term1,...,TermN]}
+\textbf{Список} --- это составной тип данных, который содержит \textit{переменное}
+количество \textbf{термов}, заключённое в квадратных скобках.
 
-Each term \texttt{TermX} in the list is called an
-\textbf{element}.  The \textbf{length} of a list refers to the number of elements.  Common in functional programming,
-the first element is called the \textbf{head} of the list
-and the remainder (from the 2\textsuperscript{nd} element onwards) is called
-the \textbf{tail} of the list.  Note that individual elements within a list do not have to have the same type, although it is common (and perhaps good)
-practice to do so --- where mixed types are involved, \textbf{records} are more commonly used.
+\texttt{[Терм1,...,ТермN]}
+
+Каждый \texttt{ТермX} в списке называется \textbf{элементом}. \textbf{Длина}
+списка означает количество элементов. Как это принято в функциональном 
+программировании, первый элемент называется \textbf{головой} списка, и остаток
+(начиная с 2\textsuperscript{го} элемента и до конца) называется \textbf{хвостом}
+списка. Заметьте, что отдельные элементы в списке не должны быть одинакового типа,
+хотя часто практикуется (и это, наверное, даже удобно), иметь в списке элементы
+одинакового типа --- когда приходится работать с элементами разных типов, обычно
+используются \textbf{записи}.
 
 \begin{center}
-\begin{tabular}{|>{\raggedright}p{90pt}|>{\raggedright}p{230pt}|}
+\begin{tabular}{|>{\raggedright}p{124pt}|>{\raggedright}p{290pt}|}
 \hline
-\multicolumn{2}{|p{321pt}|}{BIFs to manipulate lists}\tabularnewline
+\multicolumn{2}{|p{321pt}|}{BIF для работы со списками} \tabularnewline
 \hline
-\texttt{length(List)} & Returns the length of \texttt{List}\tabularnewline
+\texttt{length(Список)} &
+Возвращает длину \texttt{Списка} \tabularnewline
 \hline
-\texttt{hd(List)} & Returns the 1\textsuperscript{st} (head) element of \texttt{List}\tabularnewline
+\texttt{hd(Список)} &
+Возвращает 1\textsuperscript{й} элемент \texttt{Списка} (голову) \tabularnewline
 \hline
-\texttt{tl(List)} & Returns \texttt{List} with the 1\textsuperscript{st} element removed (tail)\tabularnewline
+\texttt{tl(Список)} &
+Возвращает \texttt{Список} без 1\textsuperscript{го} элемента (хвост) \tabularnewline
 \hline
 \end{tabular}
 \end{center}
 
-The vertical bar operator (\textbar{}) separates the leading elements of a list (one or more) from the remainder.  For example:
+Оператор "<вертикальная черта"> (\textbar{}, также в некоторых книгах по ФП он 
+называется \texttt{cons}), отделяет ведущие элементы списка (один или более)
+от остальных элементов. Например:
 
-\texttt{[H | T]  = [1, 2, 3, 4, 5]} \resultingin \texttt{H=1} and \texttt{T=[2, 3, 4, 5]} \\
-\texttt{[X, Y | Z] = [a, b, c, d, e]} \resultingin \texttt{X=a}, \texttt{Y=b} and \texttt{Z=[c, d, e]}
+\texttt{[H | T]  = [1, 2, 3, 4, 5]} \resultingin \texttt{H=1} и \texttt{T=[2, 3, 4, 5]} \\
+\texttt{[X, Y | Z] = [a, b, c, d, e]} \resultingin \texttt{X=a}, \texttt{Y=b} и \texttt{Z=[c, d, e]}
 
-Implicitly a list will end with an empty list, i.e.~\texttt{[a, b]} is
-the same as \texttt{[a, b | []]}.  A list looking like \texttt{[a, b | c]}
-is \textbf{badly formed} and should be avoided (because the atom '\texttt{c}' is \textit{not} a list).
-Lists lend themselves naturally to recursive functional programming.  For example, the following
-function `\texttt{sum}' computes the sum of a list, and `\texttt{double}' multiplies each element in a list by 2, constructing and returning a new list
-as it goes.
+Список --- рекурсивная структура. Неявно список завершается ссылкой на пустой 
+список, то есть~\texttt{[a, b]} это то же самое, как и \texttt{[a, b | []]}. 
+Список, выглядящий как \texttt{[a, b | c]} называется \textbf{плохо 
+сформированным} (badly formed) и такой записи следует избегать (потому что
+атом '\texttt{c}', завершающий структуру списка сам \textit{не} является списком).
+Списки натурально способствуют рекурсивному функциональному программированию.
+Например, следующая функция \texttt{sum} вычисляет сумму списка и функция 
+\texttt{double} умножает каждый элемент списка на 2, при этом конструируя и 
+возвращая новый список по ходу выполнения.
 
 \begin{erlang}
 sum([]) -> 0;
@@ -231,92 +253,107 @@ double([]) -> [];
 double([H | T]) -> [H*2 | double(T)].
 \end{erlang}
 
-The above definitions introduce \textit{pattern matching}, described in chapter \ref{patterns}.  Patterns of this form are common in recursive programming,
-explicitly providing a ``base case'' (for the empty list in these examples).
+Определения функций выше представляют \textit{сопоставление с образцом}, которое
+описано далее в главе \ref{patterns}. Образцы в такой записи часто встречаются в 
+рекурсивном программировании, неявно предоставляя "<базовый случай"> (для пустого
+списка в этих примерах).
 
-For working with lists, the operator \texttt{++} joins two lists together (appends the second argument to the first) and
-returns the resulting list.  The operator \texttt{--} produces a list that
-is a copy of its first argument, except that for each element in
-the second argument, the first occurrence of this element (if any) in the resulting list is
-removed.
+Для работы со списками, оператор \texttt{++} соединяет вместе два списка 
+(присоединяет второй аргумент к первому) и возвращает список-результат.  Оператор 
+\texttt{--} создаёт список, который является копией первого аргумента, за тем
+исключением, что для каждого элемента во втором списке его первое вхождение в
+результат (если такое было) удаляется.
 
 \texttt{[1,2,3] ++ [4,5]} \resultingin \texttt{[1,2,3,4,5]}
 \texttt{[1,2,3,2,1,2] -- [2,1,2]} \resultingin \texttt{[3,1,2]}
 
-A collection of list processing functions can be found in the
-\texttt{STDLIB} module \texttt{lists}.
+Подборка функция, работающих со списками может быть найдена в модуле стандартной
+библиотеки под названием \texttt{lists}.
 
 
-\subsection{Strings}
+\subsection{Строки}
 \label{datatypes:string}
-\textbf{Strings} are character strings enclosed within double quotes
-but are, in fact, stored as lists of characters.
 
-\texttt{"abcdefghi"} is the same as \texttt{[97,98,99,100,101,102,103,104,105]}
+\textbf{Строки} --- это цепочки символов, заключённые между двойными кавычками,
+на самом деле они хранятся в памяти, как списки целых чисел --- символов.
 
-\texttt{""} is the same as \texttt{[]}
+\texttt{"abcdefghi"} то же самое, как и \texttt{[97,98,99,100,101,102,103,104,105]}
 
-Two adjacent strings will be concatenated into one at compile-time and
-do not incur any runtime overhead.
+\texttt{""} то же самое, как и \texttt{[]}
+
+Две строки, записанные подряд без разделительных знаков и операторов будут 
+соединены в одну во время компиляции и не принесут дополнительных затрат по
+соединению во время исполнения.
 
 \texttt{"string" "42"} \resultingin \texttt{"string42"}
 
 
-\subsection{Binaries}
+\subsection{Двоичные данные}
 \label{datatypes:binary}
-A binary is a chunk of untyped memory by default a sequence of 8-bit
-bytes.
 
-\texttt{<}\texttt{<Elem1,...,ElemN>}\texttt{>}
+Двоичные данные --- это блок нетипизированной памяти, по умолчанию является 
+последовательностью 8-битных элементов (байтов).
 
-Each \texttt{ElemX} is specified as \texttt{Value}[\texttt{:Size}][\texttt{/TypeSpecifierList}].
+\texttt{<}\texttt{<Элемент1,...,ЭлементN>}\texttt{>}
+
+Каждый \texttt{ЭлементX} указывается в виде
+\texttt{Значение}[\texttt{:Размер}][\texttt{/СписокСпецификацийТипа}].
 
 \begin{center}
-\begin{tabular}{|>{\raggedright}p{73pt}|>{\raggedright}p{81pt}|>{\raggedright}p{147pt}|}
+\begin{tabular}{|>{\raggedright}p{120pt}|>{\raggedright}p{120pt}|>{\raggedright}p{180pt}|}
 \hline
-\multicolumn{3}{|p{297pt}|}{Element specification}\tabularnewline
+\multicolumn{3}{|p{297pt}|}{Спецификация элемента двоичных данных}\tabularnewline
 \hline
-\texttt{Value} & \texttt{Size} & \texttt{TypeSpecifierList}\tabularnewline
+\texttt{Значение} &
+\texttt{Размер} &
+\texttt{СписокСпецификацийТипа}\tabularnewline
 \hline
-Should evaluate to an integer, float or binary & Should
-evaluate to an integer & A sequence of optional type specifiers, in any order,
-separated by hyphens (-)\tabularnewline
+Результат выражения должен быть целым, действительным числом или двоичными
+данными. & 
+Результат выражения должен быть целым числом & 
+Последовательность необязательных спецификаторов типа, в любом порядке, разделённых
+дефисами (-)\tabularnewline
 \hline
 \end{tabular}
 \end{center}
 
 % page break at this point, so turned into two chunks.
 \begin{center}
-\begin{tabular}{|>{\raggedright}p{47pt}|>{\raggedright}p{115pt}|>{\raggedright}p{147pt}|}
+\begin{tabular}{|>{\raggedright}p{90pt}|>{\raggedright}p{140pt}|>{\raggedright}p{200pt}|}
 \hline
-\multicolumn{3}{|p{297pt}|}{Type specifiers}\tabularnewline
+\multicolumn{3}{|p{297pt}|}{Спецификаторы типов}\tabularnewline
 \hline
-Type & \texttt{integer} \textbar{} \texttt{float} \textbar{} \texttt{binary} & Default
-is \texttt{integer}\tabularnewline
+Тип данных &
+\texttt{integer} \textbar{} \texttt{float} \textbar{} \texttt{binary} &
+По умолчанию \texttt{integer}\tabularnewline
 \hline
-Signedness & \texttt{signed} \textbar{} \texttt{unsigned} & Default is
-\texttt{unsigned}\tabularnewline
+Наличие знака & 
+\texttt{signed} \textbar{} \texttt{unsigned} & 
+По умолчанию без знака, \texttt{unsigned}\tabularnewline
 \hline
-Endianness & \texttt{big} \textbar{} \texttt{little} \textbar{} \texttt{native} & CPU
-dependent. Default is \texttt{big}\tabularnewline
+Порядок байтов (endianness) &
+\texttt{big} \textbar{} \texttt{little} \textbar{} \texttt{native} &
+Зависит от архитектуры процессора. По умолчанию \texttt{big}\tabularnewline
 \hline
-Unit & \texttt{unit:}\textit{IntegerLiteral} & Allowed range is $1..256$.
+Единица измерения (бит) & 
+\texttt{unit:}\textit{ЦелоеЧисло} & 
+Разрешены значения от 1 до 256.
 Default is 1 for integer and float, and 8 for binary\tabularnewline
 \hline
 \end{tabular}
 \end{center}
 
-The value of \texttt{Size} multiplied by the unit gives the number of
-bits for the segment. Each segment can consist of zero or more bits
-but the total number of bits must be a multiple of 8, or a
-\texttt{badarg} run-time error will occur. Also, a segment of type
-binary must have a size evenly divisible by 8.
+Значение \texttt{Размера} умножается на единицу измерения и даёт число бит, которые
+может занять данный сегмент двоичных данных. Каждый сегмент может состоять из нуля
+или более битов, но общая сумма битов должна делиться нацело на 8, иначе во время 
+исполнения возникнет ошибка \texttt{badarg}. Также сегмент с типом \texttt{binary}
+должен иметь размер, делящийся нацело на 8.
 
-Binaries cannot be nested.
+Двоичные данные не могут вкладываться друг в друга.
 
 \begin{erlang}
 <<1, 17, 42>>       % <<1, 17, 42>>
-<<"abc">>           % <<97, 98, 99>> (The same as <<$a, $b, $c>>)
+<<"abc">>           % <<97, 98, 99>> (То же, что и <<$a, $b, $c>>)
 <<1, 17, 42:16>>    % <<1,17,0,42>>
 <<>>                % <<>>
 <<15:8/unit:10>>    % <<0,0,0,0,0,0,0,0,0,15>>
@@ -324,58 +361,63 @@ Binaries cannot be nested.
 \end{erlang}
 
 
-\section{Escape sequences}
+\section{Escape-последовательности}
 \label{datatypes:escapeseq}
-Escape sequences are allowed in strings and quoted atoms.
+Escape-последовательности разрешено использовать в строках и атомах, которые 
+заключены в кавычки.
 
 \begin{center}
 \begin{tabular}{|>{\raggedright}p{91pt}|>{\raggedright}p{229pt}|}
 \hline
-\multicolumn{2}{|p{321pt}|}{Escape sequences}\tabularnewline
+\multicolumn{2}{|p{321pt}|}{Escape-последовательности}\tabularnewline
 \hline
-\textbackslash{}b & Backspace\tabularnewline
+\textbackslash{}b & Backspace (удаление слева)\tabularnewline
 \hline
-\textbackslash{}d & Delete\tabularnewline
+\textbackslash{}d & Delete (удаление справа)\tabularnewline
 \hline
 \textbackslash{}e & Escape\tabularnewline
 \hline
-\textbackslash{}f & Form feed\tabularnewline
+\textbackslash{}f & Новая страница (при печати)\tabularnewline
 \hline
-\textbackslash{}n & New line\tabularnewline
+\textbackslash{}n & Новая строка\tabularnewline
 \hline
-\textbackslash{}r & Carriage return\tabularnewline
+\textbackslash{}r & Возврат курсора в начало\tabularnewline
 \hline
-\textbackslash{}s & Space\tabularnewline
+\textbackslash{}s & Пробел\tabularnewline
 \hline
-\textbackslash{}t & Tab\tabularnewline
+\textbackslash{}t & Табуляция\tabularnewline
 \hline
-\textbackslash{}v & Vertical tab\tabularnewline
+\textbackslash{}v & Вертикальная табуляция\tabularnewline
 \hline
-\textbackslash{}XYZ, \textbackslash{}XY, \textbackslash{}X & Character with octal
-representation XYZ, XY or X\tabularnewline
+\textbackslash{}XYZ, \textbackslash{}XY, \textbackslash{}X &
+Символ, записанный в восьмеричном представлении, как XYZ, XY или X\tabularnewline
 \hline
-\textbackslash{}\textasciicircum{}A .. \textbackslash{}\textasciicircum{}Z & Control
-A to control Z\tabularnewline
+\textbackslash{}\textasciicircum{}A .. \textbackslash{}\textasciicircum{}Z & 
+Комбинации клавиш от Ctrl-A до Ctrl-Z\tabularnewline
 \hline
-\textbackslash{}\textasciicircum{}a .. \textbackslash{}\textasciicircum{}z & Control
-A to control Z\tabularnewline
+\textbackslash{}\textasciicircum{}a .. \textbackslash{}\textasciicircum{}z &
+Комбинации клавиш от Ctrl-A до Ctrl-Z\tabularnewline
 \hline
-\textbackslash{}' & Single quote\tabularnewline
+\textbackslash{}' & Единичная кавычка \tabularnewline
 \hline
-\textbackslash{}\textbf{\texttt{"}} & Double quote\tabularnewline
+\textbackslash{}\textbf{\texttt{"}} & Двойная кавычка \tabularnewline
 \hline
-\textbackslash{}\textbackslash{} & Backslash\tabularnewline
+\textbackslash{}\textbackslash{} & Обратная косая черта (\textbackslash) 
+\tabularnewline
 \hline
 \end{tabular}
 \end{center}
 
-\section{Type conversions}
-There are a number of built-in functions for type conversion:
+
+\section{Преобразования типов}
+
+Есть множество встроенных в стандартную библиотеку функций, предназначенных для
+преобразования между типами данных:
 
 \begin{center}
-\begin{tabular}{|>{\raggedright}p{63pt}|>{\raggedright}p{21pt}|>{\raggedright}p{25pt}|>{\raggedright}p{21pt}|>{\raggedright}p{21pt}|>{\raggedright}p{21pt}|>{\raggedright}p{21pt}|>{\raggedright}p{21pt}|>{\raggedright}p{24pt}|}
+\begin{tabular}{|>{\raggedright}p{63pt}|>{\raggedright}p{30pt}|>{\raggedright}p{35pt}|>{\raggedright}p{21pt}|>{\raggedright}p{21pt}|>{\raggedright}p{21pt}|>{\raggedright}p{30pt}|>{\raggedright}p{21pt}|>{\raggedright}p{35pt}|}
 \hline
-\multicolumn{9}{|p{243pt}|}{Type conversions}\tabularnewline
+\multicolumn{9}{|p{243pt}|}{Преобразования типов}\tabularnewline
 \hline
  & atom & integer & float & pid & fun & tuple & list & binary\tabularnewline
 \hline
@@ -398,14 +440,16 @@ binary & X & X & X & X & X & X & X & \tabularnewline
 \end{tabular}
 \end{center}
 
-The BIF \texttt{float/1} converts integers to floats. The BIFs
-\texttt{round/1} and \texttt{trunc/1} convert floats to integers.
+Встроенная функция \texttt{float/1} переводит целые числа в числа с 
+плавающей точкой. Встроенные функции \texttt{round/1} и \texttt{trunc/1} переводят
+числа с плавающей точкой обратно в целые, округляя или отбрасывая дробную часть.
 
-The BIFs \texttt{Type\_to\_list/1} and \texttt{list\_to\_Type/1}
-convert to and from lists.
+Функции \texttt{Тип\_to\_list/1} и \texttt{list\_to\_Тип/1}
+переводят различные типы в списки (строки) и из списков.
 
-The BIFs \texttt{term\_to\_binary/1} and \texttt{binary\_to\_term/1}
-convert to and from binaries.
+Функции \texttt{term\_to\_binary/1} и \texttt{binary\_to\_term/1} переводят любое
+значение в закодированную двоичную форму и обратно (Подробнее: 
+\url{http://erlang.org/doc/apps/erts/erl_ext_dist.html}).
 
 \begin{erlang}
 atom_to_list(hello)        % "hello"
@@ -418,8 +462,11 @@ tuple_to_list({a, b ,c})   % [a,b,c]
 list_to_tuple([a, b, c])   % {a,b,c}
 pid_to_list(self())        % "<0.25.0>"
 term_to_binary(<<17>>)     % <<131,109,0,0,0,1,17>>
-term_to_binary({a, b ,c})  % <<131,104,3,100,0,1,97,100,0,1,98,100,0,1,99>>
-binary_to_term(<<131,104,3,100,0,1,97,100,0,1,98,100,0,1,99>>)  % {a,b,c}
-term_to_binary(math:pi())  % <<131,99,51,46,49,52,49,53,57,50,54,53,51,...>>
+term_to_binary({a, b ,c})  % <<131,104,3,100,0,1,97,100,0,1,98,
+                           %   100,0,1,99>>
+binary_to_term(<<131,104,3,100,0,1,97,100,0,1,98,100,0,1,99>>)  
+                           % {a,b,c}
+term_to_binary(math:pi())  % <<131,99,51,46,49,52,49,53,57,50,54,
+                           % 53,51,...>>
 \end{erlang}
 

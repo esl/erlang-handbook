@@ -1,41 +1,43 @@
-\chapter{Functions}
+\chapter{Функции}
 
-\section{Function definition}
-A function is defined as a sequence of one or more \textbf{function
-clauses}. The function name is an atom.
+\section{Определение функции}
 
-\vspace*{4pt}
-\begin{erlang}
-Func(Pattern11,...,Pattern1N) [when GuardSeq1] -> Body1;
-    ...;
-    ...;
-Func(PatternK1,...,PatternKN) [when GuardSeqK] -> BodyK.
-
-\end{erlang}
-\vspace*{4pt}
-
-The function clauses are separated by semicolons (\texttt{;}) and
-terminated by full stop (\texttt{.}). A function clause consists of a
-\textbf{clause head} and a \textbf{clause body} separated by an arrow
-(\texttt{->}). A clause head consists of the function name (an atom),
-arguments within parentheses and an optional guard sequence beginning
-with the keyword \texttt{when}.  Each argument is a pattern.  A clause
-body consists of a sequence of expressions separated by commas
-(\texttt{,}).
+Функция определяется, как последовательность из одного или нескольких  
+\textbf{уравнений функции}. Имя функции --- это атом.
 
 \vspace*{4pt}
-\begin{erlang}
-Expr1,
+\begin{verbatim}
+Функция(Образец11,...,Образец1N)
+  [when ЗащитныеВыражения1] -> ТелоФункции1;
+...;
+...;
+Функция(ОбразецK1,...,ОбразецKN)
+  [when ЗащитныеВыраженияK] -> ТелоФункцииK.
+
+\end{verbatim}
+\vspace*{4pt}
+
+Уравнения функции разделены точками с запятой (\texttt{;}) и последнее уравнение
+завершается точкой (\texttt{.}). Уравнение функции состоит из \textbf{заголовка
+уравнения} и \textbf{тела уравнения функции}, разделённых стрелкой (\texttt{->}).
+Заголовок уравнения состоит из имени функции (атома), списка аргументов, 
+заключённого в скобки, и необязательного списка защитных выражений, начинающихся
+с ключевого слова \texttt{when}.  Каждый аргумент функции --- образец.  Тело 
+функции состоит из последовательности выражений, разделённых запятыми (\texttt{,}).
+
+\vspace*{4pt}
+\begin{verbatim}
+Выражение1,
 ...,
-ExprM
-\end{erlang}
+ВыражениеM
+\end{verbatim}
 \vspace*{4pt}
 
-The number of arguments \texttt{N} is the \textbf{arity} of the
-function. A function is uniquely defined by the module name, function name
-and arity. Two different functions in the same module with different
-arities may have the same name. A function \texttt{Func} in \texttt{Module}
-with arity \texttt{N} is often denoted as \texttt{Module:Func/N}.
+Количество аргументов \texttt{N} ещё называется \textbf{арностью} функции.
+Функция уникально определяется именем модуля, именем функции и своей арностью. 
+Две разные функции в одном модуле, имеющие разную арность, могут иметь одно и то
+же имя.  \texttt{Функция} в \texttt{Модуле} с арностью \texttt{N} часто может
+записываться так: \texttt{Модуль:Функция/N}.
 
 \vspace*{4pt}
 \begin{erlang}
@@ -51,33 +53,34 @@ area({triangle, A, B, C}) ->
 
 % push this section onto the next page (orphan line)
 \newpage
-\section{Function calls}
-A function is called using:
+\section{Вызовы функций}
+Функция вызывается с помощью записи:
 
-\begin{erlang}
-[Module:]Func(Expr1, ..., ExprN)
-\end{erlang}
+\begin{verbatim}
+[Модуль:]Функция(Выражение1, ..., ВыражениеN)
+\end{verbatim}
 
-\texttt{Module} evaluates to a module name and \texttt{Func} to
-a function name or a \textit{fun}. When calling a function in another
-module, the module name must be provided and the function must be
-exported. This is referred to as a \textbf{fully qualified function name}.
+Выражение \texttt{Модуль} должно вычисляться в имя модуля (или быть атомом) и
+выражение \texttt{Функция} должно вычисляться в имя функции или в 
+\textit{анонимную функцию}. При вызове функции в другом модуле, следует указать 
+имя модуля и функция должна быть экспортирована. Такой вызов будет называться
+\textbf{полностью определённым вызовом функции}.
 
 \begin{erlang}
 lists:keysearch(Name, 1, List)
 \end{erlang}
 
-The module name can be omitted if \texttt{Func} evaluates to the name
-of a local function, an imported function, or an auto-imported
-BIF.  In such cases, the function is called using an \textbf{implicitly qualified function name}.
+Имя модуля может быть опущено, если \texttt{Функция} вычисляется в имя локальной 
+функции, импортированной функции или авто-импортированной встроенной (BIF) 
+функции. Такой вызов называется \textbf{неявно определённым вызовом функции}.
 
-Before calling a function the arguments \texttt{ExprX} are
-evaluated.  If the function cannot be found, an \texttt{undef} run-time
-error will occur. Next the function clauses are scanned sequentially
-until a clause is found such that the patterns in the clause head can
-be successfully matched against the given arguments and that the guard
-sequence, if any, is true. If no such clause can be found, a
-\texttt{function\_clause} run-time error will occur.
+Перед тем, как вызвать функцию, вычисляются аргументы \texttt{ExprX}.  Если функция
+не может быть найдена, то возникает ошибка времени исполнения \texttt{undef}.
+Если уравнений функции несколько, они последовательно сканируются до тех пор, пока
+не будет найдено подходящее уравнение, такое, что образцы в заголовке уравнения
+успешно могут быть сопоставлены с данными аргументами и что защитное выражение 
+(если оно задано) равно \texttt{true}.  Если такое уравнение не может быть найдено,
+возникает ошибка времени исполнения \texttt{function\_clause}.
 
 If a matching clause is found, the corresponding clause body is evaluated,
 i.e.~the expressions in the body are evaluated sequentially and the
