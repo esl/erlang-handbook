@@ -1,14 +1,18 @@
-\chapter{Data types (terms)}
+\chapter{Типы данных (термы)}
 \label{datatypes}
 
-\section{Unary data types}
 
-\subsection{Atoms}
+\section{Унарные (одиночные) типы данных}
+
+
+\subsection{Атомы}
 \label{datatypes:atom}
-An \textbf{atom} is a symbolic name, also known as a
-\textit{literal}.  Atoms begin with a lower-case letter, and may contain alphanumeric characters, underscores (\texttt{\_}) or at-signs (\texttt{@}).
-Alternatively atoms can be specified by enclosing them in single quotes (\texttt{'}), necessary when they start with an uppercase character or contain
-characters other than underscores and at-signs.  For example:
+\textbf{Атом} --- это символьное имя, также известное, как \textit{литерал}.
+Атомы начинаются со строчной латинской буквы и могут содержать буквенно-цифровые
+символы, подчёркивания (\texttt{\_}) и символ at (\texttt{@}).
+Как вариант, атомы могут быть указаны с помощью заключения в одиночные кавычки
+(\texttt{'}), это необходимо, если атом начинается с заглавной буквы, или содержит
+другие символы, кроме подчёркиваний и at (\texttt{@}). Например:
 
 \texttt{hello}
 
@@ -19,24 +23,26 @@ characters other than underscores and at-signs.  For example:
 \texttt{'phone number'}
 
 \texttt{'Anything inside quotes \textbackslash n\textbackslash 012'}
-\hfill(see section \ref{datatypes:escapeseq})
+\hfill(см. раздел \ref{datatypes:escapeseq})
 
 
-\subsection{Booleans}
+\subsection{Истина и ложь}
 \label{datatypes:boolean}
-There is no \textbf{boolean} data type in Erlang. The atoms \texttt{true} and
-\texttt{false} are used instead.
+В Erlang нет специального типа данных для \textbf{логических} значений. Эту роль
+выполняют атомы \texttt{true} и \texttt{false}.
 
 \texttt{2 =< 3} \resultingin \texttt{true} \\
 \texttt{true or false} \resultingin \texttt{true}
 
 
-\subsection{Integers}
+\subsection{Целые числа}
 \label{datatypes:integer}
-In addition to the normal way of writing \textbf{integers} Erlang
-provides further notations. \texttt{\$Char} is the Latin-1 numeric value of the
-character `\texttt{Char}' (that may be an escape sequence) and \texttt{Base\#Value} is an integer in base \texttt{Base}, which
-must be an integer in the range $2..36$.
+
+В дополнение к обычному способу записи \textbf{целых чисел} Erlang предлагает
+ещё ряд способов записи. Запись \texttt{\$Char} даёт числовое значение для 
+символа '\texttt{Char}' в кодировке Latin-1 (это также может быть и непечатный
+символ) и запись \texttt{Base\#Value} --- даёт целое число, записанное с 
+основанием \texttt{Base}, основание должно быть целым числом в диапазоне $2..36$.
 
 \texttt{42} \resultingin \texttt{42} \\
 \$A  \resultingin \texttt{65} \\
@@ -45,50 +51,63 @@ must be an integer in the range $2..36$.
 \texttt{16\#1f} \resultingin \texttt{31}
 
 
-\subsection{Floats}
+\subsection{Действительные с плавающей точкой}
 \label{datatypes:float}
-A \textbf{float} is a real number written \texttt{Num}[\texttt{eExp}]
-where \texttt{Num} is a decimal number between 0.01 and 10000 and
-\texttt{Exp} (optional) is a signed integer specifying the power-of-10 exponent.  For example:
+
+Действительное число \textbf{с плавающей точкой} записывается, как 
+\texttt{Num}[\texttt{eExp}], где \texttt{Num} --- это десятичное число в диапазоне 
+от 0.01 до 10000 и \texttt{Exp} (необязательное) --- это целое число со знаком,
+указывающее экспоненту (степень десятки, на которую множится основание Num). 
+Например:
 
 \texttt{2.3e-3} \resultingin \texttt{2.30000e-3}\hfill
-(corresponding to 2.3*10\textsuperscript{-3})
+(соответствует $2.3 \cdot 10^{-3}$)
 
 
-\subsection{References}
+\subsection{Ссылочные значения}
 \label{datatypes:reference}
-A \textbf{reference} is a term which is unique in an Erlang runtime
-system, created by the built-in function \texttt{make\_ref/0}.  (For more information on built-in functions, or \textit{BIF}s, see section \ref{functions:bifs}.)
+
+\textbf{Ссылка} --- это терм, значение которого является уникальным в системе 
+времени исполнения Erlang, который создаётся встроенной функцией 
+\texttt{make\_ref/0}. (Для дополнительной информации по встроенным функциям,
+или \textit{BIF}-ам, смотрите раздел \ref{functions:bifs}.)
 
 
-\subsection{Ports}
+\subsection{Порты}
 \label{datatypes:port}
-A \textbf{port identifier} identifies a port (see chapter \ref{ports}).
+
+\textbf{Идентификатор порта} указывает на открытый в системе порт (смотрите главу
+\ref{ports} про порты).
 
 
-\subsection{Pids}
+\subsection{Идентификаторы процессов (Pid)}
 \label{datatypes:pid}
-A \textbf{process identifier}, \textit{pid}, identifies a process (see
-chapter \ref{processes}).
+
+\textbf{Идентификатор процесса}, или \textit{pid}, указывает на процесс в системе 
+(смотрите главу \ref{processes} о процессах).
 
 
-\subsection{Funs}
+\subsection{Анонимные функции}
 \label{datatypes:fun}
-A \textit{fun} identifies a \textbf{functional object} (see section
-\ref{functions:funs}).
+
+Тип данных \textit{fun} идентифицирует \textbf{функциональный объект} (смотрите
+раздел \ref{functions:funs}).
 
 
-\section{Compound data types}
 
-\subsection{Tuples}
+\section{Составные типы данных}
+
+
+\subsection{Кортежи}
 \label{datatypes:tuple}
-A \textbf{tuple} is a compound data type that holds a \textbf{fixed
-number of terms} enclosed within curly braces.
+
+\textbf{Кортеж} --- это составной тип данных, который содержит \textbf{фиксированное 
+количество термов}, заключённое \{в фигурные скобки\}. Например:
 
 \texttt{\{Term1,...,TermN\}}
 
-Each \texttt{TermX} in the tuple is called an \textbf{element}. The
-number of elements is called the \textbf{size} of the tuple.
+Каждый из \texttt{TermX} в кортеже называется \textbf{элементом}. Количество 
+элементов называется \textbf{размером} данного кортежа.
 
 \begin{center}
 \begin{tabular}{|>{\raggedright}p{134pt}|>{\raggedright}p{186pt}|}
