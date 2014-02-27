@@ -1,0 +1,220 @@
+\chapter{Structure of an Erlang program}
+
+\section{Module syntax}
+
+An Erlang program is made up of \textbf{modules} where each module is
+a text file with the extension \textbf{.erl}. For small programs, all
+modules typically reside in one directory.
+A module consists of module attributes and function definitions.
+
+\begin{erlang}
+-module(demo).
+-export([double/1]).
+
+double(X) -> times(X, 2).
+
+times(X, N) -> X * N.
+\end{erlang}
+
+The above module \texttt{demo} consists of the function \texttt{times/2}
+which is local to the module and the function \texttt{double/1} which
+is exported and can be called from outside the module.
+
+\texttt{demo:double(10)} \resultingin \texttt{20}\hfill
+(the arrow $\Rightarrow$ should be read as ``resulting in'')
+
+\texttt{double/1} means the function ``double'' with \textit{one}
+argument. A function \texttt{double/2} taking \textit{two} arguments
+is regarded as a different function. The number of arguments is called
+the \textbf{arity} of the function.
+
+
+\section{Module attributes}
+A \textbf{module attribute} defines a certain property of a module and
+consists of a \textbf{tag} and a \textbf{value}:
+
+\texttt{-Tag(Value).}
+
+\texttt{Tag} must be an atom, while \texttt{Value} must be a literal
+term (see chapter \ref{datatypes}). Any module attribute can be specified. The
+attributes are stored in the compiled code and can be retrieved by
+calling the function \texttt{Module:module\_info(attributes).}
+
+\subsection{Pre-defined module attributes}
+Pre-defined module attributes must be placed before any function
+declaration.
+
+\begin{itemize}
+
+	\item \begin{erlangim}
+	-module(Module).
+	\end{erlangim}
+	This attribute is mandatory and must be specified first. It
+        defines the name of the module. The name Module, an atom (see section \ref{datatypes:atom}),
+        should be the same as the filename without the `\texttt{.erl}' extension.
+
+	\item \begin{erlangim}
+	-export([Func1/Arity1, ..., FuncN/ArityN]).
+	\end{erlangim}
+	This attribute specifies which functions in the module that
+        can be called from outside the module. Each function name
+        \texttt{FuncX} is an atom and \texttt{ArityX} an integer.
+
+	\item \begin{erlangim}
+	-import(Module,[Func1/Arity1, ..., FuncN/ArityN]).
+	\end{erlangim}
+	This attribute indicates a \texttt{Module} from which a list of functions
+        are imported.  For example:
+
+	\begin{erlangim}
+	-import(demo, [double/1]).
+	\end{erlangim}
+	This means that it is possible to write \texttt{double(10)} instead of
+        the longer \texttt{demo:double(10)} which can be impractical if the
+        function is used frequently.
+
+	\item \begin{erlangim}
+	-compile(Options).
+	\end{erlangim}
+	Compiler options.
+
+	\item \begin{erlangim}
+	-vsn(Vsn).
+	\end{erlangim}
+	Module version. If this attribute is not specified, the
+        version defaults to the checksum of the module.
+
+	\item \begin{erlangim}
+	-behaviour(Behaviour).
+	\end{erlangim}
+	This attribute either specifies a user defined behaviour or
+        one of the OTP standard behaviours \texttt{gen\_server},
+        \texttt{gen\_fsm}, \texttt{gen\_event} or
+        \texttt{supervisor}. The spelling ``behavior'' is also accepted.
+
+\end{itemize}
+
+
+\subsection{Macro and record definitions}
+
+Records and macros are defined in the same way as module attributes:
+
+\begin{erlang}
+-record(Record,Fields).
+
+-define(Macro,Replacement).
+\end{erlang}
+
+Records and macro definitions are also allowed between functions, as
+long as the definition comes before its first use. (About records see
+section \ref{datatypes:record} and about macros see chapter \ref{macros}.)
+
+\subsection{File inclusion}
+
+File inclusion is specified in the same way as module attributes:
+
+\begin{erlang}
+-include(File).
+
+-include_lib(File).
+\end{erlang}
+
+\texttt{File} is a string that represents a file name. Include files
+are typically used for record and macro definitions that are shared by
+several modules. By convention, the extension \texttt{.hrl} is used
+for include files.
+
+\begin{erlang}
+-include("my_records.hrl").
+-include("incdir/my_records.hrl").
+-include("/home/user/proj/my_records.hrl").
+\end{erlang}
+
+If \texttt{File} starts with a path component \texttt{\$Var}, then the value of
+the environment variable \texttt{Var} (returned by
+\texttt{os:getenv(Var)}) is substituted for \texttt{\$Var}.
+
+\begin{erlang}
+-include("$PROJ_ROOT/my_records.hrl").
+\end{erlang}
+%%$ texmaker parser bug
+
+\texttt{include\_lib} is similar to \texttt{include}, but the
+first path component is assumed to be the name of an application.
+
+\begin{erlang}
+-include_lib("kernel/include/file.hrl").
+\end{erlang}
+
+The code server uses \texttt{code:lib\_dir(kernel)} to find the
+directory of the current (latest) version of \texttt{kernel}, and then
+the subdirectory \texttt{include} is searched for the file \texttt{file.hrl}.
+
+
+\section{Comments}
+Comments may appear anywhere in a module except within strings and
+quoted atoms.  A comment begins with the percentage character
+(\texttt{\%}) and covers the rest of the line but not the
+end-of-line. The terminating end-of-line has the effect of a blank.
+
+
+\section{Character Set}
+Erlang handles the full Latin-1 (ISO-8859-1) character set. Thus all
+Latin-1 printable characters can be used and displayed without the
+escape backslash. Atoms and variables can use all Latin-1 characters.
+
+\vspace*{12pt}
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{52pt}|>{\raggedright}p{53pt}|>{\raggedright}p{103pt}|>{\raggedright}p{87pt}|}
+\hline
+\multicolumn{4}{|p{297pt}|}{Character classes}\tabularnewline
+\hline
+Octal & Decimal~ &   & Class\tabularnewline
+\hline
+40 -  57 & 32 - 47 &  ! \texttt{"} \# \$ \% \& ' / & Punctuation
+characters\tabularnewline
+\hline
+60 -  71 & 48 - 57 & 0 - 9 & Decimal digits\tabularnewline
+\hline
+72 - 100 & 58 - 64 & : ; \texttt{<} = \texttt{>} @ & Punctuation characters\tabularnewline
+\hline
+101 - 132 &  65 - 90 & A - Z & Uppercase letters\tabularnewline
+\hline
+133 - 140 &  91 - 96 & [ \textbackslash{} ] \textasciicircum{} \_ ` & Punctuation
+characters\tabularnewline
+\hline
+141 - 172 &  97 - 122 & a  -  z & Lowercase letters\tabularnewline
+\hline
+173 - 176 & 123 - 126 & \{ \textbar{} \} \textasciitilde{} & Punctuation characters\tabularnewline
+\hline
+200 - 237 & 128 - 159 ~ &   & Control characters \tabularnewline
+\hline
+240 - 277 & 160 - 191 & - ¿  & Punctuation characters \tabularnewline
+\hline
+300 - 326 & 192 - 214 & À - Ö  & Uppercase letters \tabularnewline
+\hline
+327  & 215 & ×  & Punctuation character \tabularnewline
+\hline
+330 - 336 & 216 - 222 & Ø - Þ  & Uppercase letters \tabularnewline
+\hline
+337 - 366 & 223 - 246 & ß - ö  & Lowercase letters \tabularnewline
+\hline
+367  & 247 & ÷  & Punctuation character \tabularnewline
+\hline
+370 - 377 & 248 - 255 & ø - ÿ  & Lowercase letters \tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+% because of where this lands, force a page break to avoid orphan.
+\newpage
+\section{Reserved words}
+
+%\vspace{12pt}
+
+The following are reserved words in Erlang:
+
+\begin{erlang}
+after and andalso band begin bnot bor bsl bsr bxor case catch cond
+div end fun if let not of or orelse receive rem try when xor
+\end{erlang}

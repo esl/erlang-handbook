@@ -1,0 +1,156 @@
+\chapter{Pattern Matching}
+\label{patterns}
+
+\section{Variables}
+\label{patterns:variables}
+
+\textbf{Variables} are introduced as arguments to a function or as a
+result of pattern matching. Variables begin with an uppercase letter
+or underscore (\texttt{\_}) and may contain alphanumeric characters,
+underscores and at-signs (\texttt{@}). Variables can only be bound
+(assigned) once.
+
+\begin{erlang}
+Abc
+A_long_variable_name
+AnObjectOrientatedVariableName
+_Height
+\end{erlang}
+
+An \textbf{anonymous variable} is denoted by a single underscore (\texttt{\_})
+and can be used when a variable is required but its value can be
+ignored.
+
+\begin{erlang}
+[H|_] = [1,2,3]         % H=1 and the rest is ignored
+\end{erlang}
+
+Variables beginning with underscore like \texttt{\_Height} are normal
+variables, not anonymous. They are however ignored by the compiler in
+the sense that they will not generate any warnings for unused
+variables. Thus it is possible to write:
+
+\begin{erlang}
+member(_Elem, []) ->
+    false.
+\end{erlang}
+
+instead of:
+
+\begin{erlang}
+member(_, []) ->
+    false.
+\end{erlang}
+
+which can make for more readable code.
+
+The \textit{scope} for a variable is its function clause. Variables
+bound in a branch of an \texttt{if}, \texttt{case}, or
+\texttt{receive} expression must be bound in all branches to have a
+value outside the expression, otherwise they will be regarded as
+\textit{unsafe} (possibly undefined) outside the expression.
+
+
+\section{Pattern Matching}
+A \textbf{pattern} has the same structure as a term but may contain
+new unbound variables.
+
+\begin{erlang}
+Name1
+[H|T]
+{error,Reason}
+\end{erlang}
+
+Patterns occur in \textit{function heads}, \textit{case},
+\textit{receive}, and \textit{try} expressions and in match operator
+(\texttt{=}) expressions. Patterns are evaluated through
+\textbf{pattern matching} against an expression and this is how
+variables are defined and bound.
+
+\begin{erlang}
+Pattern = Expr
+\end{erlang}
+
+Both sides of the expression must have the same structure. If the
+matching succeeds, all unbound variables, if any, in the pattern
+become bound. If the matching fails, a \texttt{badmatch} run-time
+error will occur.
+
+
+\begin{minted}{console}
+> {A, B} = {answer, 42}.
+{answer,42}
+> A.
+answer
+> B.
+42
+\end{minted}
+
+\subsection{Match operator (\texttt{=}) in patterns}
+If \texttt{Pattern1} and \texttt{Pattern2} are valid patterns, then
+the following is also a valid pattern:
+
+\begin{erlang}
+Pattern1 = Pattern2
+\end{erlang}
+
+The \texttt{=} introduces an \textbf{alias} which when matched against an
+expression, both \texttt{Pattern1} and \texttt{Pattern2} are matched
+against it. The purpose of this is to avoid the reconstruction of terms.
+
+\begin{erlang}
+foo({connect,From,To,Number,Options}, To) ->
+    Signal = {connect,From,To,Number,Options},
+    fox(Signal),
+    ...;
+\end{erlang}
+
+which can be written more efficiently as:
+
+\begin{erlang}
+foo({connect,From,To,Number,Options} = Signal, To) ->
+    fox(Signal),
+    ...;
+\end{erlang}
+
+
+\subsection{String prefix in patterns}
+When matching strings, the following is a valid pattern:
+
+\begin{erlang}
+f("prefix" ++ Str) -> ...
+\end{erlang}
+
+which is equivalent to and easier to read than:
+
+\begin{erlang}
+f([$p,$r,$e,$f,$i,$x | Str]) -> ...
+\end{erlang}
+
+You can only use strings as prefix expressions; patterns such as \texttt{Str ++ "postfix"} are not allowed. 
+
+\subsection{Expressions in patterns}
+An arithmetic expression can be used within a pattern, provided it
+only uses numeric or bitwise operators and its value can be evaluated
+to a constant at compile-time.
+
+\begin{erlang}
+case {Value, Result} of
+    {?Threshold+1, ok} -> ...   % ?Threshold is a macro
+\end{erlang}
+
+\subsection{Matching binaries}
+
+\begin{erlang}
+Bin = <<1, 2, 3>>               % <<1,2,3>> All elements are 8-bit bytes
+<<A, B, C>> = Bin               % A=1, B=2 and C=3
+<<D:16, E>> = Bin               % D=258 and E=3
+<<F, G/binary>> = Bin           % F=1 and G=<<2,3>>
+\end{erlang}
+
+In the last line, the variable \texttt{G} of unspecified size matches the
+rest of the binary \texttt{Bin}.
+
+Always put a space between (\texttt{=}) and (\verb|<<|) so as to
+avoid confusion with the (\texttt{=<}) operator.
+

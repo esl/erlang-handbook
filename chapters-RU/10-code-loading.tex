@@ -1,0 +1,46 @@
+\chapter{Code loading}
+\label{code}
+
+Erlang supports code updating in a running system. Code replacement is
+performed at module level.
+
+The code of a module can exist in two versions in a system:
+\textbf{current} and \textbf{old}. When a module is
+loaded into the system for the first time, the code becomes
+\textit{current}. If a new instance of the module is loaded, the code
+of the previous instance becomes \textit{old} and the new instance
+becomes \textit{current}. Normally a module is automatically loaded
+the first time a function in it is called. If the module is already
+loaded then it must explicitly be loaded again to a new version.
+
+Both old and current code are valid, and may be used
+concurrently. Fully qualified function calls will always refer to the
+current code. However, the old code may still be run by other
+processes.
+
+If a third instance of the module is loaded, the code server will
+remove (\textit{purge}) the old code and any processes lingering in it
+are terminated. Then the third instance becomes \textit{current} and
+the previously current code becomes \textit{old}.
+
+To change from old code to current code, a process must make a fully
+qualified function call.
+
+\begin{erlang}
+-module(mod).
+-export([loop/0]).
+
+loop() ->
+    receive
+        code_switch ->
+            mod:loop();
+        Msg ->
+            ...
+            loop()
+    end.
+\end{erlang}
+
+To make the process change code, send the message
+\texttt{code\_switch} to it. The process then will make a fully
+qualified call to \texttt{mod:loop()} and change to the current
+code. Note that \texttt{mod:loop/0} must be exported.

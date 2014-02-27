@@ -1,0 +1,634 @@
+\chapter{Functions}
+
+\section{Function definition}
+A function is defined as a sequence of one or more \textbf{function
+clauses}. The function name is an atom.
+
+\vspace*{4pt}
+\begin{erlang}
+Func(Pattern11,...,Pattern1N) [when GuardSeq1] -> Body1;
+    ...;
+    ...;
+Func(PatternK1,...,PatternKN) [when GuardSeqK] -> BodyK.
+
+\end{erlang}
+\vspace*{4pt}
+
+The function clauses are separated by semicolons (\texttt{;}) and
+terminated by full stop (\texttt{.}). A function clause consists of a
+\textbf{clause head} and a \textbf{clause body} separated by an arrow
+(\texttt{->}). A clause head consists of the function name (an atom),
+arguments within parentheses and an optional guard sequence beginning
+with the keyword \texttt{when}.  Each argument is a pattern.  A clause
+body consists of a sequence of expressions separated by commas
+(\texttt{,}).
+
+\vspace*{4pt}
+\begin{erlang}
+Expr1,
+...,
+ExprM
+\end{erlang}
+\vspace*{4pt}
+
+The number of arguments \texttt{N} is the \textbf{arity} of the
+function. A function is uniquely defined by the module name, function name
+and arity. Two different functions in the same module with different
+arities may have the same name. A function \texttt{Func} in \texttt{Module}
+with arity \texttt{N} is often denoted as \texttt{Module:Func/N}.
+
+\vspace*{4pt}
+\begin{erlang}
+-module(mathStuff).
+-export([area/1]).
+
+area({square, Side}) -> Side * Side;
+area({circle, Radius}) -> math:pi() * Radius * Radius;
+area({triangle, A, B, C}) ->
+    S = (A + B + C)/2,
+    math:sqrt(S*(S-A)*(S-B)*(S-C)).
+\end{erlang}
+
+% push this section onto the next page (orphan line)
+\newpage
+\section{Function calls}
+A function is called using:
+
+\begin{erlang}
+[Module:]Func(Expr1, ..., ExprN)
+\end{erlang}
+
+\texttt{Module} evaluates to a module name and \texttt{Func} to
+a function name or a \textit{fun}. When calling a function in another
+module, the module name must be provided and the function must be
+exported. This is referred to as a \textbf{fully qualified function name}.
+
+\begin{erlang}
+lists:keysearch(Name, 1, List)
+\end{erlang}
+
+The module name can be omitted if \texttt{Func} evaluates to the name
+of a local function, an imported function, or an auto-imported
+BIF.  In such cases, the function is called using an \textbf{implicitly qualified function name}.
+
+Before calling a function the arguments \texttt{ExprX} are
+evaluated.  If the function cannot be found, an \texttt{undef} run-time
+error will occur. Next the function clauses are scanned sequentially
+until a clause is found such that the patterns in the clause head can
+be successfully matched against the given arguments and that the guard
+sequence, if any, is true. If no such clause can be found, a
+\texttt{function\_clause} run-time error will occur.
+
+If a matching clause is found, the corresponding clause body is evaluated,
+i.e.~the expressions in the body are evaluated sequentially and the
+value of the last expression is returned.
+
+The fully qualified function name must be used when calling a function
+with the same name as a BIF (built-in function, see section
+\ref{functions:bifs}). The compiler does not allow defining a function
+with the same name as an imported function. When calling a local
+function, there is a difference between using the implicitly or fully
+qualified function name, as the latter always refers to the latest
+version of the module (see chapter \ref{code}).
+
+
+\section{Expressions}
+\label{functions:expressions}
+An \textbf{expression} is either a term or the invocation of an
+operator, for example:
+
+\begin{erlang}
+Term
+op Expr
+Expr1 op Expr2
+(Expr)
+begin
+   Expr1,
+   ...,
+   ExprM            % no comma (,) before end
+end
+
+\end{erlang}
+
+There are both \textit{unary} and \textit{binary} operators. The
+simplest form of expression is a term, i.e.~an \textit{integer},
+\textit{float}, \textit{atom}, \textit{string}, \textit{list} or
+\textit{tuple} and the return value is the term itself. An expression
+may contain \textit{macro} or \textit{record} expressions which will
+expanded at compile time.
+
+Parenthesised expressions are useful to override operator precedence (see section \ref{functions:expressions:precedence}):
+
+\begin{erlang}
+1 + 2 * 3           % 7
+(1 + 2) * 3         % 9
+\end{erlang}
+
+Block expressions within \texttt{begin...end} can be used to group a
+sequence of expressions and the return value is the value of the last
+expression \texttt{ExprM}.
+
+All subexpressions are evaluated before the expression itself is
+evaluated, but the order in which subexpressions are evaluated is undefined.
+
+Most operators can only be applied to arguments of a certain type. For
+example, arithmetic operators can only be applied to integers or
+floats. An argument of the wrong type will cause a \texttt{badarg}
+run-time error.
+
+
+\subsection{Term comparisons}
+\begin{erlang}
+Expr1 op Expr2
+\end{erlang}
+
+A \textbf{term comparison} returns a \textit{boolean} value,
+in the form of atoms \texttt{true} or \texttt{false}.
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{40pt}|>{\raggedright}p{105pt}|>{\raggedright}p{26pt}|>{\raggedright}p{124pt}|}
+\hline
+\multicolumn{4}{|p{297pt}|}{Comparison operators}\tabularnewline
+\hline
+\texttt{==} & Equal to & \texttt{=<} & Less than or equal to\tabularnewline
+\hline
+\texttt{/=} & Not equal to & \texttt{<} & Less than\tabularnewline
+\hline
+\texttt{=:=} & Exactly equal to & \texttt{>}= & Greater than or equal to\tabularnewline
+\hline
+\texttt{=/=} & Exactly not equal to & \texttt{>} & Greater than\tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+\begin{erlang}
+1==1.0              % true
+1=:=1.0             % false
+1 > a               % false
+\end{erlang}
+
+The arguments may be of different data types. The following order is
+defined:
+
+\texttt{number < atom < reference < fun < port < pid < tuple < list < binary}
+
+Lists are compared element by element. Tuples are ordered by size, two
+tuples with the same size are compared element by element. When
+comparing an integer and a float, the integer is first converted to a
+float. In the case of \texttt{=:=} or \texttt{=/=} there is no type conversion.
+
+
+\subsection{Arithmetic expressions}
+
+\begin{erlang}
+op Expr
+Expr1 op Expr2
+\end{erlang}
+
+An \textbf{arithmetic expression} returns the result after applying
+the operator.
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{35pt}|>{\raggedright}p{145pt}|>{\raggedright}p{128pt}|}
+\hline
+\multicolumn{3}{|p{309pt}|}{Arithmetic operators}\tabularnewline
+\hline
+\texttt{+}  & Unary +  & \texttt{Integer \textbar{} Float} \tabularnewline
+\hline
+\texttt{-}  & Unary -  & \texttt{Integer \textbar{} Float}\tabularnewline
+\hline
+\texttt{+}  & Addition & \texttt{Integer} \textbar{} \texttt{Float}\tabularnewline
+\hline
+\texttt{-}  & Subtraction & \texttt{Integer} \textbar{} \texttt{Float}\tabularnewline
+\hline
+\texttt{*}  & Multiplication & \texttt{Integer} \textbar{} \texttt{Float}\tabularnewline
+\hline
+\texttt{/}  & Floating point division  & \texttt{Integer} \textbar{} \texttt{Float}\tabularnewline
+\hline
+\texttt{bnot}  & Unary bitwise not  & \texttt{Integer} \tabularnewline
+\hline
+\texttt{div}  & Integer division  & \texttt{Integer}\tabularnewline
+\hline
+\texttt{rem}  & Integer remainder of X/Y  & \texttt{Integer} \tabularnewline
+\hline
+\texttt{band}  & Bitwise and  & \texttt{Integer}\tabularnewline
+\hline
+\texttt{bor}  & Bitwise or  & \texttt{Integer} \tabularnewline
+\hline
+\texttt{bxor}  & Arithmetic bitwise xor  & \texttt{Integer}\tabularnewline
+\hline
+\texttt{bsl}  & Arithmetic bitshift left  & \texttt{Integer} \tabularnewline
+\hline
+\texttt{bsr}  & Bitshift right  & \texttt{Integer}\tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+\begin{erlang}
++1                  % 1
+4/2                 % 2.00000
+5 div 2             % 2
+5 rem 2             % 1
+2#10 band 2#01      % 0
+2#10 bor 2#01       % 3
+\end{erlang}
+
+
+\subsection{Boolean expressions}
+
+\begin{erlang}
+op Expr
+Expr1 op Expr2
+\end{erlang}
+
+A \textbf{boolean expression} returns the value \texttt{true} or
+\texttt{false} after applying the operator.
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{79pt}|>{\raggedright}p{241pt}|}
+\hline
+\multicolumn{2}{|p{321pt}|}{Boolean operators}\tabularnewline
+\hline
+\texttt{not}  & Unary logical not \tabularnewline
+\hline
+\texttt{and}  & Logical and \tabularnewline
+\hline
+\texttt{or}  & Logical or \tabularnewline
+\hline
+\texttt{xor}  & Logical exclusive or\tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+\begin{erlang}
+not true            % false
+true and false      % false
+true xor false      % true
+\end{erlang}
+
+
+\subsection{Short-circuit boolean expressions}
+
+\begin{erlang}
+Expr1 orelse Expr2
+Expr1 andalso Expr2
+\end{erlang}
+
+These are boolean expressions where \texttt{Expr2} is evaluated only
+if necessary. In an \texttt{orelse} expression \texttt{Expr2} will be
+evaluated only if \texttt{Expr1} evaluates to false. In an
+\texttt{andalso} expression \texttt{Expr2} will be evaluated only if
+\texttt{Expr1} evaluates to true.
+
+\begin{erlang}
+if A >= 0 andalso math:sqrt(A) > B -> ...
+
+if is_list(L) andalso length(L) == 1 -> ...
+\end{erlang}
+
+
+\subsection{Operator precedences}
+\label{functions:expressions:precedence}
+In an expression consisting of subexpressions the operators will be
+applied according to a defined \textbf{operator precedence} order:
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{221pt}|>{\raggedright}p{99pt}|}
+\hline
+\multicolumn{2}{|p{321pt}|}{Operator precedence (from high to low)}\tabularnewline
+\hline
+\texttt{:} ~ &  \tabularnewline
+\hline
+\texttt{\#} ~ &  \tabularnewline
+\hline
+\texttt{Unary + - bnot not ~} &  \tabularnewline
+\hline
+\texttt{/ * div rem band and}  & Left associative \tabularnewline
+\hline
+\texttt{+ - bor bxor bsl bsr or xor} & Left associative \tabularnewline
+\hline
+\texttt{++ --}  & Right associative \tabularnewline
+\hline
+\texttt{== /= =< < >= > =:= =/=} & \tabularnewline
+\hline
+\texttt{andalso}  &  \tabularnewline
+\hline
+\texttt{orelse} &  \tabularnewline
+\hline
+\texttt{= !}  & Right associative \tabularnewline
+\hline
+\texttt{catch ~} &  \tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+The operator with the highest priority is evaluated first. Operators
+with the same priority are evaluated according to their
+\textbf{associativity}.  The left associative arithmetic operators
+are evaluated left to right:
+
+\texttt{6 + 5 * 4 - 3 / 2  \resultingin  6 + 20 - 1.5  \resultingin  26 - 1.5  \resultingin  24.5}
+
+
+\section{Compound expressions}
+
+
+\subsection{If}
+
+\begin{erlang}
+if
+    GuardSeq1 ->
+        Body1;
+    ...;
+    GuardSeqN ->
+        BodyN                   % Note no semicolon (;) before end
+end
+\end{erlang}
+
+The branches of an \texttt{if} expression are scanned sequentially
+until a guard sequence \texttt{GuardSeq} which evaluates to
+\texttt{true} is found.  The corresponding \texttt{Body} (sequence
+of expressions separated by commas) is then evaluated.  The return value of
+\texttt{Body} is the return value of the \texttt{if} expression.
+
+If no guard sequence is true, an \texttt{if\_clause} run-time error
+will occur. If necessary, the guard expression \texttt{true} can be used in the
+last branch, as that guard sequence is always true (known as a ``catch
+all'').
+
+\begin{erlang}
+is_greater_than(X, Y) ->
+    if
+        X>Y ->
+            true;
+        true ->                 % works as an 'else' branch
+            false
+    end
+\end{erlang}
+
+It should be noted that pattern matching in function clauses can be used to replace \texttt{if} cases (most of the time).
+Overuse of \texttt{if} sentences withing function bodies is considered a bad Erlang practice.
+
+\subsection{Case}
+
+Case expressions provide for inline pattern matching, similar to the way in which function clauses are matched.
+
+\begin{erlang}
+case Expr of
+    Pattern1 [when GuardSeq1] ->
+        Body1;
+        ...;
+    PatternN [when GuardSeqN] ->
+        BodyN                   % Note no semicolon (;) before end
+end
+\end{erlang}
+
+The expression \texttt{Expr} is evaluated and the patterns
+\texttt{Pattern1}...\texttt{PatternN} are sequentially matched against the result. If a
+match succeeds and the optional guard sequence \texttt{GuardSeqX} is
+\texttt{true}, then the corresponding \texttt{BodyX} is evaluated. The return value
+of \texttt{BodyX} is the return value of the case expression.
+
+If there is no matching pattern with a true guard sequence, a
+\texttt{case\_clause} run-time error will occur.
+
+\begin{erlang}
+is_valid_signal(Signal) ->
+    case Signal of
+        {signal, _What, _From, _To} ->
+            true;
+        {signal, _What, _To} ->
+            true;
+        _Else ->                % 'catch all'
+            false
+    end.
+\end{erlang}
+
+
+\subsection{List comprehensions}
+List comprehensions are analogous to the \texttt{setof} and
+\texttt{findall} predicates in Prolog.
+
+\begin{erlang}
+[Expr || Qualifier1,...,QualifierN]
+\end{erlang}
+
+\texttt{Expr} is an arbitrary expression, and each \texttt{QualifierX}
+is either a \textbf{generator} or a \textbf{filter}. A generator is
+written as:
+
+\begin{erlang}
+Pattern <- ListExpr
+\end{erlang}
+
+where \texttt{ListExpr} must be an expression which evaluates to a
+list of terms. A filter is an expression which evaluates to
+\texttt{true} or \texttt{false}. Variables in list generator
+expressions \textit{shadow} variables in the function clause
+surrounding the list comprehension.
+
+The qualifiers are evaluated from left to right, the generators
+creating values and the filters constraining them. The list
+comprehension then returns a list where the elements are the result of
+evaluating \texttt{Expr} for each combination of the resulting values.
+
+\begin{minted}{console}
+> [{X, Y} || X <- [1,2,3,4,5,6], X > 4, Y <- [a,b,c]].
+[{5,a},{5,b},{5,c},{6,a},{6,b},{6,c}]
+\end{minted}
+
+
+\section{Guard sequences}
+A \textbf{guard sequence} is a set of \textbf{guards} separated by
+semicolons (\texttt{;}). The guard sequence is \texttt{true} if at
+least one of the guards is \texttt{true}.
+
+\begin{erlang}
+Guard1; ...; GuardK
+\end{erlang}
+
+A \textbf{guard} is a set of \textbf{guard expressions} separated by
+commas (\texttt{,}). The guard is \texttt{true} if all guard
+expressions evaluate to \texttt{true}.
+
+\begin{erlang}
+GuardExpr1, ..., GuardExprN
+\end{erlang}
+
+The permitted \textbf{guard expressions} (sometimes called guard
+tests) are a subset of valid Erlang expressions, since the
+evaluation of a guard expression must be guaranteed to be free of side-effects.
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{154pt}|>{\raggedright}p{166pt}|}
+\hline
+\multicolumn{2}{|p{321pt}|}{Valid guard expressions:}\tabularnewline
+\hline
+\multicolumn{2}{|p{321pt}|}{The atom \texttt{true};}\tabularnewline
+\hline
+\multicolumn{2}{|p{321pt}|}{Other constants (terms and bound variables), are all regarded
+as \texttt{false};}\tabularnewline
+\hline
+\multicolumn{2}{|p{321pt}|}{Term comparisons;}\tabularnewline
+\hline
+\multicolumn{2}{|p{321pt}|}{Arithmetic and boolean expressions;}\tabularnewline
+\hline
+\multicolumn{2}{|p{321pt}|}{Calls to the BIFs specified below.}\tabularnewline
+\hline
+Type test BIFs & Other BIFs allowed in guards:\tabularnewline
+\hline
+\texttt{is\_atom/1} & \texttt{abs(Integer} \textbar{} \texttt{Float)}\tabularnewline
+\hline
+\texttt{is\_constant/1} & \texttt{float(Term)}\tabularnewline
+\hline
+\texttt{is\_integer/1} & \texttt{trunc(Integer} \textbar{} \texttt{Float)}\tabularnewline
+\hline
+\texttt{is\_float/1} & \texttt{round(Integer} \textbar{} \texttt{Float)}\tabularnewline
+\hline
+\texttt{is\_number/1} & \texttt{size(Tuple} \textbar{} \texttt{Binary)}\tabularnewline
+\hline
+\texttt{is\_reference/1} & \texttt{element(N, Tuple)}\tabularnewline
+\hline
+\texttt{is\_port/1} & \texttt{hd(List)}\tabularnewline
+\hline
+\texttt{is\_pid/1} & \texttt{tl(List)}\tabularnewline
+\hline
+\texttt{is\_function/1} & \texttt{length(List)}\tabularnewline
+\hline
+\texttt{is\_tuple/1} & \texttt{self()}\tabularnewline
+\hline
+\texttt{is\_record/2} The 2\textsuperscript{nd} argument is \linebreak{}
+the record name & \texttt{node(})\tabularnewline
+\hline
+\texttt{is\_list/1} & \texttt{node(Pid} \textbar{} \texttt{Ref} \textbar \texttt{Port)}\tabularnewline
+\hline
+\texttt{is\_binary/1} & \tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+A small example:
+
+\begin{erlang}
+fact(N) when N>0 ->             % first clause head
+    N * fact(N-1);              % first clause body
+fact(0) ->                      % second clause head
+    1.                          % second clause body
+\end{erlang}
+
+
+\section{Tail recursion}
+If the last expression of a function body is a function call, a
+\textbf{tail recursive} call is performed in such a way that no system
+resources (like the call stack) are consumed. This means that an
+infinite loop like a server can be programmed provided it only uses
+tail recursive calls.
+
+The function \texttt{fact/1} above could be rewritten using tail
+recursion in the following manner:
+
+ \begin{erlang}
+fact(N) when N>1 -> fact(N, N-1);
+fact(N) when N==1; N==0 -> 1.
+
+fact(F,0) -> F;                 % The variable F is used as an accumulator
+fact(F,N) -> fact(F*N, N-1).
+\end{erlang}
+
+
+\section{Funs}
+\label{functions:funs}
+A \textbf{fun} defines a \textit{functional object}. Funs make it
+possible to pass an entire function, not just the function name, as an
+argument. A `fun' expression begins with the keyword \texttt{fun} and
+ends with the keyword \texttt{end} instead of a full stop
+(\texttt{.}).  Between these should be a regular function
+declaration, except that no function name is specified.
+
+\begin{erlang}
+fun
+    (Pattern11,...,Pattern1N) [when GuardSeq1] ->
+        Body1;
+        ...;
+    (PatternK1,...,PatternKN) [when GuardSeqK] ->
+        BodyK
+end
+\end{erlang}
+
+Variables in a \texttt{fun} head \textit{shadow} variables in the function
+clause surrounding the \texttt{fun} but variables bound in a \texttt{fun} body are local
+to the body.  The return value of the expression is the resulting function. The expression
+\texttt{fun Name/N is} equivalent to:
+
+\begin{erlang}
+fun (Arg1,...,ArgN) -> Name(Arg1,...,ArgN) end
+\end{erlang}
+
+The expression \texttt{fun Module:Func/Arity} is also allowed, provided that \texttt{Func} is exported
+from \texttt{Module}.
+
+\begin{erlang}
+Fun1 = fun (X) -> X+1 end.
+Fun1(2)         % 3
+
+Fun2 = fun (X) when X>=1000 -> big; (X) -> small end.
+Fun2(2000)      % big
+\end{erlang}
+
+Since a \texttt{fun} is anonymous, i.e.~there is no function name in the
+definition of the \texttt{fun}, the definition of a recursive \texttt{fun} has to be
+done in two steps.  This example shows how to define the function
+\texttt{sum(List)} (see section \ref{datatypes:list}) as a \texttt{fun}.
+
+\begin{erlang}
+Sum1 = fun ([], _Foo) -> 0;([H|T], Foo) -> H + Foo(T, Foo) end.
+Sum = fun (List) -> Sum1(List, Sum1) end.
+Sum([1,2,3,4,5])    % 15
+\end{erlang}
+
+The definition of \texttt{Sum1} is done in a way such that it takes \textit{itself} as a parameter, matched to \texttt{\_Foo} (empty list) or \texttt{Foo},
+which it then calls recursively.  The definition of \texttt{Sum} calls \texttt{Sum1}, also passing \texttt{Sum1} as a parameter.
+
+\section{BIFs --- Built-in functions}
+\label{functions:bifs}
+The \textbf{built-in functions}, BIFs, are implemented in the C code of
+the runtime system and do things that are difficult or impossible to
+implement in Erlang. Most of the built-in functions belong to the
+module \texttt{erlang} but there are also built-in functions that belong
+to other modules like \texttt{lists} and \texttt{ets}. The most
+commonly used BIFs belonging to the module \texttt{erlang} are
+\textbf{auto-imported}, i.e.~they do not need to be prefixed with the
+module name.
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{103pt}|>{\raggedright}p{217pt}|}
+\hline
+\multicolumn{2}{|p{321pt}|}{Some useful BIFs}\tabularnewline
+\hline
+\texttt{date()} & Returns today's date as \texttt{\{Year, Month, Day\}}\tabularnewline
+\hline
+\texttt{now()} & Returns current time in microseconds. System dependent\tabularnewline
+\hline
+\texttt{time()} & Returns current time as \texttt{\{Hour, Minute, Second\}} System dependent\tabularnewline
+\hline
+\texttt{halt()} & Stops the Erlang system\tabularnewline
+\hline
+\texttt{processes()} & Returns a list of all processes currently known to the system\tabularnewline
+\hline
+\texttt{process\_info(Pid)} & Returns a dictionary containing information about \texttt{Pid}\tabularnewline
+\hline
+\texttt{Module:module\_info()} & Returns a dictionary containing information about the code
+in Module\tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+A \textbf{dictionary} is a list of \texttt{\{Key, Value\} terms (see
+also section \ref{processes:dicts}).}
+
+\begin{erlang}
+size({a, b, c})             % 3
+atom_to_list('Erlang')      % "Erlang"
+date()                      % {2013,5,27}
+time()                      % {01,27,42}
+\end{erlang}

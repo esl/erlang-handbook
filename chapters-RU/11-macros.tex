@@ -1,0 +1,139 @@
+\chapter{Macros}
+\label{macros}
+
+\section{Defining and using macros}
+
+\begin{erlang}
+-define(Const, Replacement).
+-define(Func(Var1, ..., VarN), Replacement).
+\end{erlang}
+
+A \textbf{macro} must be defined before it is used but a macro
+definition may be placed anywhere among the attributes and function
+declarations of a module. If a macro is used in several modules it is
+advisable to put the macro definition in an include file. A macro is
+used as follows:
+
+\begin{erlang}
+?Const
+?Func(Arg1,...,ArgN)
+\end{erlang}
+
+Macros are expanded during compilation. A macro reference
+\texttt{?Const} is replaced by \texttt{Replacement} like this:
+
+\begin{erlang}
+-define(TIMEOUT, 200).
+...
+call(Request) ->
+    server:call(refserver, Request, ?TIMEOUT).
+\end{erlang}
+
+is expanded to:
+
+\begin{erlang}
+call(Request) ->
+    server:call(refserver, Request, 200).
+\end{erlang}
+
+A macro reference \texttt{?Func(Arg1, ..., ArgN)} will be replaced by
+\texttt{Replacement}, where all occurrences of a variable \texttt{VarX}
+from the macro definition are replaced by the corresponding argument
+\texttt{ArgX}.
+
+\begin{erlang}
+-define(MACRO1(X, Y), {a, X, b, Y}).
+...
+bar(X) ->
+    ?MACRO1(a, b),
+    ?MACRO1(X, 123).
+\end{erlang}
+
+will be expanded to:
+
+\begin{erlang}
+bar(X) ->
+    {a, a, b, b},
+    {a, X, b, 123}.
+\end{erlang}
+
+To view the result of macro expansion, a module can be compiled with
+the \texttt{`P'} option:
+
+\begin{erlang}
+compile:file(File, ['P']).
+\end{erlang}
+
+This produces a listing of the parsed code after preprocessing and
+parse transforms, in the file \texttt{File.P}.
+
+
+\section{Predefined macros}
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{103pt}|>{\raggedright}p{223pt}|}
+\hline
+\multicolumn{2}{|p{326pt}|}{P{\large{}redefined} macros}\tabularnewline
+\hline
+\texttt{?MODULE} & The name of the current module\tabularnewline
+\hline
+\texttt{?MODULE\_STRING} & The name of the current module, as a string\tabularnewline
+\hline
+\texttt{?FILE} & The file name of the current module\tabularnewline
+\hline
+\texttt{?LINE} & The current line number\tabularnewline
+\hline
+\texttt{?MACHINE} & The machine name, 'BEAM'\tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+
+\section{Flow Control in Macros}
+
+\begin{erlang}
+-undef(Macro).      % This inhibits the macro definition.
+
+-ifdef(Macro).
+    %% Lines that are evaluated if Macro was defined
+-else.
+    %% If the condition was false, these lines are evaluated instead.
+-endif.
+\end{erlang}
+
+\texttt{ifndef(Macro)} can be used instead of \texttt{ifdef} and means
+the opposite.
+
+\begin{erlang}
+-ifdef(debug).
+-define(LOG(X), io:format("{~p,~p}:~p~n",[?MODULE,?LINE,X])).
+-else.
+-define(LOG(X), true).
+-endif.
+\end{erlang}
+
+If \texttt{debug} is defined when the module is compiled,
+\texttt{?LOG(Arg)} will expand to a call to \texttt{io:format/2} and
+provide the user with some simple trace output.
+
+
+\section{Stringifying Macro Arguments}
+\texttt{??Arg}, where \texttt{Arg} is a macro argument expands to the
+argument in the form of a string.
+
+\begin{erlang}
+-define(TESTCALL(Call), io:format("Call ~s: ~w~n", [??Call, Call])).
+
+?TESTCALL(myfunction(1,2)),
+?TESTCALL(you:function(2,1)),
+\end{erlang}
+
+results in:
+
+\begin{erlang}
+io:format("Call ~s: ~w~n", ["myfunction(1,2)", m:myfunction(1,2)]),
+io:format("Call ~s: ~w~n", ["you:function(2,1)", you:function(2,1)]),
+\end{erlang}
+
+That is, a trace output with both the function called and the
+resulting value.

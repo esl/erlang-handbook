@@ -1,0 +1,324 @@
+\chapter{Processes}
+\label{processes}
+
+A \textbf{process} corresponds to one \textit{thread of control}.
+Erlang permits very large numbers of concurrent processes,
+each executing like it had an own virtual processor.  When a process
+executing \texttt{functionA} calls another \texttt{functionB}, it
+will wait until \texttt{functionB} is finished and then retrieve its
+result. If instead it \textit{spawns} another process executing
+\texttt{functionB}, both will continue in parallel
+(concurrently). \texttt{functionA} will not wait for \texttt{functionB}
+and the only way they can communicate is through \textit{message passing}.
+
+Erlang processes are light-weight with a small memory footprint, fast to
+create and shut-down, and the scheduling overhead is low.  A
+\textbf{process identifier}, \texttt{Pid}, identifies a process. The
+BIF \texttt{self/0} returns the \texttt{Pid} of the calling process.
+
+
+\section{Process creation}
+A process is created using the BIF \texttt{spawn/3}.
+
+\begin{erlang}
+spawn(Module, Func, [Expr1, ..., ExprN])
+\end{erlang}
+
+\texttt{Module} should evaluate to a module name and \texttt{Func} to
+a function name in that module. The list \texttt{Expr1}$...$\texttt{ExprN} are the
+arguments to the function.  \texttt{spawn} creates a new process and
+returns the process identifier, \texttt{Pid}. The new process starts
+by executing:
+
+\begin{erlang}
+Module:Func(Expr1, ..., ExprN)
+\end{erlang}
+
+The function \texttt{Func} has to be exported even if it is spawned by
+another function in the same module. There are other spawn BIFs, for
+example \texttt{spawn/4} for spawning a process on another node.
+
+
+\section{Registered processes}
+A process can be associated with a name. The name must be an atom and
+is automatically unregistered if the process terminates. Only static
+(cyclic) processes should be registered.
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{117pt}|>{\raggedright}p{204pt}|}
+\hline
+\multicolumn{2}{|p{321pt}|}{Name registration BIFs}\tabularnewline
+\hline
+\texttt{register(Name, Pid)}  & Associates the atom \texttt{Name} with the process \texttt{Pid}\tabularnewline
+\hline
+\texttt{registered()}  & Returns a list of names which have been registered \tabularnewline
+\hline
+\texttt{whereis(Name)}  & Returns the \texttt{Pid} registered under \texttt{Name} or \texttt{undefined} if the name
+is not registered\tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+
+\section{Process communication}
+Processes communicate by sending and receiving
+\textbf{messages}. Messages are sent using the send operator
+(\texttt{!}) and are received using \texttt{receive}. Message passing
+is asynchronous and reliable, i.e.~the message is guaranteed to
+eventually reach the recipient, provided that the recipient exists.
+
+\subsection{Send}
+\begin{erlang}
+Pid ! Expr
+\end{erlang}
+
+The send (\texttt{!}) operator sends the value of \texttt{Expr} as a
+message to the process specified by \texttt{Pid} where it will be
+placed last in its \textbf{message queue}.  The value of \texttt{Expr}
+is also the return value of the (\texttt{!}) expression. \texttt{Pid}
+must evaluate to a process identifier, a registered name or a tuple
+\texttt{\{Name,Node\}}, where \texttt{Name} is a registered process at
+\texttt{Node} (see chapter \ref{distribution}). The message sending operator
+(\texttt{!}) never fails, even if it addresses a non-existent process.
+
+
+\subsection{Receive}
+
+\begin{erlang}
+receive
+    Pattern1 [when GuardSeq1] ->
+        Body1;
+    ...
+    PatternN [when GuardSeqN] ->
+        BodyN                   % Note no semicolon (;) before end
+end
+\end{erlang}
+
+This expression receives messages sent to the process using the send
+operator (\texttt{!}). The patterns \texttt{PatternX} are sequentially
+matched against the first message in time order in the message queue,
+then the second and so on.  If a match succeeds and the optional guard
+sequence \texttt{GuardSeqX} is true, then the message is removed from
+the message queue and the corresponding \texttt{BodyX} is
+evaluated.  It is the order of the pattern clauses that decides the
+order in which messages will be received prior to the order in which
+they arrive.  This is called \textit{selective receive}. The
+return value of \texttt{BodyX} is the return value of the receive
+expression.
+
+\texttt{receive} never fails. The process may be suspended, possibly
+indefinitely, until a message arrives that matches one of the patterns
+and with a true guard sequence.
+
+\newpage
+\begin{erlang}
+wait_for_onhook() ->
+    receive
+        onhook ->
+            disconnect(),
+            idle();
+        {connect, B} ->
+            B ! {busy, self()},
+            wait_for_onhook()
+    end.
+\end{erlang}
+
+
+\subsection{Receive with timeout}
+
+\begin{erlang}
+receive
+    Pattern1 [when GuardSeq1] ->
+        Body1;
+        ...;
+    PatternN [when GuardSeqN] ->
+        BodyN
+after
+    ExprT ->
+        BodyT
+end
+\end{erlang}
+
+\texttt{ExprT} should evaluate to an integer between \texttt{0} and
+\texttt{16\#ffffffff} (the value must fit in 32 bits). If no matching
+message has arrived within \texttt{ExprT} milliseconds, then
+\texttt{BodyT} will be evaluated and its return value becomes the
+return value of the receive expression.
+
+\begin{erlang}
+wait_for_onhook() ->
+    receive
+        onhook ->
+            disconnect(),
+            idle();
+        {connect, B} ->
+            B ! {busy, self()},
+            wait_for_onhook()
+    after
+        60000 ->
+            disconnect(),
+            error()
+    end.
+\end{erlang}
+
+A \texttt{receive...after} expression with no branches can be used to
+implement simple timeouts.
+
+\begin{erlang}
+receive
+after
+    ExprT ->
+        BodyT
+end
+\end{erlang}
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{47pt}|>{\raggedright}p{273pt}|}
+\hline
+\multicolumn{2}{|p{321pt}|}{Two special cases for the timeout value \texttt{ExprT}}\tabularnewline
+\hline
+\texttt{infinity} & This is equivalent to not using a timeout and can be useful for timeout
+values that are calculated at run-time\tabularnewline
+\hline
+\texttt{0} & If there is no matching message in the mailbox, the timeout will occur immediately\tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+
+\section{Process termination}
+\label{processes:termination}
+A process always terminates with an \textbf{exit reason} which may be
+any term.  If a process terminates normally, i.e.~it has run
+to the end of its code, then the reason is the atom \texttt{normal}. A process
+can terminate itself by calling one of the following BIFs.
+
+\begin{erlang}
+exit(Reason)
+
+erlang:error(Reason)
+
+erlang:error(Reason, Args)
+\end{erlang}
+
+A process terminates with the exit reason \texttt{\{Reason,Stack\}} when a
+run-time error occurs.
+
+A process may also be terminated if it receives an exit signal with
+a reason other than \texttt{normal} (see section \ref{processes:recvexitsignals}).
+
+
+\section{Process links}
+\label{processes:links}
+Two processes can be \textbf{linked} to each other. Links are
+bidirectional and there can only be one link between two distinct processes (unique \texttt{Pid}s). A
+process with \texttt{Pid1} can link to a process with \texttt{Pid2}
+using the BIF \texttt{link(Pid2)}.  The BIF \texttt{spawn\_link(Module, Func, Args)}
+spawns and links a process in one atomic operation.
+
+A link can be removed using the BIF \texttt{unlink(Pid)}.
+
+
+\subsection{Error handling between processes}
+When a process terminates it will send \textbf{exit signals} to all
+processes that it is linked to.  These in turn will also be terminated
+\textit{or handle the exit signal in some way}. This feature can be
+used to build hierarchical program structures where some processes are
+supervising other processes, for example restarting them if they
+terminate abnormally.
+
+
+\subsection{Sending exit signals}
+\label{processes:sendexitsignals}
+A process always terminates with an exit reason which is sent as an
+exit signal to all linked processes. The BIF \texttt{exit(Pid, Reason)} sends
+an exit signal with the reason \texttt{Reason} to \texttt{Pid}, without
+affecting the calling process.
+
+
+\subsection{Receiving exit signals}
+\label{processes:recvexitsignals}
+If a process receives an exit signal with an exit reason other than
+\texttt{normal} it will also be terminated, and will send exit signals with the
+same exit reason to its linked processes.  An exit signal with reason
+\texttt{normal} is ignored.  This behaviour can be changed using the BIF
+\texttt{process\_flag(trap\_exit, true)}.
+
+The process is then able to \textbf{trap exits}.  This means that an
+exit signal will be transformed into a message \texttt{\{'EXIT', FromPid, Reason\}} which is
+put into the process's mailbox and can be handled by the process like a regular
+message using \texttt{receive}.
+
+However, a call to the BIF \texttt{exit(Pid, kill)} unconditionally
+terminates the process \texttt{Pid} regardless whether it is able to
+trap exit signals or not.
+
+
+\section{Monitors}
+A process \texttt{Pid1} can create a \textbf{monitor} for
+\texttt{Pid2} using the BIF:
+
+\begin{erlang}
+erlang:monitor(process, Pid2)
+\end{erlang}
+
+which returns a reference \texttt{Ref}. If \texttt{Pid2} terminates
+with exit reason \texttt{Reason}, a message as follows will be sent to
+\texttt{Pid1}:
+
+\begin{erlang}
+{'DOWN', Ref, process, Pid2, Reason}
+\end{erlang}
+
+If \texttt{Pid2} does not exist, the \texttt{'DOWN'} message is sent
+immediately with \texttt{Reason} set to \texttt{noproc}.  Monitors are
+unidirectional in that if \texttt{Pid1} monitors \texttt{Pid2} then it
+will receive a message when \texttt{Pid2} dies but \texttt{Pid2} will
+\textbf{not} receive a message when \texttt{Pid1} dies. Repeated calls
+to \texttt{erlang:monitor(process, Pid)} will create several,
+independent monitors and each one will be sent a \texttt{'DOWN'} message
+when \texttt{Pid} terminates.
+
+A monitor can be removed by calling \texttt{erlang:demonitor(Ref)}. It
+is possible to create monitors for processes with registered names,
+also at other nodes.
+
+
+\section{Process priorities}
+The BIF \texttt{process\_flag(priority, Prio)} defines the priority of
+the current process. \texttt{Prio} may have the value \texttt{normal},
+which is the default, \texttt{low}, \texttt{high} or \texttt{max}. 
+
+Modifying a process's priority is discouraged and should only be done in 
+special circumstances.  A problem that requires changing process priorities
+can generally be solved by another approach.
+
+
+\section{Process dictionary}
+\label{processes:dicts}
+Each process has its own process dictionary which is a list of
+\texttt{\{Key, Value\}} terms.
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{79pt}|>{\raggedright}p{247pt}|}
+\hline
+\multicolumn{2}{|p{326pt}|}{Process dictionary BIFs}\tabularnewline
+\hline
+\texttt{put(Key, Value)} & Saves the \texttt{Value} under the \texttt{Key} or replaces an older value\tabularnewline
+\hline
+\texttt{get(Key)} & Retrieves the value stored under \texttt{Key} or \texttt{undefined}\tabularnewline
+\hline
+\texttt{get()} & Returns the entire process dictionary as a list of \texttt{\{Key, Value\}} terms\tabularnewline
+\hline
+\texttt{get\_keys(Value)} & Returns a list of keys that have the value \texttt{Value}\tabularnewline
+\hline
+\texttt{erase(Key)} & Deletes \texttt{\{Key, Value\}}, if any, and returns \texttt{Key}\tabularnewline
+\hline
+\texttt{erase()} & Returns the entire process dictionary and deletes it\tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+Process dictionaries could be used to keep global variables within an application,
+but the extensive use of them for this is usually regarded as poor programming style.
+

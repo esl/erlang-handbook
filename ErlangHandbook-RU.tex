@@ -1,0 +1,149 @@
+% !TEX encoding = UTF-8 Unicode
+%% NOTE: Due to using fontspec and UTF8 to avoid encoding problems and stuff, Russian
+%% version of this document builds using xe(la)tex and TexStudio
+\documentclass[oneside]{book}
+
+%%%%%%
+%% package includes
+\usepackage{ifxetex}
+\ifxetex
+    \usepackage{fontspec}
+    \defaultfontfeatures{Scale=MatchLowercase,Mapping=tex-text}
+    \setmainfont{Fira Sans}
+    \setsansfont{Fira Sans}
+    \setmonofont{Fira Mono}
+\else
+	\usepackage[utf8]{inputenc}
+	\usepackage[T2A]{fontenc}
+\fi
+
+\usepackage[russian]{babel}
+\usepackage{hyperref}
+\usepackage{textcomp}
+\usepackage{array}
+\usepackage{color}
+\usepackage[hmargin=2.5cm,vmargin=2.5cm]{geometry}
+\usepackage{minted}
+\usepackage{todonotes}
+\usepackage{parskip}
+\usepackage[Bjornstrup]{fncychap}
+\usepackage{listings}
+
+%%%%%%
+%% package setup
+\hypersetup{
+    colorlinks=true,
+    linktoc=all,
+    linkcolor=red,
+}
+
+%%%%%%
+%% hacks and macros
+\newminted[erlang]{erlang}{xleftmargin=1cm,xrightmargin=1cm,frame=single,framerule=1pt}
+
+%% hack to fix the margin issue in \item s in 1.2.1
+\newminted[erlangim]{erlang}{xleftmargin=-1.5cm}
+
+%%% display todo notes or not?
+\newcommand{\todonote}[1]{\todo[inline]{\textbf{Note:} #1}}
+%\newcommand{\todonote}[1]{}
+
+%% typesetting for the "results in" notation used.
+\def\resultingin{$\quad\Rightarrow\quad$}
+
+\begin{document}
+
+%%%%%%
+%% Title
+\begin{titlepage}
+\centering
+
+\vspace*{70pt}
+\includegraphics[scale=0.3]{includes/erlang-logo.png}\\[0.8\baselineskip]
+{\Huge \sffamily HANDBOOK}\\
+\vspace{250pt}
+{\LARGE \sffamily Бъярн Дэкер (Bjarne D\"acker)}\par
+{\LARGE \sffamily Роберт Вирдинг (Robert Virding)}\par
+
+\end{titlepage}
+
+
+%%%%%%
+%% Info Page
+\clearpage
+\thispagestyle{empty}
+{\Huge Erlang Handbook}\\[0.1\baselineskip]
+\hspace{10pt}{\large{by Bjarne Däcker and Robert Virding}}
+
+\vspace{20pt}
+{\Large \textbf{Revision:}\\[0.2\baselineskip]
+\immediate\write18{git log -n1 | grep 'Date:' | sed 's/Date:   //g' > _revision.tex}
+\input{_revision}
+\immediate\write18{rm _revision.tex}
+}
+
+\vspace{20pt}
+{\large Latest version of this handbook can be found at:\\
+\url{http://opensource.erlang-solutions.com/erlang-handbook}}
+
+\vfill
+
+\textbf{Editor}\\[0.1\baselineskip]
+%\begin{tabular}{@{\hspace{3ex}}p{42em}}
+Omer Kilic
+%\end{tabular}
+
+\textbf{Contributors}\\[0.1\baselineskip]
+%\begin{tabular}{@{\hspace{3ex}}p{42em}}
+The list of contributors can be found \href{https://github.com/esl/erlang-handbook/graphs/contributors}{on the project repository}.
+%\end{tabular}
+
+\vspace{20pt}
+\textbf{Conventions}\\
+Syntax specifications are set using \texttt{this monotype font}. Square brackets
+([ ]) enclose optional parts. Terms beginning with an uppercase letter like
+\textit{Integer} shall then be replaced by some suitable value. Terms beginning
+with a lowercase letter like \texttt{end} are reserved words in Erlang. A
+vertical bar (\textbar{}) separates alternatives, like Integer \textbar{} Float.
+
+\vspace{20pt}
+\textbf{Errata and Improvements}\\
+This is a live document so please file corrections and suggestions for
+improvement about the content using the issue tracker at
+\url{https://github.com/esl/erlang-handbook}. You may also fork this repository
+and send a pull request with your suggested fixes and improvements. New
+revisions of this document will be published after major corrections.
+
+\vspace{20pt}
+\includegraphics[scale=0.7]{includes/cc-by-sa.png}\\ This text is made available
+under a Creative Commons Attribution-ShareAlike 3.0 License. You are free to
+copy, distribute and transmit it under the license terms defined at
+\url{http://creativecommons.org/licenses/by-sa/3.0}
+
+\newpage
+
+
+%%%%%%
+%% TOC
+\tableofcontents
+
+
+%%%%%%
+%% Chapters
+
+\input{chapters-RU/01-background}
+
+%\input{chapters-RU/02-structure-of-an-erlang-program}
+%\input{chapters-RU/03-data-types}
+%\input{chapters-RU/04-pattern-matching}
+%\input{chapters-RU/05-functions}
+%\input{chapters-RU/06-processes}
+%\input{chapters-RU/07-error-handling}
+%\input{chapters-RU/08-distributed-erlang}
+%\input{chapters-RU/09-ports-and-port-drivers}
+%\input{chapters-RU/10-code-loading}
+%\input{chapters-RU/11-macros}
+%\input{chapters-RU/12-further-reading}
+
+
+\end{document}

@@ -1,0 +1,203 @@
+\chapter{Error handling}
+\label{errorhandling}
+
+This chapter deals with error handling within a process. Such errors
+are known as \textbf{exceptions}.
+
+
+\section{Exception classes and error reasons}
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{49pt}|>{\raggedright}p{277pt}|}
+\hline
+\multicolumn{2}{|p{326pt}|}{Exception classes}\tabularnewline
+\hline
+\texttt{error} & Run-time error for example when applying an operator to the wrong types of arguments. Run-time errors can be raised by calling
+	the BIFs \texttt{erlang:error(Reason)} or \texttt{erlang:error(Reason, Args)} \tabularnewline
+\hline
+\texttt{exit}  & The process calls \texttt{exit(Reason)}, see section \ref{processes:termination}\tabularnewline
+\hline
+\texttt{throw}  & The process calls \texttt{throw(Expr)}, see section \ref{errorhandling:catchthrow}\tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+An exception will cause the process to crash, i.e. its execution is
+stopped and it is removed from the system. It is also said to
+\textit{terminate}. Then exit signals will be sent to any linked
+processes.\textit{ }An exception consists of its class, an exit reason
+and a stack. The stack trace can be retrieved using the BIF
+\texttt{erlang:get\_stacktrace/0}.
+
+Run-time errors and other exceptions can be prevented from causing the
+process to terminate by using the expressions \texttt{try} and \texttt{catch}.
+
+For exceptions of class \texttt{error}, for example normal run-time errors, the
+\textbf{exit reason} is a tuple \texttt{\{Reason, Stack\}} where
+\texttt{Reason} is a term indicating which type of error.
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{100pt}|>{\raggedright}p{226pt}|}
+\hline
+\multicolumn{2}{|p{326pt}|}{Exit reasons}\tabularnewline
+\hline
+\texttt{badarg}  & Argument is of wrong type. \tabularnewline
+\hline
+\texttt{badarith}  & Argument is of wrong type in an arithmetic expression. \tabularnewline
+\hline
+\texttt{\{badmatch, Value\}}  & Evaluation of a match expression failed. \texttt{Value} did not match.
+\tabularnewline
+\hline
+\texttt{function\_clause}  & No matching function clause is found when evaluating a function
+call. \tabularnewline
+\hline
+\texttt{\{case\_clause, Value\}}  & No matching branch is found when evaluating a case expression.
+\texttt{Value} did not match. \tabularnewline
+\hline
+\texttt{if\_clause}  & No true branch is found when evaluating an \texttt{if} expression. \tabularnewline
+\hline
+\texttt{\{try\_clause, Value\}}  & No matching branch is found when evaluating the of section
+of a \texttt{try} expression. \texttt{Value} did not match. \tabularnewline
+\hline
+\texttt{undef}  & The function cannot be found when evaluating a function call\tabularnewline
+\hline
+\texttt{\{badfun, Fun\}}  & There is something wrong with \texttt{Fun}\tabularnewline
+\hline
+\texttt{\{badarity, Fun\}}  & A fun is applied to the wrong number of arguments. \texttt{Fun} describes
+it and the arguments\tabularnewline
+\hline
+\texttt{timeout\_value}  & The timeout value in a \texttt{receive}$...$\texttt{after} expression is evaluated
+to something else than an integer or infinity\tabularnewline
+\hline
+\texttt{noproc}  & Trying to link to a non-existant process\tabularnewline
+\hline
+\texttt{\{nocatch, Value\}}  & Trying to evaluate a \texttt{throw} outside of a \texttt{catch}. \texttt{Value} is the thrown
+term\tabularnewline
+\hline
+\texttt{system\_limit}  & A system limit has been reached\tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+\texttt{Stack} is the stack of function calls being evaluated when the error
+occurred, given as a list of tuples \texttt{\{Module, Name, Arity\}}
+with the most recent function call first.  The most recent function
+call tuple may in some cases be \texttt{\{Module, Name, Args\}}.
+
+
+\section{Catch and throw}
+\label{errorhandling:catchthrow}
+\begin{erlang}
+catch Expr
+\end{erlang}
+
+This returns the value of \texttt{Expr} unless an exception occurs
+during its evaluation. Then the return value will be a tuple
+containing information about the exception.
+
+\begin{erlang}
+{'EXIT', {Reason, Stack}}
+\end{erlang}
+
+Then the exception is \textit{caught}. Otherwise it would terminate
+the process. If the exception is caused by a function call
+\texttt{exit(Term)} the tuple \texttt{\{'EXIT',Term\}} is returned. If
+the exception is caused by calling \texttt{throw(Term)} then
+\texttt{Term} will be returned.
+
+\texttt{catch 1+2} \resultingin \texttt{3}\\
+\texttt{catch 1+a } \resultingin \texttt{\{'EXIT',\{badarith,[...]\}\}}
+
+\texttt{catch} has low precedence and catch subexpressions often need
+to be enclosed in a block expression or in parentheses.
+
+\texttt{A = (catch 1+2)} \resultingin \texttt{3}
+
+The BIF \texttt{throw(Expr)} is used for \textit{non-local} return
+from a function. It must be evaluated within a \texttt{catch}, which returns
+the result from evaluating \texttt{Expr}.
+
+\texttt{catch begin 1,2,3,throw(four),5,6 end} \resultingin \texttt{four}
+
+If \texttt{throw/1} is not evaluated within a \texttt{catch}, a
+\texttt{nocatch} run-time error will occur.
+
+A \texttt{catch} will not prevent a process from terminating due to an exit
+signal from another linked process (unless it has been set to trap
+exits).
+
+
+\section{Try}
+\label{errorhandling:try}
+The \texttt{try} expression is able to distinguish between different exception
+classes.  The following example emulates the behaviour of \texttt{catch Expr}:
+
+\begin{erlang}
+try Expr
+catch
+    throw:Term -> Term;
+    exit:Reason -> {'EXIT', Reason};
+    error:Reason -> {'EXIT',{Reason, erlang:get_stacktrace()}}
+end
+\end{erlang}
+
+The full description of \texttt{try} is as follows:
+
+\begin{erlang}
+try Expr [of
+    Pattern1 [when GuardSeq1] -> Body1;
+    ...;
+    PatternN [when GuardSeqN] -> BodyN]
+[catch
+    [Class1:]ExceptionPattern1 [when ExceptionGuardSeq1] -> ExceptionBody1;
+    ...;
+    [ClassN:]ExceptionPatternN [when ExceptionGuardSeqN] -> ExceptionBodyN]
+[after AfterBody]
+end
+\end{erlang}
+
+There has to be at least one \texttt{catch} or an \texttt{after}
+clause. There may be an \texttt{of} clause following the \texttt{Expr}
+which adds a \texttt{case} expression on the value of \texttt{Expr}.
+
+\texttt{try} returns the value of \texttt{Expr} unless an exception
+occurs during its evaluation. Then the exception is \textit{caught}
+and the patterns \texttt{ExceptionPattern} with the right exception
+\texttt{Class} are sequentially matched against the caught exception. An
+omitted \texttt{Class} is shorthand for \texttt{throw}. If a match succeeds and the
+optional guard sequence \texttt{ExceptionGuardSeq} is true, the
+corresponding \texttt{ExceptionBody} is evaluated and becomes the return
+value.
+
+If there is no matching \texttt{ExceptionPattern} of the right \texttt{Class}
+with a true guard sequence, the exception is passed on as if
+\texttt{Expr} had not been enclosed in a \texttt{try} expression. An exception
+occurring during the evaluation of an \texttt{ExceptionBody} it is not
+caught.
+
+If none of the of \texttt{Patterns} match, a \texttt{try\_clause} run-time
+error will occur.
+
+If defined then \texttt{AfterBody} is always evaluated \textbf{last}
+irrespective of whether and error occurred or not. Its return value is
+ignored and the return value of the \texttt{try} is the same as
+without an \texttt{after} section. \texttt{AfterBody} is evaluated
+even if an exception occurs in \texttt{Body} or
+\texttt{ExceptionBody}, in which case the exception is passed on.
+
+%% The \texttt{AfterBody} is evaluated after either \texttt{Body} or
+%% \texttt{ExceptionBody} no matter which one. The evaluated value of the
+%% \texttt{AfterBody} is lost; the return value of the try expression is
+%% the same with an after section as without. Even if an exception occurs
+%% during evaluation of \texttt{Body} or \texttt{ExceptionBody}, the
+%% \texttt{AfterBody} is evaluated. In this case the exception is caught
+%% and passed on after the \texttt{AfterBody} has been evaluated, so the
+%% exception from the try expression is the same with an after section as
+%% without.
+
+An exception that occurs during the evaluation of \texttt{AfterBody}
+itself is not caught, so if the \texttt{AfterBody} is evaluated due to
+an exception in \texttt{Expr}, \texttt{Body} or
+\texttt{ExceptionBody}, that exception is lost and masked by the new
+exception.
+
