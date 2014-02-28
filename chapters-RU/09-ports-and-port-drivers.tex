@@ -1,113 +1,136 @@
-\chapter{Ports and Port Drivers}
+\chapter{Порты и драйверы портов}
 \label{ports}
-\textbf{Ports} provide a byte-oriented interface to external programs
-and communicate with Erlang processes by sending and receiving lists
-of bytes as messages. The Erlang process that creates a port is called
-the \textbf{port owner} or the \textbf{connected process} of the
-port. All communication to and from the port should go via the port
-owner. If the port owner terminates, so will the port (and the
-external program, if it has been programmed correctly).
 
-The external program forms another OS process. By default, it should
-read from standard input (file descriptor 0) and write to standard
-output (file descriptor 1). The external program should terminate when
-the port is closed.
+\textbf{Порты} предоставляют байто-ориентированный интерфейс к внешним программам и
+связывается с процессами Erlang посылая и принимая сообщения в виде списков байтов.
+Процесс Erlang, который создаёт порт, называется \textbf{владельцем порта} или
+\textbf{подключенным к порту процессом}.  Все коммуникации в и из порта должны
+пройти через владельца порта.  Если владелец порта завершает работу, порт тоже
+закроется (а также и внешняя программа, подключенная к порту, если она была
+правильно написана и среагирует на закрытие ввода/вывода).
 
-
-\section{Port Drivers}
-Drivers are normally programmed in C and are dynamically linked to the
-Erlang runtime system. The linked-in driver behaves like a port and is
-called a \textbf{port driver}. However, an erroneous port driver might
-cause the entire Erlang runtime system to leak memory, hang or crash.
+Внешняя программа является другим процессом операционной системы. По умолчанию, он
+должен считывать данные из стандартного входа (файловый дескриптор 0) и отвечать
+на стандартный вывод (файловый дескриптор 1).  Внешняя программа должна завершать
+свою работу когда порт закрывается (ввод/вывод закрывается).
 
 
-\section{Port BIFs}
+\section{Драйверы портов}
+
+Драйверы портов обычно пишутся на языке С и динамически подключаются к системе
+исполнения Erlang. Встроенный драйвер ведёт себя как порт и называется 
+\textbf{драйвером порта}.  Однако, ошибка в драйвере порта может привести к 
+нестабильности во всей системе Erlang, утечкам памяти, зависаниям и краху системы.
+
+
+\section{Встроенные функции для портов}
 
 \begin{center}
-\begin{tabular}{|>{\raggedright}p{161pt}|>{\raggedright}p{165pt}|}
+\begin{tabular}{|>{\raggedright}p{140pt}|>{\raggedright}p{300pt}|}
 \hline
-\multicolumn{2}{|p{326pt}|}{Port creation BIF}\tabularnewline
+\multicolumn{2}{|p{440pt}|}{Функция для создания порта} \tabularnewline
 \hline
-\texttt{open\_port(PortName, PortSettings)} & Returns a \textbf{port identifier} \texttt{Port} as the result of opening a new Erlang port. Messages can be sent to and received from a port identifier, just like a Pid. Port identifiers can also be linked to or registered under a name using \texttt{link/1} and \texttt{register/2}. \tabularnewline
+\texttt{open\_port(ИмяПорта, НастройкиПорта)} & 
+Возвращает \textbf{идентификатор порта} \texttt{Порт}, как результат открытия 
+нового Erlang-порта.  Сообщения могут быть отправлены в и получены через 
+идентификатор порта, так же как это можно делать с идентификаторами процессов.
+Идентификаторы портов могут быть связаны с процессами, или зарегистрированы под
+каким-либо именем с помощью \texttt{link/1} и \texttt{register/2}. \tabularnewline
 \hline
 \end{tabular}
 \end{center}
 
-\texttt{PortName} is usually a tuple \texttt{\{spawn,Command\}} where
-the string \texttt{Command} is the name of the external program. The
-external program runs outside the Erlang workspace unless a port
-driver with the name \texttt{Command} is found. If the driver is
-found, it will be started.
+\texttt{ИмяПорта} обычно является кортежем вида \texttt{\{spawn,Команда\}}, где
+строка \texttt{Команда} является именем внешней программы.  Внешняя программа 
+выполняется за пределами Erlang-системы, если только не найден драйвер порта с
+именем \texttt{Команда}.  Если драйвер найден, он будет активирован вместо команды.
 
-\texttt{PortSettings} is a list of settings (options) for the
-port. The list typically contains at least a tuple
-\texttt{\{packet,N\}} which specifies that data sent between the port
-and the external program are preceded by an N-byte length
-indicator. Valid values for \texttt{N} are 1, 2 or 4. If binaries
-should be used instead of lists of bytes, the option \texttt{binary}
-must be included.
+\texttt{НастройкиПорта} --- это список настроек (опций) для порта. Список обычно
+содержит как минимум один кортеж \texttt{\{packet,N\}}, указывающий, что данные,
+пересылаемые между портом и внешней программой, предваряются N-байтовым индикатором
+длины.  Разрешённые значения для \texttt{N} --- 1, 2 или 4.  Если двоичные данные
+должны использоваться вместо списков байтов, то должна быть включена опция
+\texttt{binary}.
 
-The port owner Pid communicates with Port by sending and receiving
-messages. (Any process could send the messages to the port, but
-messages from the port will always be sent to the port owner).
+Владелец порта Pid связывается с \texttt{Портом} с помощью отправки и получения
+Erlang-сообщений.  (Любой процесс может послать сообщение в порт, но ответы от 
+порта всегда будут отправлены только владельцу порта).
 
 \begin{center}
-\begin{tabular}{|>{\raggedright}p{115pt}|>{\raggedright}p{211pt}|}
+\begin{tabular}{|>{\raggedright}p{140pt}|>{\raggedright}p{300pt}|}
 \hline
-\multicolumn{2}{|p{326pt}|}{Messages sent to a port}\tabularnewline
+\multicolumn{2}{|p{440pt}|}{Сообщения, отсылаемые в порт}\tabularnewline
 \hline
-\texttt{\{Pid, \{command, Data\}\}}  & Sends Data to the port. \tabularnewline
+\texttt{\{Pid, \{command, Данные\}\}}  & 
+Посылает \texttt{Данные} в порт. \tabularnewline
 \hline
-\texttt{\{Pid, close\}}  & Closes the port. Unless the port is already closed, the port replies
-with \texttt{\{Port, closed\}} when all buffers have been flushed and the port really closes.
+\texttt{\{Pid, close\}}  & 
+Закрывает порт. Если порт был открыт, он отвечает сообщением 
+\texttt{\{Порт, closed\}}, когда все буферы были сброшены и порт закрылся.
 \tabularnewline
 \hline
-\texttt{\{Pid,\{connect,NewPid\}\}}  & Sets the port owner of \texttt{Port} to \texttt{NewPid}. Unless the port is already closed, the port replies with \texttt{\{Port, connected\}} to the old port owner. Note that the old port owner is still linked to the port, but the new port
-owner is not. \tabularnewline
+\texttt{\{Pid, \{connect, НовыйPid\}\}}  & 
+Устанавливает владельца \texttt{Порта} равным \texttt{НовомуPid}. Если порт был
+открыт, он отвечает сообщением \texttt{\{Порт, connected\}} старому владельцу. 
+Заметьте, что старый владелец порта остаётся связанным с портом, тогда как новый
+--- нет. \tabularnewline
 \hline
 \end{tabular}
 \end{center}
 
-Data must be an I/O list. An I/O list is a binary or a (possibly deep)
-list of binaries or integers in the range 0..255.
+Данные должны быть списком ввода-вывода. Список ввода-вывода --- это либо двоичные
+данные, либо смешанный (возможно вложенный) список двоичных данных и целых чисел
+в диапазоне от 0 до 255.
 
 \begin{center}
-\begin{tabular}{|>{\raggedright}p{121pt}|>{\raggedright}p{204pt}|}
+\begin{tabular}{|>{\raggedright}p{140pt}|>{\raggedright}p{300pt}|}
 \hline
-\multicolumn{2}{|p{326pt}|}{Messages received from a port}\tabularnewline
+\multicolumn{2}{|p{440pt}|}{Сообщения, получаемые из порта}\tabularnewline
 \hline
-\texttt{\{Port, \{data, Data\}\}}  & Data is received from the external program\tabularnewline
+\texttt{\{Порт, \{data, Данные\}\}}  & 
+Данные получены от внешней программы \tabularnewline
 \hline
-\texttt{\{Port, closed\}}  & Reply to \texttt{Port ! \{Pid,close\}}\tabularnewline
+\texttt{\{Порт, closed\}}  & 
+Ответ на команду \texttt{Порт ! \{Pid,close\}} \tabularnewline
 \hline
-\texttt{\{Port, connected\}}  & Reply to \texttt{Port ! \{Pid,\{connect, NewPid\}\}} \tabularnewline
+\texttt{\{Порт, connected\}}  & 
+Ответ на команду \texttt{Порт ! \{Pid,\{connect, NewPid\}\}} \tabularnewline
 \hline
-\texttt{\{'EXIT', Port, Reason\}}  & If Port has terminated for some reason. \tabularnewline
+\texttt{\{'EXIT', Порт, Причина\}}  &
+Присылается, если порт был отключен по какой-либо причине. \tabularnewline
 \hline
 \end{tabular}
 \end{center}
 
-Instead of sending and receiving messages, there are also a number of
-BIFs that can be used. These can be called by any process, not only
-the port owner.
+Вместо того, чтобы отправлять и получать сообщения, имеется ряд встроенных функций,
+которые можно использовать.  Они могут быть вызваны любым процессом, а не только
+владельцем порта.
 
 \begin{center}
-\begin{tabular}{|>{\raggedright}p{146pt}|>{\raggedright}p{180pt}|}
+\begin{tabular}{|>{\raggedright}p{140pt}|>{\raggedright}p{300pt}|}
 \hline
-\multicolumn{2}{|p{326pt}|}{Port BIFs}\tabularnewline
+\multicolumn{2}{|p{440pt}|}{Встроенные функции для работы с портами}\tabularnewline
 \hline
-\texttt{port\_command(Port, Data)}  & Sends Data to Port\tabularnewline
+\texttt{port\_command(Порт, Данные)}  & 
+Отправляет \texttt{Данные} в \texttt{Порт} \tabularnewline
 \hline
-\texttt{port\_close(Port)}  & Closes Port\tabularnewline
+\texttt{port\_close(Порт)}  & 
+Закрывает \texttt{Порт} \tabularnewline
 \hline
-\texttt{port\_connect(Port, NewPid)}  & Sets the port owner of \texttt{Port} to \texttt{NewPid}. The old port owner Pid stays linked to the port and has to call \texttt{unlink(Port)} if this is not desired. \tabularnewline
+\texttt{port\_connect(Порт, НовыйPid)}  & 
+Устанавливает владельца \texttt{Порта} равным \texttt{НовомуPid}. Старый владелец
+остаётся связанным с портом и должен сам вызвать \texttt{unlink(Порт)} если связь
+не требуется. \tabularnewline
 \hline
-\texttt{erlang:port\_info(Port, Item)}  & Returns information as specified by \texttt{Item}\tabularnewline
+\texttt{erlang:port\_info(\\
+Порт, Элемент)}  & 
+Возвращает информацию о \texttt{Порте} с ключом \texttt{Элемент} \tabularnewline
 \hline
-\texttt{erlang:ports()}  & Returns a list of all ports on the current node\tabularnewline
+\texttt{erlang:ports()}  & 
+Возвращает список всех открытых портов на текущем узле \tabularnewline
 \hline
 \end{tabular}
 \end{center}
 
-There are some additional BIFs that only apply to port drivers:
-\texttt{port\_control/3} and \texttt{erlang:port\_call/3}.
+Есть несколько дополнительных встроенных функций, которые применимы только к 
+драйверам портов: это \texttt{port\_control/3} и \texttt{erlang:port\_call/3}.
