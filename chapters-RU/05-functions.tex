@@ -6,31 +6,30 @@
 \textbf{уравнений функции}. Имя функции --- это атом.
 
 \vspace*{4pt}
-\begin{verbatim}
+\begin{erlangru}
 Функция(Образец11,...,Образец1N)
-  [when ЗащитныеВыражения1] -> ТелоФункции1;
+  [when ОхранныеВыражения1] -> ТелоФункции1;
 ...;
 ...;
 Функция(ОбразецK1,...,ОбразецKN)
-  [when ЗащитныеВыраженияK] -> ТелоФункцииK.
-
-\end{verbatim}
+  [when ОхранныеВыраженияK] -> ТелоФункцииK.
+\end{erlangru}
 \vspace*{4pt}
 
 Уравнения функции разделены точками с запятой (\texttt{;}) и последнее уравнение
 завершается точкой (\texttt{.}). Уравнение функции состоит из \textbf{заголовка
 уравнения} и \textbf{тела уравнения функции}, разделённых стрелкой (\texttt{->}).
 Заголовок уравнения состоит из имени функции (атома), списка аргументов, 
-заключённого в скобки, и необязательного списка защитных выражений, начинающихся
+заключённого в скобки, и необязательного списка охранных выражений, начинающихся
 с ключевого слова \texttt{when}.  Каждый аргумент функции --- образец.  Тело 
 функции состоит из последовательности выражений, разделённых запятыми (\texttt{,}).
 
 \vspace*{4pt}
-\begin{verbatim}
+\begin{erlangru}
 Выражение1,
 ...,
 ВыражениеM
-\end{verbatim}
+\end{erlangru}
 \vspace*{4pt}
 
 Количество аргументов \texttt{N} ещё называется \textbf{арностью} функции.
@@ -62,7 +61,7 @@ area({triangle, A, B, C}) ->
 
 Выражение \texttt{Модуль} должно вычисляться в имя модуля (или быть атомом) и
 выражение \texttt{Функция} должно вычисляться в имя функции или в 
-\textit{анонимную функцию}. При вызове функции в другом модуле, следует указать 
+\emph{анонимную функцию}. При вызове функции в другом модуле, следует указать 
 имя модуля и функция должна быть экспортирована. Такой вызов будет называться
 \textbf{полностью определённым вызовом функции}.
 
@@ -78,88 +77,88 @@ lists:keysearch(Name, 1, List)
 не может быть найдена, то возникает ошибка времени исполнения \texttt{undef}.
 Если уравнений функции несколько, они последовательно сканируются до тех пор, пока
 не будет найдено подходящее уравнение, такое, что образцы в заголовке уравнения
-успешно могут быть сопоставлены с данными аргументами и что защитное выражение 
+успешно могут быть сопоставлены с данными аргументами и что охранное выражение 
 (если оно задано) равно \texttt{true}.  Если такое уравнение не может быть найдено,
 возникает ошибка времени исполнения \texttt{function\_clause}.
 
-If a matching clause is found, the corresponding clause body is evaluated,
-i.e.~the expressions in the body are evaluated sequentially and the
-value of the last expression is returned.
+Если совпадающее уравнение найдено, то вычисляется соответствующее тело функции,
+то есть выражения в теле функции вычисляются одно за другим и возвращается 
+результат последнего выражения.
 
-The fully qualified function name must be used when calling a function
-with the same name as a BIF (built-in function, see section
-\ref{functions:bifs}). The compiler does not allow defining a function
-with the same name as an imported function. When calling a local
-function, there is a difference between using the implicitly or fully
-qualified function name, as the latter always refers to the latest
-version of the module (see chapter \ref{code}).
+Полностью определённое имя функции должно быть использовано, если вызывается 
+встроенная функция с таким же именем (BIF, см. секцию \ref{functions:bifs}). 
+Компилятор не разрешит определить функцию с таким же именем, как другая 
+импортированная функция. При вызове локальной функции есть разница между 
+использованием неявно или полностью определённого имени функции, поскольку второе
+всегда относится к последней версии модуля (см. главу \ref{code} о модулях и 
+версиях).
 
 
-\section{Expressions}
+\section{Выражения}
 \label{functions:expressions}
-An \textbf{expression} is either a term or the invocation of an
-operator, for example:
 
-\begin{erlang}
-Term
-op Expr
-Expr1 op Expr2
-(Expr)
+\textbf{Выражение} это терм либо вызов оператора, результатом которого будет терм, 
+например:
+
+\begin{erlangru}
+Терм
+операция Выражение
+Выражение1 операция Выражение2
+(Выражение)
 begin
-   Expr1,
+   Выражение1,
    ...,
-   ExprM            % no comma (,) before end
+   ВыражениеM            % нет запятой (,) перед end
 end
+\end{erlangru}
 
-\end{erlang}
+В наличии имеются как \emph{унарные} так и \emph{бинарные} операторы. Простейшая
+форма выражения --- это терм, например \emph{целое число}, \emph{число с плавающей
+точкой}, \emph{атом}, \emph{строка}, \emph{список} или \emph{кортеж}, и 
+возвращаемое оператором значение тоже терм. Выражение может содержать \emph{макрос}
+или операции над \emph{записью}, которые будут развёрнуты во время компиляции.
 
-There are both \textit{unary} and \textit{binary} operators. The
-simplest form of expression is a term, i.e.~an \textit{integer},
-\textit{float}, \textit{atom}, \textit{string}, \textit{list} or
-\textit{tuple} and the return value is the term itself. An expression
-may contain \textit{macro} or \textit{record} expressions which will
-expanded at compile time.
-
-Parenthesised expressions are useful to override operator precedence (see section \ref{functions:expressions:precedence}):
+Выражения в скобках полезны для изменения порядка вычисления операторов (см.  
+раздел \ref{functions:expressions:precedence}):
 
 \begin{erlang}
 1 + 2 * 3           % 7
 (1 + 2) * 3         % 9
 \end{erlang}
 
-Block expressions within \texttt{begin...end} can be used to group a
-sequence of expressions and the return value is the value of the last
-expression \texttt{ExprM}.
+Блочные выражения, заключённые в операторные скобки между \texttt{begin...end},
+могут использоваться для группировки последовательности выражений и возвращают 
+значение, равное значению последнего выражения внутри \texttt{ВыражениеM}.
 
-All subexpressions are evaluated before the expression itself is
-evaluated, but the order in which subexpressions are evaluated is undefined.
+Все вложенные подвыражения вычисляются до главного выражения, но порядок, в котором
+происходит вычисление вложенных, не определён стандартом.
 
-Most operators can only be applied to arguments of a certain type. For
-example, arithmetic operators can only be applied to integers or
-floats. An argument of the wrong type will cause a \texttt{badarg}
-run-time error.
+Многие операторы могут применяться только к аргументам определённого типа. 
+Например, арифметические операторы могут только применяться к целым числам или 
+числам с плавающей точкой. Аргумент неверного типа вызовет ошибку времени 
+выполнения \texttt{badarg}.
 
 
-\subsection{Term comparisons}
-\begin{erlang}
-Expr1 op Expr2
-\end{erlang}
+\subsection{Сравнение термов}
+\begin{verbatim}
+Выражение1 оператор Выражение2
+\end{verbatim}
 
-A \textbf{term comparison} returns a \textit{boolean} value,
-in the form of atoms \texttt{true} or \texttt{false}.
+\textbf{Сравнение термов} возвращает \emph{булево} (логическое) значение, в форме
+атомов \texttt{true} или \texttt{false}.
 
 \begin{center}
-\begin{tabular}{|>{\raggedright}p{40pt}|>{\raggedright}p{105pt}|>{\raggedright}p{26pt}|>{\raggedright}p{124pt}|}
+\begin{tabular}{|>{\raggedright}p{40pt}|>{\raggedright}p{185pt}|>{\raggedright}p{26pt}|>{\raggedright}p{135pt}|}
 \hline
-\multicolumn{4}{|p{297pt}|}{Comparison operators}\tabularnewline
+\multicolumn{4}{|p{297pt}|}{Операторы сравнения}\tabularnewline
 \hline
-\texttt{==} & Equal to & \texttt{=<} & Less than or equal to\tabularnewline
+\texttt{==} & Равно & \texttt{=<} & Меньше или равно \tabularnewline
 \hline
-\texttt{/=} & Not equal to & \texttt{<} & Less than\tabularnewline
+\texttt{/=} & Не равно & \texttt{<} & Меньше, чем \tabularnewline
 \hline
-\texttt{=:=} & Exactly equal to & \texttt{>}= & Greater than or equal to\tabularnewline
+\texttt{=:=} & Точно равно (с учётом типа) & \texttt{>}= & Больше или равно \tabularnewline
 \hline
-\texttt{=/=} & Exactly not equal to & \texttt{>} & Greater than\tabularnewline
+\texttt{=/=} & Точно не равно (с учётом типа) & \texttt{>} & Больше, чем \tabularnewline
 \hline
 \end{tabular}
 \end{center}
@@ -170,59 +169,60 @@ in the form of atoms \texttt{true} or \texttt{false}.
 1 > a               % false
 \end{erlang}
 
-The arguments may be of different data types. The following order is
-defined:
+Аргументы оператора сравнения могут иметь разные типы данных. В таком случае 
+действует следующий порядок сравнения:
 
-\texttt{number < atom < reference < fun < port < pid < tuple < list < binary}
+\texttt{число < атом < ссылка < анонимная функция < порт < pid < кортеж < список < 
+	двоичные данные}
 
-Lists are compared element by element. Tuples are ordered by size, two
-tuples with the same size are compared element by element. When
-comparing an integer and a float, the integer is first converted to a
-float. In the case of \texttt{=:=} or \texttt{=/=} there is no type conversion.
+Списки сравниваются поэлементно. Кортежи сравниваются по размеру, два кортежа 
+одного размера сравниваются поэлементно. При сравнении целого числа и числа с 
+плавающей точкой, целое сначала приводится к числу с плавающей точкой. В случае 
+использования точного равенства \texttt{=:=} или \texttt{=/=} тип числа не 
+изменяется и учитывается в равенстве.
 
 
-\subsection{Arithmetic expressions}
+\subsection{Арифметические выражения}
 
-\begin{erlang}
-op Expr
-Expr1 op Expr2
-\end{erlang}
+\begin{erlangru}
+оператор Выражение
+Выражение1 оператор Выражение2
+\end{erlangru}
 
-An \textbf{arithmetic expression} returns the result after applying
-the operator.
+\textbf{Арифметическое выражение} возвращает результат после применения оператора.
 
 \begin{center}
-\begin{tabular}{|>{\raggedright}p{35pt}|>{\raggedright}p{145pt}|>{\raggedright}p{128pt}|}
+\begin{tabular}{|>{\raggedright}p{35pt}|>{\raggedright}p{185pt}|>{\raggedright}p{128pt}|}
 \hline
-\multicolumn{3}{|p{309pt}|}{Arithmetic operators}\tabularnewline
+\multicolumn{3}{|p{309pt}|}{Арифметические операторы}\tabularnewline
 \hline
-\texttt{+}  & Unary +  & \texttt{Integer \textbar{} Float} \tabularnewline
+\texttt{+}  & Унарный плюс  & \texttt{Integer} \textbar{} \texttt{Float} \tabularnewline
 \hline
-\texttt{-}  & Unary -  & \texttt{Integer \textbar{} Float}\tabularnewline
+\texttt{-}  & Унарный минус  & \texttt{Integer} \textbar{} \texttt{Float} \tabularnewline
 \hline
-\texttt{+}  & Addition & \texttt{Integer} \textbar{} \texttt{Float}\tabularnewline
+\texttt{+}  & Сложение & \texttt{Integer} \textbar{} \texttt{Float}\tabularnewline
 \hline
-\texttt{-}  & Subtraction & \texttt{Integer} \textbar{} \texttt{Float}\tabularnewline
+\texttt{-}  & Вычитание & \texttt{Integer} \textbar{} \texttt{Float}\tabularnewline
 \hline
-\texttt{*}  & Multiplication & \texttt{Integer} \textbar{} \texttt{Float}\tabularnewline
+\texttt{*}  & Умножение & \texttt{Integer} \textbar{} \texttt{Float}\tabularnewline
 \hline
-\texttt{/}  & Floating point division  & \texttt{Integer} \textbar{} \texttt{Float}\tabularnewline
+\texttt{/}  & Деление с плавающей точкой & \texttt{Integer} \textbar{} \texttt{Float}\tabularnewline
 \hline
-\texttt{bnot}  & Unary bitwise not  & \texttt{Integer} \tabularnewline
+\texttt{bnot}  & Унарное битовое НЕ & \texttt{Integer} \tabularnewline
 \hline
-\texttt{div}  & Integer division  & \texttt{Integer}\tabularnewline
+\texttt{div}  & Целочисленное деление & \texttt{Integer}\tabularnewline
 \hline
-\texttt{rem}  & Integer remainder of X/Y  & \texttt{Integer} \tabularnewline
+\texttt{rem}  & Целочисленный остаток от деления X на Y  & \texttt{Integer} \tabularnewline
 \hline
-\texttt{band}  & Bitwise and  & \texttt{Integer}\tabularnewline
+\texttt{band}  & Битовое И & \texttt{Integer}\tabularnewline
 \hline
-\texttt{bor}  & Bitwise or  & \texttt{Integer} \tabularnewline
+\texttt{bor}  & Битовое ИЛИ & \texttt{Integer} \tabularnewline
 \hline
-\texttt{bxor}  & Arithmetic bitwise xor  & \texttt{Integer}\tabularnewline
+\texttt{bxor}  & Исключающее битовое ИЛИ & \texttt{Integer}\tabularnewline
 \hline
-\texttt{bsl}  & Arithmetic bitshift left  & \texttt{Integer} \tabularnewline
+\texttt{bsl}  & Арифметический (с учётом знака) битовый сдвиг влево & \texttt{Integer} \tabularnewline
 \hline
-\texttt{bsr}  & Bitshift right  & \texttt{Integer}\tabularnewline
+\texttt{bsr}  & Битовый сдвиг вправо & \texttt{Integer}\tabularnewline
 \hline
 \end{tabular}
 \end{center}
@@ -237,28 +237,28 @@ the operator.
 \end{erlang}
 
 
-\subsection{Boolean expressions}
+\subsection{Логические (булевы) выражения}
 
-\begin{erlang}
-op Expr
-Expr1 op Expr2
-\end{erlang}
+\begin{verbatim}
+оператор Выражение
+Выражение1 оператор Выражение2
+\end{verbatim}
 
-A \textbf{boolean expression} returns the value \texttt{true} or
-\texttt{false} after applying the operator.
+\textbf{Логическое выражение} возвращает значение \texttt{true} или \texttt{false}
+после применения оператора.
 
 \begin{center}
 \begin{tabular}{|>{\raggedright}p{79pt}|>{\raggedright}p{241pt}|}
 \hline
-\multicolumn{2}{|p{321pt}|}{Boolean operators}\tabularnewline
+\multicolumn{2}{|p{321pt}|}{Логические (булевы) операторы}\tabularnewline
 \hline
-\texttt{not}  & Unary logical not \tabularnewline
+\texttt{not}  & Унарное логическое НЕ (отрицание) \tabularnewline
 \hline
-\texttt{and}  & Logical and \tabularnewline
+\texttt{and}  & Логическое И \tabularnewline
 \hline
-\texttt{or}  & Logical or \tabularnewline
+\texttt{or}  & Логическое ИЛИ \tabularnewline
 \hline
-\texttt{xor}  & Logical exclusive or\tabularnewline
+\texttt{xor}  & Логическое исключающее ИЛИ \tabularnewline
 \hline
 \end{tabular}
 \end{center}
@@ -270,18 +270,18 @@ true xor false      % true
 \end{erlang}
 
 
-\subsection{Short-circuit boolean expressions}
+\subsection{Умные логические выражения}
 
-\begin{erlang}
-Expr1 orelse Expr2
-Expr1 andalso Expr2
-\end{erlang}
+\begin{verbatim}
+Выражение1 orelse Выражение2
+Выражение1 andalso Выражение2
+\end{verbatim}
 
-These are boolean expressions where \texttt{Expr2} is evaluated only
-if necessary. In an \texttt{orelse} expression \texttt{Expr2} will be
-evaluated only if \texttt{Expr1} evaluates to false. In an
-\texttt{andalso} expression \texttt{Expr2} will be evaluated only if
-\texttt{Expr1} evaluates to true.
+В этих логические выражениях второй операнд вычисляется только в том случае, если 
+его значение необходимо. В выражении \texttt{orelse} \texttt{Выражение2} будет 
+вычислено, только если \texttt{Выражение1} равняется \texttt{false}. В выражении 
+\texttt{andalso} \texttt{Выражение2} будет вычислено, только если 
+\texttt{Выражение1} равняется \texttt{true}.
 
 \begin{erlang}
 if A >= 0 andalso math:sqrt(A) > B -> ...
@@ -290,15 +290,16 @@ if is_list(L) andalso length(L) == 1 -> ...
 \end{erlang}
 
 
-\subsection{Operator precedences}
+\subsection{Приоритет операторов}
 \label{functions:expressions:precedence}
-In an expression consisting of subexpressions the operators will be
-applied according to a defined \textbf{operator precedence} order:
+
+В выражении, состоящем из подвыражений, операторы будут применяться согласно 
+определённому порядку, который называется \textbf{приоритетом операторов}:
 
 \begin{center}
-\begin{tabular}{|>{\raggedright}p{221pt}|>{\raggedright}p{99pt}|}
+\begin{tabular}{|>{\raggedright}p{221pt}|>{\raggedright}p{125pt}|}
 \hline
-\multicolumn{2}{|p{321pt}|}{Operator precedence (from high to low)}\tabularnewline
+\multicolumn{2}{|p{321pt}|}{Приоритет операторов (от высшего к низшему)} \tabularnewline
 \hline
 \texttt{:} ~ &  \tabularnewline
 \hline
@@ -306,11 +307,11 @@ applied according to a defined \textbf{operator precedence} order:
 \hline
 \texttt{Unary + - bnot not ~} &  \tabularnewline
 \hline
-\texttt{/ * div rem band and}  & Left associative \tabularnewline
+\texttt{/ * div rem band and}  & Левоассоциативный \tabularnewline
 \hline
-\texttt{+ - bor bxor bsl bsr or xor} & Left associative \tabularnewline
+\texttt{+ - bor bxor bsl bsr or xor} & Левоассоциативный \tabularnewline
 \hline
-\texttt{++ --}  & Right associative \tabularnewline
+\texttt{++ --}  & Правоассоциативный \tabularnewline
 \hline
 \texttt{== /= =< < >= > =:= =/=} & \tabularnewline
 \hline
@@ -318,82 +319,86 @@ applied according to a defined \textbf{operator precedence} order:
 \hline
 \texttt{orelse} &  \tabularnewline
 \hline
-\texttt{= !}  & Right associative \tabularnewline
+\texttt{= !}  & Правоассоциативный \tabularnewline
 \hline
 \texttt{catch ~} &  \tabularnewline
 \hline
 \end{tabular}
 \end{center}
 
-The operator with the highest priority is evaluated first. Operators
-with the same priority are evaluated according to their
-\textbf{associativity}.  The left associative arithmetic operators
-are evaluated left to right:
+Оператор с наивысшим приоритетом вычисляется первым. Операторы с одинаковым 
+приоритетом вычисляются согласно их \textbf{ассоциативности}. Левоассоциативные
+операторы вычисляются слева направо.:
 
 \texttt{6 + 5 * 4 - 3 / 2  \resultingin  6 + 20 - 1.5  \resultingin  26 - 1.5  \resultingin  24.5}
 
 
-\section{Compound expressions}
+
+\section{Составные выражения}
 
 
 \subsection{If}
 
-\begin{erlang}
+\begin{erlangru}
 if
-    GuardSeq1 ->
-        Body1;
+    ОхранноеВыражение1 ->
+        Тело1;
     ...;
-    GuardSeqN ->
-        BodyN                   % Note no semicolon (;) before end
+    ОхранноеВыражениеN ->
+        ТелоN          % Заметьте, нет точки с запятой (;) перед end
 end
-\end{erlang}
+\end{erlangru}
 
-The branches of an \texttt{if} expression are scanned sequentially
-until a guard sequence \texttt{GuardSeq} which evaluates to
-\texttt{true} is found.  The corresponding \texttt{Body} (sequence
-of expressions separated by commas) is then evaluated.  The return value of
-\texttt{Body} is the return value of the \texttt{if} expression.
+Ветки выражения \texttt{if} сканируются последовательно сверху вниз, пока не 
+встретится \texttt{ОхранноеВыражение}, результатом которого будет \texttt{true}.
+Соотвествующее \texttt{Тело} (последовательность выражений, разделённых запятыми)
+будет вычислено. Возвращаемое \texttt{Телом} значение будет результатом всего 
+выражения \texttt{if}.
 
-If no guard sequence is true, an \texttt{if\_clause} run-time error
-will occur. If necessary, the guard expression \texttt{true} can be used in the
-last branch, as that guard sequence is always true (known as a ``catch
-all'').
+Если ни одно из охранных выражений не вычисляется в \texttt{true}, то возникнет
+ошибка времени выполнения \texttt{if\_clause}. При необходимости можно 
+использовать охранное выражение \texttt{true} в последней ветке \texttt{if}, 
+поскольку такое охранное выражение всегда срабатывает, если другие не сработали и
+называется "<срабатывающим для всех значений"> (catch all).
 
 \begin{erlang}
 is_greater_than(X, Y) ->
     if
         X>Y ->
             true;
-        true ->                 % works as an 'else' branch
+        true ->                 % работает как ветка 'else'
             false
     end
 \end{erlang}
 
-It should be noted that pattern matching in function clauses can be used to replace \texttt{if} cases (most of the time).
-Overuse of \texttt{if} sentences withing function bodies is considered a bad Erlang practice.
+Следует заметить, что сопоставление с образцом в уравнениях функций может почти
+всегда использоваться для замены \texttt{if}. Чрезмерное использование \texttt{if}
+внутри функций считается плохой практикой.
+
 
 \subsection{Case}
 
-Case expressions provide for inline pattern matching, similar to the way in which function clauses are matched.
+Выражения \texttt{case} используются для сопоставления с образцом прямо в коде, 
+подобно тому, как сопоставляются аргументы в заголовках функций.
 
-\begin{erlang}
-case Expr of
-    Pattern1 [when GuardSeq1] ->
-        Body1;
+\begin{erlangru}
+case Выражение of
+    Выражение1 [when ОхранноеВыражение1] ->
+        Тело1;
         ...;
-    PatternN [when GuardSeqN] ->
-        BodyN                   % Note no semicolon (;) before end
+    ВыражениеN [when ОхранноеВыражениеN] ->
+        ТелоN       % Заметьте, нет точки с запятой (;) перед end
 end
-\end{erlang}
+\end{erlangru}
 
-The expression \texttt{Expr} is evaluated and the patterns
-\texttt{Pattern1}...\texttt{PatternN} are sequentially matched against the result. If a
-match succeeds and the optional guard sequence \texttt{GuardSeqX} is
-\texttt{true}, then the corresponding \texttt{BodyX} is evaluated. The return value
-of \texttt{BodyX} is the return value of the case expression.
+\texttt{Выражение} вычисляется и \texttt{Образец1}...\texttt{ОбразецN} 
+последовательно сопоставляются с результатом. Если сопоставление проходит успешно, 
+и необязательное \texttt{Охран\-ное\-ВыражениеХ} равно \texttt{true}, тогда вычисляется
+соответствующее \texttt{ТелоХ}. Возвращаемое значение \texttt{ТелаХ} является 
+результатом всего выражения \texttt{case}.
 
-If there is no matching pattern with a true guard sequence, a
-\texttt{case\_clause} run-time error will occur.
+В случае, если ни один из образцов и их охранных выражений не подходит, возникает
+ошибка времени выполнения \texttt{case\_clause}.
 
 \begin{erlang}
 is_valid_signal(Signal) ->
@@ -408,32 +413,33 @@ is_valid_signal(Signal) ->
 \end{erlang}
 
 
-\subsection{List comprehensions}
-List comprehensions are analogous to the \texttt{setof} and
-\texttt{findall} predicates in Prolog.
+\subsection{Генераторы списков}
+
+Генераторы списков аналогичны предикатам \texttt{setof} и \texttt{findall}
+в языке Prolog.
 
 \begin{erlang}
-[Expr || Qualifier1,...,QualifierN]
+[Выражение || Квалификатор1,...,КвалификаторN]
 \end{erlang}
 
-\texttt{Expr} is an arbitrary expression, and each \texttt{QualifierX}
-is either a \textbf{generator} or a \textbf{filter}. A generator is
-written as:
+\texttt{Выражение} --- произвольное выражение, и каждый 
+\texttt{КвалификаторX} --- это либо \textbf{генератор} (источник данных) 
+либо \textbf{фильтр}. Генератор записывается, как:
 
 \begin{erlang}
-Pattern <- ListExpr
+Образец <- ВыражениеСписок
 \end{erlang}
 
-where \texttt{ListExpr} must be an expression which evaluates to a
-list of terms. A filter is an expression which evaluates to
-\texttt{true} or \texttt{false}. Variables in list generator
-expressions \textit{shadow} variables in the function clause
-surrounding the list comprehension.
+где \texttt{ВыражениеСписок} должно быть выражением, результатом которого является
+список термов. Фильтр --- это выражение, результатом которого является 
+\texttt{true} или \texttt{false}. Переменные внутри генератора списков 
+\emph{затеняют} переменные с такими же именами, принадлежащие функции, окружающей
+генератор.
 
-The qualifiers are evaluated from left to right, the generators
-creating values and the filters constraining them. The list
-comprehension then returns a list where the elements are the result of
-evaluating \texttt{Expr} for each combination of the resulting values.
+Квалификаторы вычисляются слева направо, генераторы создают значения и фильтры 
+отбирают нужные из них. Генератор списков возвращает список, в котором элементы 
+являются рещультатом вычисления \texttt{Выражения} для каждой комбинации 
+результирующих значений.
 
 \begin{minted}{console}
 > [{X, Y} || X <- [1,2,3,4,5,6], X > 4, Y <- [a,b,c]].
@@ -441,44 +447,46 @@ evaluating \texttt{Expr} for each combination of the resulting values.
 \end{minted}
 
 
-\section{Guard sequences}
-A \textbf{guard sequence} is a set of \textbf{guards} separated by
-semicolons (\texttt{;}). The guard sequence is \texttt{true} if at
-least one of the guards is \texttt{true}.
+\section{Охранные последовательности}
 
-\begin{erlang}
-Guard1; ...; GuardK
-\end{erlang}
+\textbf{Охранная последовательность} --- это набор \textbf{охранных выражений},
+разделённых точками с запятой (\texttt{;}). Охранная последовательность равняется
+\texttt{true}, если как минимум одно из составляющих её охранных выражений равно
+\texttt{true}.
 
-A \textbf{guard} is a set of \textbf{guard expressions} separated by
-commas (\texttt{,}). The guard is \texttt{true} if all guard
-expressions evaluate to \texttt{true}.
+\begin{erlangru}
+Охрана1; ...; ОхранаK
+\end{erlangru}
 
-\begin{erlang}
-GuardExpr1, ..., GuardExprN
-\end{erlang}
+\textbf{Охрана} --- это множество \textbf{охранных выражений}, разделённых запятыми
+(\texttt{,}). Результатом будет \texttt{true} если все охранные выражения равняются
+\texttt{true}.
 
-The permitted \textbf{guard expressions} (sometimes called guard
-tests) are a subset of valid Erlang expressions, since the
-evaluation of a guard expression must be guaranteed to be free of side-effects.
+\begin{erlangru}
+ОхранноеВыражение1, ..., ОхранноеВыражениеN
+\end{erlangru}
+
+В \textbf{охранных выражениях}, которые иногда ещё называются охранными тестами,
+разрешены не любые выражения Erlang, а ограниченный набор, выбранный авторами 
+Erlang, поскольку важно, чтобы ход вычисления охранного выражения не имел побочных
+эффектов.
 
 \begin{center}
 \begin{tabular}{|>{\raggedright}p{154pt}|>{\raggedright}p{166pt}|}
 \hline
-\multicolumn{2}{|p{321pt}|}{Valid guard expressions:}\tabularnewline
+\multicolumn{2}{|p{321pt}|}{Разрешённые охранные выражения:}\tabularnewline
 \hline
-\multicolumn{2}{|p{321pt}|}{The atom \texttt{true};}\tabularnewline
+\multicolumn{2}{|p{321pt}|}{Атом \texttt{true};}\tabularnewline
 \hline
-\multicolumn{2}{|p{321pt}|}{Other constants (terms and bound variables), are all regarded
-as \texttt{false};}\tabularnewline
+\multicolumn{2}{|p{321pt}|}{Другие константы (термы, связанные переменные), все считаются равными \texttt{false};}\tabularnewline
 \hline
-\multicolumn{2}{|p{321pt}|}{Term comparisons;}\tabularnewline
+\multicolumn{2}{|p{321pt}|}{Сравнения термов;}\tabularnewline
 \hline
-\multicolumn{2}{|p{321pt}|}{Arithmetic and boolean expressions;}\tabularnewline
+\multicolumn{2}{|p{321pt}|}{Арифметические и логические выражения;}\tabularnewline
 \hline
-\multicolumn{2}{|p{321pt}|}{Calls to the BIFs specified below.}\tabularnewline
+\multicolumn{2}{|p{321pt}|}{Вызовы встроенных (BIF) функций, перечисленные ниже:}\tabularnewline
 \hline
-Type test BIFs & Other BIFs allowed in guards:\tabularnewline
+Функции проверки типа & Другие позволенные функции:\tabularnewline
 \hline
 \texttt{is\_atom/1} & \texttt{abs(Integer} \textbar{} \texttt{Float)}\tabularnewline
 \hline
@@ -500,8 +508,7 @@ Type test BIFs & Other BIFs allowed in guards:\tabularnewline
 \hline
 \texttt{is\_tuple/1} & \texttt{self()}\tabularnewline
 \hline
-\texttt{is\_record/2} The 2\textsuperscript{nd} argument is \linebreak{}
-the record name & \texttt{node(})\tabularnewline
+\texttt{is\_record/2} Второй аргумент имя записи & \texttt{node(})\tabularnewline
 \hline
 \texttt{is\_list/1} & \texttt{node(Pid} \textbar{} \texttt{Ref} \textbar \texttt{Port)}\tabularnewline
 \hline
@@ -510,78 +517,82 @@ the record name & \texttt{node(})\tabularnewline
 \end{tabular}
 \end{center}
 
-A small example:
+Небольшой пример
 
 \begin{erlang}
-fact(N) when N>0 ->             % first clause head
-    N * fact(N-1);              % first clause body
-fact(0) ->                      % second clause head
-    1.                          % second clause body
+fact(N) when N>0 ->             % Заголовок первого уравнения
+    N * fact(N-1);              % Тело первого уравнения
+fact(0) ->                      % Заголовок второго уравнения
+    1.                          % Тело второго уравнения
 \end{erlang}
 
 
-\section{Tail recursion}
-If the last expression of a function body is a function call, a
-\textbf{tail recursive} call is performed in such a way that no system
-resources (like the call stack) are consumed. This means that an
-infinite loop like a server can be programmed provided it only uses
-tail recursive calls.
+\section{Хвостовая рекурсий}
 
-The function \texttt{fact/1} above could be rewritten using tail
-recursion in the following manner:
+Если последнее выражение тела функции является вызовом функции, то выполняется
+\textbf{хвостовой рекурсивный} вызов так, что ресурсы системы (например, стек
+вызовов) не расходуются. Это означает, что можно создать бесконечный цикл, такой,
+как, например, сервер, если использовать хвостовые рекурсивные вызовы.
+
+Функция \texttt{fact/1} выше может быть переписана для использования хвостовой
+рекурсии следующим образом:
 
  \begin{erlang}
 fact(N) when N>1 -> fact(N, N-1);
 fact(N) when N==1; N==0 -> 1.
 
-fact(F,0) -> F;                 % The variable F is used as an accumulator
+fact(F,0) -> F;       % Переменная F используется как аккумулятор
 fact(F,N) -> fact(F*N, N-1).
 \end{erlang}
 
 
-\section{Funs}
+
+\section{Анонимные функции}
 \label{functions:funs}
-A \textbf{fun} defines a \textit{functional object}. Funs make it
-possible to pass an entire function, not just the function name, as an
-argument. A `fun' expression begins with the keyword \texttt{fun} and
-ends with the keyword \texttt{end} instead of a full stop
-(\texttt{.}).  Between these should be a regular function
-declaration, except that no function name is specified.
 
-\begin{erlang}
+Ключевое слово \textbf{fun} определяет \emph{функциональный объект}. Анонимные 
+функции делают возможным передавать целую функцию, а не только её имя, в качестве
+аргумента. Выражение, определяющее анонимную функцию, начинается с ключевого слова
+\texttt{fun} и заканчивается ключевым словом \texttt{end} вместо точки 
+(\texttt{.}).  Между ними должно находиться обычное объявление функции, за тем 
+исключением, что имя её не пишется.
+
+\begin{erlangru}
 fun
-    (Pattern11,...,Pattern1N) [when GuardSeq1] ->
-        Body1;
+    (Образец11,...,Образец1N) [when Охрана1] ->
+        ТелоУравнения1;
         ...;
-    (PatternK1,...,PatternKN) [when GuardSeqK] ->
-        BodyK
+    (ОбразецK1,...,ОбразецKN) [when ОхранаK] ->
+        ТелоУравненияK
 end
-\end{erlang}
+\end{erlangru}
 
-Variables in a \texttt{fun} head \textit{shadow} variables in the function
-clause surrounding the \texttt{fun} but variables bound in a \texttt{fun} body are local
-to the body.  The return value of the expression is the resulting function. The expression
-\texttt{fun Name/N is} equivalent to:
+Переменные в заголовке анонимной функции \emph{затеняют} переменные в уравнении
+функции, которое окружает \texttt{fun}, но переменные, связанные в теле 
+\texttt{fun} являются для него локальными.  Возвращаемое выражением \texttt{fun 
+Имя/N} значение является функцией. Выражение \texttt{fun Имя/N} эквивалентно 
+следующей записи:
 
-\begin{erlang}
-fun (Arg1,...,ArgN) -> Name(Arg1,...,ArgN) end
-\end{erlang}
+\begin{erlangru}
+fun (Аргумент1,...,АргументN) -> Имя(Аргумент1,...,АргументN) end
+\end{erlangru}
 
-The expression \texttt{fun Module:Func/Arity} is also allowed, provided that \texttt{Func} is exported
-from \texttt{Module}.
+Выражение \texttt{fun Модуль:Функция/Арность} также разрешено, но только если 
+\texttt{Функция} экспортирована из \texttt{Модуля}.
 
 \begin{erlang}
 Fun1 = fun (X) -> X+1 end.
-Fun1(2)         % 3
+Fun1(2)         % результат: 3
 
 Fun2 = fun (X) when X>=1000 -> big; (X) -> small end.
-Fun2(2000)      % big
+Fun2(2000)      % результат: big
 \end{erlang}
 
-Since a \texttt{fun} is anonymous, i.e.~there is no function name in the
-definition of the \texttt{fun}, the definition of a recursive \texttt{fun} has to be
-done in two steps.  This example shows how to define the function
-\texttt{sum(List)} (see section \ref{datatypes:list}) as a \texttt{fun}.
+Поскольку функция, созданная  \texttt{fun} анонимна, то есть не имеет имени в 
+определении функции, то для определения рекурсивной функции следует сделать два
+шага.  Пример ниже показывает, как определить рекурсивную функцию 
+\texttt{sum(List)} (смотрите раздел \ref{datatypes:list}) как анонимную с помощью
+\texttt{fun}. Такой подход ещё называется \emph{Y-комбинатор}.
 
 \begin{erlang}
 Sum1 = fun ([], _Foo) -> 0;([H|T], Foo) -> H + Foo(T, Foo) end.
@@ -589,45 +600,59 @@ Sum = fun (List) -> Sum1(List, Sum1) end.
 Sum([1,2,3,4,5])    % 15
 \end{erlang}
 
-The definition of \texttt{Sum1} is done in a way such that it takes \textit{itself} as a parameter, matched to \texttt{\_Foo} (empty list) or \texttt{Foo},
-which it then calls recursively.  The definition of \texttt{Sum} calls \texttt{Sum1}, also passing \texttt{Sum1} as a parameter.
+Определение \texttt{Sum1} сделано так, что оно принимает \emph{само себя} в
+качестве аргумента, сопоставляется с \texttt{\_Foo} (пустым списком) или
+\texttt{Foo}, который затем рекурсивно вызывается.  Определение \texttt{Sum} 
+вызывает \texttt{Sum1}, также передавая \texttt{Sum1} в качестве аргумента.
 
-\section{BIFs --- Built-in functions}
+\textbf{Примечание: }В Erlang версии R17 эта проблема устранена и анонимные 
+функции могут ссылаться сами на себя.
+
+
+
+\section{BIFы --- Встроенные функции}
 \label{functions:bifs}
-The \textbf{built-in functions}, BIFs, are implemented in the C code of
-the runtime system and do things that are difficult or impossible to
-implement in Erlang. Most of the built-in functions belong to the
-module \texttt{erlang} but there are also built-in functions that belong
-to other modules like \texttt{lists} and \texttt{ets}. The most
-commonly used BIFs belonging to the module \texttt{erlang} are
-\textbf{auto-imported}, i.e.~they do not need to be prefixed with the
-module name.
+
+\textbf{Встроенные функции}, или BIF (built-in functions) --- это функции, 
+реализованные на языке C, на котором также написана система Erlang, и делают вещи,
+которые трудно или невозможно реализовать на языке Erlang.  Большинство встроенных
+функций принадлежат модулю \texttt{erlang}, но есть некоторые, принадлежащие и
+другим модулям, таким как \texttt{lists} и \texttt{ets}. Чаще всего используемые
+встроенные функции, принадлежащие модулю \texttt{erlang} импортируются во все
+ваши модули автоматически, то есть перед ними не требуется писать имя модуля.
 
 \begin{center}
-\begin{tabular}{|>{\raggedright}p{103pt}|>{\raggedright}p{217pt}|}
+\begin{tabular}{|>{\raggedright}p{135pt}|>{\raggedright}p{290pt}|}
 \hline
-\multicolumn{2}{|p{321pt}|}{Some useful BIFs}\tabularnewline
+\multicolumn{2}{|p{321pt}|}{Некоторые полезные встроенные функции} \tabularnewline
 \hline
-\texttt{date()} & Returns today's date as \texttt{\{Year, Month, Day\}}\tabularnewline
+\texttt{date()} &
+Возвращает сегодняшнюю дату в формате \texttt{\{Год, Месяц, День\}} \tabularnewline
 \hline
-\texttt{now()} & Returns current time in microseconds. System dependent\tabularnewline
+\texttt{now()} &
+Возвращает текущее время в микросекундах. Точность и реализация зависит от 
+операционной системы \tabularnewline
 \hline
-\texttt{time()} & Returns current time as \texttt{\{Hour, Minute, Second\}} System dependent\tabularnewline
+\texttt{time()} &
+Возвращает текущее время в формате \texttt{\{Часы, Минуты, Секунды\}}. Реализация зависит от операционной системы \tabularnewline
 \hline
-\texttt{halt()} & Stops the Erlang system\tabularnewline
+\texttt{halt()} & 
+Аварийно останавливает работу Erlang-системы \tabularnewline
 \hline
-\texttt{processes()} & Returns a list of all processes currently known to the system\tabularnewline
+\texttt{processes()} & 
+Возвращает список всех Erlang-процессов в системе \tabularnewline
 \hline
-\texttt{process\_info(Pid)} & Returns a dictionary containing information about \texttt{Pid}\tabularnewline
+\texttt{process\_info(Pid)} & 
+Возвращает словарь, содержащий информацию о процессе \texttt{Pid} \tabularnewline
 \hline
-\texttt{Module:module\_info()} & Returns a dictionary containing information about the code
-in Module\tabularnewline
+\texttt{Модуль:module\_info()} & 
+Возвращает словарь, содержащий информацию о \texttt{Модуле} \tabularnewline
 \hline
 \end{tabular}
 \end{center}
 
-A \textbf{dictionary} is a list of \texttt{\{Key, Value\} terms (see
-also section \ref{processes:dicts}).}
+\textbf{Словарь} --- это список кортежей в формате \texttt{\{Ключ, Значение\}}
+	(см. также раздел \ref{processes:dicts}).
 
 \begin{erlang}
 size({a, b, c})             % 3

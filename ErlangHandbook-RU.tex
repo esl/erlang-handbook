@@ -11,9 +11,9 @@
     \usepackage{fontspec}
     \defaultfontfeatures{Scale=MatchLowercase,Mapping=tex-text}
     \setmainfont[Path=fonts/,ItalicFont=PTF56F.ttf,
-    BoldFont=PTF75F.ttf]{PTF55F.ttf}
-    \setmonofont[Ligatures={NoRequired,NoCommon,NoContextual}]{Fira Mono}
-    %\setmonofont[Path=fonts/,BoldFont=PTM75F.ttf]{PTM55F.ttf}
+        BoldFont=PTF75F.ttf]{PTF55F.ttf}
+    \setmonofont[Ligatures={NoRequired,NoCommon,NoContextual},
+        Path=fonts/,BoldFont=FiraMono-Bold.ttf]{FiraMono-Regular.ttf}
 \else
 	\usepackage[utf8]{inputenc}
 	\usepackage[T2A]{fontenc}
@@ -42,6 +42,12 @@
 %%%%%%
 %% hacks and macros
 \newminted[erlang]{erlang}{xleftmargin=0cm,xrightmargin=0cm,frame=single,framerule=1pt}
+
+%% Framed code fragment coloring, for code examples where Russian variable 
+%% names break syntax and coloring
+\usepackage{fancyvrb}
+\DefineVerbatimEnvironment{erlangru}{Verbatim}{
+	fontsize=\small,frame=lines,samepage=true}
 
 %% hack to fix the margin issue in \item s in 1.2.1
 \newminted[erlangim]{erlang}{xleftmargin=-1.5cm}
@@ -142,9 +148,9 @@ Integer \textbar{} Float.
 %\input{chapters-RU/02-structure-of-an-erlang-program}
 %\input{chapters-RU/03-data-types}
 %\input{chapters-RU/04-pattern-matching}
-\input{chapters-RU/05-functions}
+%\input{chapters-RU/05-functions}
 %\input{chapters-RU/06-processes}
-%\input{chapters-RU/07-error-handling}
+\input{chapters-RU/07-error-handling}
 %\input{chapters-RU/08-distributed-erlang}
 %\input{chapters-RU/09-ports-and-port-drivers}
 %\input{chapters-RU/10-code-loading}

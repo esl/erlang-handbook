@@ -1,114 +1,124 @@
-\chapter{Processes}
+\chapter{Процессы}
 \label{processes}
 
-A \textbf{process} corresponds to one \textit{thread of control}.
-Erlang permits very large numbers of concurrent processes,
-each executing like it had an own virtual processor.  When a process
-executing \texttt{functionA} calls another \texttt{functionB}, it
-will wait until \texttt{functionB} is finished and then retrieve its
-result. If instead it \textit{spawns} another process executing
-\texttt{functionB}, both will continue in parallel
-(concurrently). \texttt{functionA} will not wait for \texttt{functionB}
-and the only way they can communicate is through \textit{message passing}.
+\textbf{Процесс} соответствует одному \emph{потоку управления}. Erlang разрешает
+создавать очень большое количество параллельно работающих процессов, каждый из
+которых исполняется, как будто он имеет свой собственный виртуальный процессор.
+Когда процесс, исполняющися внутри функции \texttt{functionA} вызывает другую
+функцию \texttt{functionB}, он будет ждать, пока \texttt{functionB} не завершится
+и затём извлечёт или получит результат. Если вместо этого он \emph{породит} новый 
+процесс, исполняющий ту же \texttt{functionB}, то оба процесса продолжат 
+исполняться одновремено (конкурентно).  \texttt{functionA} не будет ждать 
+завершения \texttt{functionB} и единственный способ передать результат --- это
+\emph{передача сообщений}.
 
-Erlang processes are light-weight with a small memory footprint, fast to
-create and shut-down, and the scheduling overhead is low.  A
-\textbf{process identifier}, \texttt{Pid}, identifies a process. The
-BIF \texttt{self/0} returns the \texttt{Pid} of the calling process.
-
-
-\section{Process creation}
-A process is created using the BIF \texttt{spawn/3}.
-
-\begin{erlang}
-spawn(Module, Func, [Expr1, ..., ExprN])
-\end{erlang}
-
-\texttt{Module} should evaluate to a module name and \texttt{Func} to
-a function name in that module. The list \texttt{Expr1}$...$\texttt{ExprN} are the
-arguments to the function.  \texttt{spawn} creates a new process and
-returns the process identifier, \texttt{Pid}. The new process starts
-by executing:
-
-\begin{erlang}
-Module:Func(Expr1, ..., ExprN)
-\end{erlang}
-
-The function \texttt{Func} has to be exported even if it is spawned by
-another function in the same module. There are other spawn BIFs, for
-example \texttt{spawn/4} for spawning a process on another node.
+Процессы Erlang --- очень лёгкие с малым расходом памяти, легко стартуют и легко
+завершают работу, и расходы на их планировку во время выполнения очень небольшие.
+\textbf{Идентификатор процесса}, или \texttt{Pid}, идентифицирует существующий или 
+недавно существовавший процесс. Встроенная функция \texttt{self/0} возвращает
+\texttt{Pid} вызвавшего её процесса.
 
 
-\section{Registered processes}
-A process can be associated with a name. The name must be an atom and
-is automatically unregistered if the process terminates. Only static
-(cyclic) processes should be registered.
+\section{Создание процессов}
+Процесс создаётся с помощью встроенной (BIF) функции \texttt{spawn/3}.
+
+\begin{erlangru}
+spawn(Модуль, Функция, [Аргумент1, ..., АргументN])
+\end{erlangru}
+
+Аргумент \texttt{Модуль} должен быть равен имени модуля, который содержит нужную 
+функцию, и \texttt{Функция} --- имени экспортированной функции в этом модуле.
+Список \texttt{Аргумент1}$...$\texttt{АргументN} --- параметры, которые будут 
+переданны запущенной в новом процессе функции.  \texttt{spawn} создаёт новый
+процесс и возвращает его идентификатор, \texttt{Pid}. Новый процесс начинается с 
+выполнения такого кода:
+
+\begin{erlangru}
+Модуль:Функция(Аргумент1, ..., АргументN)
+\end{erlangru}
+
+\texttt{Функция} должна быть экспортирована, даже если процесс с ней порождается
+другой функцией в том же модуле.  Есть и другие встроенные функции для порождения
+процессов, например \texttt{spawn/4} порождает процесс на другом узле Erlang.
+
+
+\section{Зарегистрированные процессы}
+
+Процесс может быть связан с некоторым именем.  Имя процесса должно быть атомом и
+оно автоматически освобождается, если процесс завершает свою работу.  Следует
+регистрировать только статические (постоянно живущие) процессы.
 
 \begin{center}
-\begin{tabular}{|>{\raggedright}p{117pt}|>{\raggedright}p{204pt}|}
+\begin{tabular}{|>{\raggedright}p{140pt}|>{\raggedright}p{245pt}|}
 \hline
-\multicolumn{2}{|p{321pt}|}{Name registration BIFs}\tabularnewline
+\multicolumn{2}{|p{321pt}|}{Встроенные функции для регистрации имён}\tabularnewline
 \hline
-\texttt{register(Name, Pid)}  & Associates the atom \texttt{Name} with the process \texttt{Pid}\tabularnewline
+\texttt{register(Имя, Pid)} &
+Назначает атом \texttt{Имя} в качестве имени для процесса \texttt{Pid} 
+\tabularnewline
 \hline
-\texttt{registered()}  & Returns a list of names which have been registered \tabularnewline
+\texttt{registered()}  & 
+Возвращает список имён, которые были зарегистрированы \tabularnewline
 \hline
-\texttt{whereis(Name)}  & Returns the \texttt{Pid} registered under \texttt{Name} or \texttt{undefined} if the name
-is not registered\tabularnewline
+\texttt{whereis(Name)}  & 
+Возвращает \texttt{Pid}, который был зарегистрирован для имени \texttt{Имя} или
+атом \texttt{undefined} если имя не было зарегистрировано \tabularnewline
 \hline
 \end{tabular}
 \end{center}
 
 
-\section{Process communication}
-Processes communicate by sending and receiving
-\textbf{messages}. Messages are sent using the send operator
-(\texttt{!}) and are received using \texttt{receive}. Message passing
-is asynchronous and reliable, i.e.~the message is guaranteed to
-eventually reach the recipient, provided that the recipient exists.
-
-\subsection{Send}
-\begin{erlang}
-Pid ! Expr
-\end{erlang}
-
-The send (\texttt{!}) operator sends the value of \texttt{Expr} as a
-message to the process specified by \texttt{Pid} where it will be
-placed last in its \textbf{message queue}.  The value of \texttt{Expr}
-is also the return value of the (\texttt{!}) expression. \texttt{Pid}
-must evaluate to a process identifier, a registered name or a tuple
-\texttt{\{Name,Node\}}, where \texttt{Name} is a registered process at
-\texttt{Node} (see chapter \ref{distribution}). The message sending operator
-(\texttt{!}) never fails, even if it addresses a non-existent process.
+\section{Сообщения между процессами}
+Процессы сообщаются друг с другом посредством отправки и получения 
+\textbf{сообщений}.  Сообщения отправляются используя оператор отправки
+(\texttt{!}) и принимаются с помощью конструкции \texttt{receive}.  Передача 
+сообщений асинхронная и надёжная, то есть сообщение гарантированно достигает 
+получателя, если он существует.
 
 
-\subsection{Receive}
+\subsection{Отправка}
+\begin{erlangru}
+Pid ! Выражение
+\end{erlangru}
 
-\begin{erlang}
+Оператор отправки (\texttt{!}) посылает значение \texttt{Выражения} в форме 
+сообщения процессу, указанному идентификатором \texttt{Pid}, где сообщение будет 
+помещено в конец его \textbf{очереди сообщений}.  Значение \texttt{Выражения}
+также будет значением, возвращённым оператором (\texttt{!}).  \texttt{Pid}
+должен быть идентификатором процессы, зарегистрированным в системе именем или
+кортежем в виде \texttt{\{Имя,Узел\}}, где \texttt{Имя} --- это зарегистрированное 
+имя процесса на удалённом \texttt{Узле} (см. главу \ref{distribution}). 
+Оператор отправки сообщения (\texttt{!}) не может возвратить ошибку, даже если
+в качестве получателя был указан несуществующий процесс.
+
+
+\subsection{Получение}
+
+\begin{erlangru}
 receive
-    Pattern1 [when GuardSeq1] ->
-        Body1;
+    Образец1 [when ОхранныеВыражения1] ->
+        Тело1;
     ...
-    PatternN [when GuardSeqN] ->
-        BodyN                   % Note no semicolon (;) before end
+    ОбразецN [when ОхранныеВыраженияN] ->
+        ТелоN      % Заметьте, нет точки с запятой (;) перед end
 end
-\end{erlang}
+\end{erlangru}
 
-This expression receives messages sent to the process using the send
-operator (\texttt{!}). The patterns \texttt{PatternX} are sequentially
-matched against the first message in time order in the message queue,
-then the second and so on.  If a match succeeds and the optional guard
-sequence \texttt{GuardSeqX} is true, then the message is removed from
-the message queue and the corresponding \texttt{BodyX} is
-evaluated.  It is the order of the pattern clauses that decides the
-order in which messages will be received prior to the order in which
-they arrive.  This is called \textit{selective receive}. The
-return value of \texttt{BodyX} is the return value of the receive
-expression.
+Это выражение принимает сообщения, отправленные процессу с помощью оператора 
+отправки (\texttt{!}). \texttt{ОбразцыX} последовательно сопоставляются с первым
+сообщением в очереди сообщений, затем со вторым и так далее.  Если сопоставление
+проходит успешно и необязательный список охранных выражений 
+\texttt{ОхранныеВы\-раженияX} тоже равен \texttt{true}, то сообщение удаляется из 
+очереди сообщений и соответствующая цепочка выражений \texttt{ТелоX} вычисляется. 
+Именно порядок уравнений с образцами решает порядок получения сообщений, а не 
+порядок, в котором они прибывают.  Это называется \emph{избирательным приёмом}
+сообщений.  Значение, возвращаемое \texttt{ТеломX} и будет значением, возвращённым
+всем выражением \texttt{receive}.
 
-\texttt{receive} never fails. The process may be suspended, possibly
-indefinitely, until a message arrives that matches one of the patterns
-and with a true guard sequence.
+\texttt{receive} никогда не приводит к возникновению ошибки. Процесс может быть
+поставлен на паузу во время ожидания, возможно навсегда, до тех пор, пока не 
+появится сообщение, отвечающее одному из образцов с охранной последовательностью,
+равной \texttt{true}.
 
 \newpage
 \begin{erlang}
@@ -124,26 +134,26 @@ wait_for_onhook() ->
 \end{erlang}
 
 
-\subsection{Receive with timeout}
+\subsection{Получение с таймаутом}
 
-\begin{erlang}
+\begin{erlangru}
 receive
-    Pattern1 [when GuardSeq1] ->
-        Body1;
+    Образец1 [when ОхранныеВыражения1] ->
+        Тело1;
         ...;
-    PatternN [when GuardSeqN] ->
-        BodyN
+    ОбразецN [when ОхранныеВыраженияN] ->
+        ТелоN
 after
-    ExprT ->
-        BodyT
+    ВыражениеТ ->
+        ТелоT
 end
-\end{erlang}
+\end{erlangru}
 
-\texttt{ExprT} should evaluate to an integer between \texttt{0} and
-\texttt{16\#ffffffff} (the value must fit in 32 bits). If no matching
-message has arrived within \texttt{ExprT} milliseconds, then
-\texttt{BodyT} will be evaluated and its return value becomes the
-return value of the receive expression.
+\texttt{ВыражениеТ} должно давать целое число между \texttt{0} и 
+\texttt{16\#ffffffff} (значение должно помещаться в 32 бита). Если ни одно 
+подходящее сообщение не прибыло в течение \texttt{ВыражениеТ} миллисекунд, то
+выражение \texttt{ТелоT} вычисляется и его возвращаемое значение становится 
+результатом всего выражения \texttt{receive}.
 
 \begin{erlang}
 wait_for_onhook() ->
@@ -161,164 +171,192 @@ wait_for_onhook() ->
     end.
 \end{erlang}
 
-A \texttt{receive...after} expression with no branches can be used to
-implement simple timeouts.
+Выражение \texttt{receive...after} без образцов может быть использовано для 
+реализации простых таймаутов.
 
-\begin{erlang}
+\begin{erlangru}
 receive
 after
-    ExprT ->
-        BodyT
+    ВыражениеТ ->
+        ТелоТ
 end
-\end{erlang}
+\end{erlangru}
 
 \begin{center}
-\begin{tabular}{|>{\raggedright}p{47pt}|>{\raggedright}p{273pt}|}
+\begin{tabular}{|>{\raggedright}p{65pt}|>{\raggedright}p{340pt}|}
 \hline
-\multicolumn{2}{|p{321pt}|}{Two special cases for the timeout value \texttt{ExprT}}\tabularnewline
+\multicolumn{2}{|p{321pt}|}{Два особых случая для значения таймаута 
+	\texttt{ВыражениеT}}\tabularnewline
 \hline
-\texttt{infinity} & This is equivalent to not using a timeout and can be useful for timeout
-values that are calculated at run-time\tabularnewline
+\texttt{infinity} & 
+Является эквивалентом бесконечного ожидания и может пригодиться, если значение
+таймаута вычисляется во время исполнения и передаётся параметром в функцию 
+\tabularnewline
 \hline
-\texttt{0} & If there is no matching message in the mailbox, the timeout will occur immediately\tabularnewline
+\texttt{0} & 
+Если в почтовом ящике нет подходящего сообщения, таймаут произойдёт немедленно
+\tabularnewline
 \hline
 \end{tabular}
 \end{center}
 
 
-\section{Process termination}
+\section{Завершение работы процесса}
 \label{processes:termination}
-A process always terminates with an \textbf{exit reason} which may be
-any term.  If a process terminates normally, i.e.~it has run
-to the end of its code, then the reason is the atom \texttt{normal}. A process
-can terminate itself by calling one of the following BIFs.
 
-\begin{erlang}
-exit(Reason)
+Процесс всегда завершается по некоторой \textbf{причине выхода} (exit reason), 
+которая может быть любым термом Erlang.  Если процесс завершился нормально, то 
+есть его код исполнился до конца, то причиной выхода будет атом \texttt{normal}.
+Процесс может завершить себя сам вызывая одну из следующих встроенных функций:
 
-erlang:error(Reason)
+\begin{erlangru}
+exit(Причина)
 
-erlang:error(Reason, Args)
-\end{erlang}
+erlang:error(Причина)
 
-A process terminates with the exit reason \texttt{\{Reason,Stack\}} when a
-run-time error occurs.
+erlang:error(Причина, Аргументы)
+\end{erlangru}
 
-A process may also be terminated if it receives an exit signal with
-a reason other than \texttt{normal} (see section \ref{processes:recvexitsignals}).
+Процесс завершается с причиной выхода \texttt{\{Причина,СтекВызовов\}}, когда 
+происходит ошибка времени исполнения.
+
+Процесс также может быть завершён, если он получает сигнал выхода с любой другой
+причиной кроме \texttt{normal} (см. раздел \ref{processes:recvexitsignals}).
 
 
-\section{Process links}
+\section{Связи между процессами}
 \label{processes:links}
-Two processes can be \textbf{linked} to each other. Links are
-bidirectional and there can only be one link between two distinct processes (unique \texttt{Pid}s). A
-process with \texttt{Pid1} can link to a process with \texttt{Pid2}
-using the BIF \texttt{link(Pid2)}.  The BIF \texttt{spawn\_link(Module, Func, Args)}
-spawns and links a process in one atomic operation.
 
-A link can be removed using the BIF \texttt{unlink(Pid)}.
+Два процесса могут быть \textbf{связаны} друг с другом. Связи двунаправленны и
+может существовать только одна связь между любыми двумя процессами (имеются в виду 
+уникальные идентификаторы процессов). Процесс с идентификатором \texttt{Pid1} может
+связаться с процессом, имеющим идентификатор \texttt{Pid2} используя встроенную
+функцию \texttt{link(Pid2)}.  Функция \texttt{spawn\_link(Модуль, Функция, 
+Аргументы)} порождает и сразу же связывает процессы одной атомарной операцией.
 
-
-\subsection{Error handling between processes}
-When a process terminates it will send \textbf{exit signals} to all
-processes that it is linked to.  These in turn will also be terminated
-\textit{or handle the exit signal in some way}. This feature can be
-used to build hierarchical program structures where some processes are
-supervising other processes, for example restarting them if they
-terminate abnormally.
+Связь между процессами можно убрать используя функцию \texttt{unlink(Pid)}.
 
 
-\subsection{Sending exit signals}
+\subsection{Обработка ошибок между процессами}
+
+Когда процесс завершает работу, он отправляет \textbf{сигналы выхода} всем 
+процессам, с которыми он связан.  Они в свою очередь также завершают работу 
+\emph{или обрабатывают сигнал выхода каким-либо способом}. Эта возможность может 
+использоваться для построения иерархических программных структур, где некоторые из
+процессов присматривают за другими процессами, например рестартуя их, если они
+завершаются аварийно.
+
+
+\subsection{Отправка сигналов выхода}
 \label{processes:sendexitsignals}
-A process always terminates with an exit reason which is sent as an
-exit signal to all linked processes. The BIF \texttt{exit(Pid, Reason)} sends
-an exit signal with the reason \texttt{Reason} to \texttt{Pid}, without
-affecting the calling process.
+
+Процесс всегда завершает работу с причиной выхода, которая отправляется в виде
+сигнала выхода всем связанным процессам. Встроенная функция \texttt{exit(Pid, 
+Причина)} посылает сигнал выхода другому процессу \texttt{Pid} по указанной
+\texttt{Причине}, не влияя на процесс-отправитель.
 
 
-\subsection{Receiving exit signals}
+\subsection{Получение сигналов выхода}
 \label{processes:recvexitsignals}
-If a process receives an exit signal with an exit reason other than
-\texttt{normal} it will also be terminated, and will send exit signals with the
-same exit reason to its linked processes.  An exit signal with reason
-\texttt{normal} is ignored.  This behaviour can be changed using the BIF
-\texttt{process\_flag(trap\_exit, true)}.
 
-The process is then able to \textbf{trap exits}.  This means that an
-exit signal will be transformed into a message \texttt{\{'EXIT', FromPid, Reason\}} which is
-put into the process's mailbox and can be handled by the process like a regular
-message using \texttt{receive}.
+Если процесс получает сигнал выхода с причиной выхода другой, кроме как 
+\texttt{normal}, он также завершит свою работу и отправит сигналы выхода с той же
+причиной всем своим связанным процессам.  Сигнал выхода с причиной \texttt{normal}
+игнорируется и не приводит к такому поведению.  Это поведение можно изменить с
+помощью вызова встроенной функции \texttt{process\_flag(trap\_exit, true)}.
 
-However, a call to the BIF \texttt{exit(Pid, kill)} unconditionally
-terminates the process \texttt{Pid} regardless whether it is able to
-trap exit signals or not.
+Процесс после этого способен \textbf{перехватывать сигналы выхода}.  Это означает,
+что сигнал выхода трансформируется в обычное сообщение: \texttt{\{'EXIT', 
+	ОтКогоPid, Причина\}}, который помещается в почтовый ящик процесса и может
+быть принят и обработан, как обычное сообщение используя \texttt{receive}.
+
+Однако, вызов встроенной функции \texttt{exit(Pid, kill)} безусловно завершает 
+работу процесса \texttt{Pid} независимо от того, способен ли он перехватывать 
+сигналы выхода или нет.
 
 
-\section{Monitors}
-A process \texttt{Pid1} can create a \textbf{monitor} for
-\texttt{Pid2} using the BIF:
+\section{Мониторы}
+
+Процесс \texttt{Pid1} может создать \textbf{монитор} для процесса \texttt{Pid2} 
+используя встроенную функцию:
 
 \begin{erlang}
 erlang:monitor(process, Pid2)
 \end{erlang}
 
-which returns a reference \texttt{Ref}. If \texttt{Pid2} terminates
-with exit reason \texttt{Reason}, a message as follows will be sent to
-\texttt{Pid1}:
+которая возвращает ссылочное значение (\texttt{Ссылку}). Если после этого
+\texttt{Pid2} завершит работу с \texttt{Причиной} выхода, то следующее сообщение 
+будет отправлено процессу \texttt{Pid1}:
 
-\begin{erlang}
-{'DOWN', Ref, process, Pid2, Reason}
-\end{erlang}
+\begin{erlangru}
+{'DOWN', Ссылка, process, Pid2, Причина}
+\end{erlangru}
 
-If \texttt{Pid2} does not exist, the \texttt{'DOWN'} message is sent
-immediately with \texttt{Reason} set to \texttt{noproc}.  Monitors are
-unidirectional in that if \texttt{Pid1} monitors \texttt{Pid2} then it
-will receive a message when \texttt{Pid2} dies but \texttt{Pid2} will
-\textbf{not} receive a message when \texttt{Pid1} dies. Repeated calls
-to \texttt{erlang:monitor(process, Pid)} will create several,
-independent monitors and each one will be sent a \texttt{'DOWN'} message
-when \texttt{Pid} terminates.
+Если процесс \texttt{Pid2} не существует, то сообщение \texttt{'DOWN'} будет 
+отправлено немедленно и поле \texttt{Причина} будет установлено равным 
+\texttt{noproc}.  Мониторы однонаправлены, то есть если \texttt{Pid1} следит за 
+\texttt{Pid2}, то он получит сообщение о смерти \texttt{Pid2}, но \texttt{Pid2}
+\textbf{не} получит сообщение о смерти \texttt{Pid1}. Повторные вызовы функции 
+\linebreak
+\texttt{erlang:monitor(process, Pid)} создадут несколько независимых мониторов и
+каждый из них отправит сообщение \texttt{'DOWN'}, когда процесс \texttt{Pid}
+завершит работу.
 
-A monitor can be removed by calling \texttt{erlang:demonitor(Ref)}. It
-is possible to create monitors for processes with registered names,
-also at other nodes.
-
-
-\section{Process priorities}
-The BIF \texttt{process\_flag(priority, Prio)} defines the priority of
-the current process. \texttt{Prio} may have the value \texttt{normal},
-which is the default, \texttt{low}, \texttt{high} or \texttt{max}. 
-
-Modifying a process's priority is discouraged and should only be done in 
-special circumstances.  A problem that requires changing process priorities
-can generally be solved by another approach.
+Монитор можно удалить, вызывая функцию \texttt{erlang:demonitor(Ссылка)}. Возможно
+создание мониторов для процессов с зарегистрированными именами, а также запущенных
+на других узлах.
 
 
-\section{Process dictionary}
+\section{Приоритетность процессов}
+
+Встроенная функция \texttt{process\_flag(priority, Приоритет)} определяет 
+приоритет текущего процесса.  \texttt{Приоритет} может быть одним из следующих
+значений \texttt{normal} (по умолчанию), \texttt{low}, \texttt{high} или 
+\texttt{max}. 
+
+Изменение приоритета процесса не рекомендуется и должно производиться только в
+особых случаях.  Проблема, которая требует смены приоритета процесса, чаще всего
+может быть решена и другим подходом.
+
+
+\section{Словарь процесса}
 \label{processes:dicts}
-Each process has its own process dictionary which is a list of
-\texttt{\{Key, Value\}} terms.
+
+Каждый процесс имеет собственный словарь, являющийся списком пар термов
+в форме \texttt{\{Ключ, Значение\}}.
 
 \begin{center}
-\begin{tabular}{|>{\raggedright}p{79pt}|>{\raggedright}p{247pt}|}
+\begin{tabular}{|>{\raggedright}p{140pt}|>{\raggedright}p{290pt}|}
 \hline
-\multicolumn{2}{|p{326pt}|}{Process dictionary BIFs}\tabularnewline
+\multicolumn{2}{|p{326pt}|}{Встроенные функции для работы со словарём 
+	процесса}\tabularnewline
 \hline
-\texttt{put(Key, Value)} & Saves the \texttt{Value} under the \texttt{Key} or replaces an older value\tabularnewline
+\texttt{put(Ключ, Значение)} & 
+Сохраняет \texttt{Значение} с \texttt{Ключом} или заменяет уже существующее 
+\tabularnewline
 \hline
-\texttt{get(Key)} & Retrieves the value stored under \texttt{Key} or \texttt{undefined}\tabularnewline
+\texttt{get(Ключ)} & 
+Извлекает значение, сохранённое с \texttt{Ключом}, иначе возвращает
+\texttt{undefined} \tabularnewline
 \hline
-\texttt{get()} & Returns the entire process dictionary as a list of \texttt{\{Key, Value\}} terms\tabularnewline
+\texttt{get()} & 
+Возвращает весь словарь процесса целиком, в виде списка пар
+\texttt{\{Ключ, Значение\}} \tabularnewline
 \hline
-\texttt{get\_keys(Value)} & Returns a list of keys that have the value \texttt{Value}\tabularnewline
+\texttt{get\_keys(Значение)} & 
+Возвращает список ключей, которые имеют \texttt{Значение} \tabularnewline
 \hline
-\texttt{erase(Key)} & Deletes \texttt{\{Key, Value\}}, if any, and returns \texttt{Key}\tabularnewline
+\texttt{erase(Ключ)} & 
+Удаляет пару \texttt{\{Ключ, Значение\}}, если она была, и возвращает 
+\texttt{Ключ} \tabularnewline
 \hline
-\texttt{erase()} & Returns the entire process dictionary and deletes it\tabularnewline
+\texttt{erase()} & 
+Возвращает словарь процесса целиком и удаляет его содержимое \tabularnewline
 \hline
 \end{tabular}
 \end{center}
 
-Process dictionaries could be used to keep global variables within an application,
-but the extensive use of them for this is usually regarded as poor programming style.
+Словари процессов могут использоваться для того, чтобы хранить глобальные
+переменные в приложении, но их слишком активное использование обычно усложняет 
+отладку и считается плохим стилем программирования.
 

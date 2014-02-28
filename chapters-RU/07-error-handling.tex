@@ -24,8 +24,8 @@ are known as \textbf{exceptions}.
 
 An exception will cause the process to crash, i.e. its execution is
 stopped and it is removed from the system. It is also said to
-\textit{terminate}. Then exit signals will be sent to any linked
-processes.\textit{ }An exception consists of its class, an exit reason
+\emph{terminate}. Then exit signals will be sent to any linked
+processes.\emph{ }An exception consists of its class, an exit reason
 and a stack. The stack trace can be retrieved using the BIF
 \texttt{erlang:get\_stacktrace/0}.
 
@@ -99,7 +99,7 @@ containing information about the exception.
 {'EXIT', {Reason, Stack}}
 \end{erlang}
 
-Then the exception is \textit{caught}. Otherwise it would terminate
+Then the exception is \emph{caught}. Otherwise it would terminate
 the process. If the exception is caused by a function call
 \texttt{exit(Term)} the tuple \texttt{\{'EXIT',Term\}} is returned. If
 the exception is caused by calling \texttt{throw(Term)} then
@@ -113,7 +113,7 @@ to be enclosed in a block expression or in parentheses.
 
 \texttt{A = (catch 1+2)} \resultingin \texttt{3}
 
-The BIF \texttt{throw(Expr)} is used for \textit{non-local} return
+The BIF \texttt{throw(Expr)} is used for \emph{non-local} return
 from a function. It must be evaluated within a \texttt{catch}, which returns
 the result from evaluating \texttt{Expr}.
 
@@ -161,7 +161,7 @@ clause. There may be an \texttt{of} clause following the \texttt{Expr}
 which adds a \texttt{case} expression on the value of \texttt{Expr}.
 
 \texttt{try} returns the value of \texttt{Expr} unless an exception
-occurs during its evaluation. Then the exception is \textit{caught}
+occurs during its evaluation. Then the exception is \emph{caught}
 and the patterns \texttt{ExceptionPattern} with the right exception
 \texttt{Class} are sequentially matched against the caught exception. An
 omitted \texttt{Class} is shorthand for \texttt{throw}. If a match succeeds and the
