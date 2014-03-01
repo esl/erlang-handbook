@@ -8,12 +8,6 @@
 %% package includes
 \usepackage{ifxetex}
 \ifxetex
-    \usepackage{fontspec}
-    \defaultfontfeatures{Scale=MatchLowercase,Mapping=tex-text}
-    \setmainfont[Path=fonts/,ItalicFont=PTF56F.ttf,
-        BoldFont=PTF75F.ttf]{PTF55F.ttf}
-    \setmonofont[Ligatures={NoRequired,NoCommon,NoContextual},
-        Path=fonts/,BoldFont=FiraMono-Bold.ttf]{FiraMono-Regular.ttf}
 \else
 	\usepackage[utf8]{inputenc}
 	\usepackage[T2A]{fontenc}
@@ -40,14 +34,28 @@
 }
 
 %%%%%%
+%% Fonts
+\ifxetex
+    \usepackage{fontspec}
+    \defaultfontfeatures{Scale=MatchLowercase,Mapping=tex-text}
+    \setmainfont[Path=fonts/,ItalicFont=PTF56F.ttf,
+        BoldFont=PTF75F.ttf]{PTF55F.ttf}
+    \setmonofont[Ligatures={NoRequired,NoCommon,NoContextual},
+        Path=fonts/,BoldFont=FiraMono-Bold.ttf]{FiraMono-Regular.ttf}
+    \usepackage{titlesec}
+    \newfontfamily\erlChapterFont[Path=fonts/,BoldFont=PTF75F.ttf]{PTF55F.ttf}
+    \ChTitleVar{\erlChapterFont\fontsize{28}{28}\bf\selectfont\hfill}
+    \ChNameVar{\erlChapterFont\fontsize{16}{16}\bf\selectfont}
+\fi
+
+%%%%%%
 %% hacks and macros
 \newminted[erlang]{erlang}{xleftmargin=0cm,xrightmargin=0cm,frame=single,framerule=1pt}
 
 %% Framed code fragment coloring, for code examples where Russian variable 
 %% names break syntax and coloring
 \usepackage{fancyvrb}
-\DefineVerbatimEnvironment{erlangru}{Verbatim}{
-	fontsize=\small,frame=lines,samepage=true}
+\DefineVerbatimEnvironment{erlangru}{Verbatim}{frame=single,samepage=true}
 
 %% hack to fix the margin issue in \item s in 1.2.1
 \newminted[erlangim]{erlang}{xleftmargin=-1.5cm}
