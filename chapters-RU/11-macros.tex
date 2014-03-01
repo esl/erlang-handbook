@@ -1,0 +1,147 @@
+\chapter{Макросы}
+\label{macros}
+
+\section{Определение и использование макросов}
+
+\begin{erlangru}
+-define(Константа, Замена).
+-define(Функция(Переменная1, ..., ПеременнаяN), Замена).
+\end{erlangru}
+
+\textbf{Макрос} должен быть определён перед тем, как он используется, но 
+определение макроса можно поместить где угодно среди атрибутов и определений 
+функций в модуле.  Если макрос используется в нескольких модулях, рекомендуется 
+поместить его определение во включаемый файл.  Макрос используется так:
+
+\begin{erlangru}
+?Константа
+?Функция(Переменная1,...,ПеременнаяN)
+\end{erlangru}
+
+Макросы разворачиваются во время компиляции на самом раннем этапе.
+Ссылка на макрос \texttt{?Константа} будет заменена на текст \texttt{Замена} 
+так:
+
+\begin{erlang}
+-define(TIMEOUT, 200).
+...
+call(Request) ->
+    server:call(refserver, Request, ?TIMEOUT).
+\end{erlang}
+
+разворачивается перед компиляцией в:
+
+\begin{erlang}
+call(Request) ->
+    server:call(refserver, Request, 200).
+\end{erlang}
+
+Ссылка на макрос \texttt{?Функция(Аргумент1, ..., АргументN)} будет заменена на
+\texttt{Замену}, где все вхождения переменной \texttt{ПеременнаяX} из 
+определения макроса будут заменены на соответствующий \texttt{АргументX}.
+
+\begin{erlang}
+-define(MACRO1(X, Y), {a, X, b, Y}).
+...
+bar(X) ->
+    ?MACRO1(a, b),
+    ?MACRO1(X, 123).
+\end{erlang}
+
+будет развёрнуто в:
+
+\begin{erlang}
+bar(X) ->
+    {a, a, b, b},
+    {a, X, b, 123}.
+\end{erlang}
+
+Для просмотра результата разворачивания макросов, модуль можно скомпилировать с
+параметром \texttt{'P'} таким образом:
+
+\begin{erlangru}
+compile:file(Файл, ['P']).
+\end{erlangru}
+
+Это производит распечатку разобранного кода после применения к нему 
+предварительной обработки и трансформаций разбора (parse transform), в файле с 
+именем \texttt{Файл.P}.
+
+
+\section{Предопределённые макросы}
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{110pt}|>{\raggedright}p{250pt}|}
+\hline
+\multicolumn{2}{|p{330pt}|}{Предопределённые макросы}\tabularnewline
+\hline
+\texttt{?MODULE} & 
+Атом, имя текущего модуля \tabularnewline
+\hline
+\texttt{?MODULE\_STRING} & 
+Строка, имя текущего модуля \tabularnewline
+\hline
+\texttt{?FILE} & 
+Имя исходного файла текущего модуля \tabularnewline
+\hline
+\texttt{?LINE} & 
+Текущий номер строки \tabularnewline
+\hline
+\texttt{?MACHINE} & 
+Имя виртуальной машины, 'BEAM'\tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+
+\section{Управление исполнением макросов}
+
+\begin{erlang}
+-undef(Macro).      % Это отменяет определённый ранее макрос
+
+-ifdef(Macro).
+    %% Строки, которые будут скомпилированы, если Macro существует
+-else.
+    %% Иначе будут скомпилированы эти строки
+-endif.
+\end{erlang}
+
+\texttt{ifndef(Macro)} можно использовать вместо \texttt{ifdef} и имеет обратный
+смысл.
+
+\begin{erlang}
+-ifdef(debug).
+-define(LOG(X), io:format("{~p,~p}:~p~n",[?MODULE,?LINE,X])).
+-else.
+-define(LOG(X), true).
+-endif.
+\end{erlang}
+
+Если макрос \texttt{debug} определён в то время, когда идёт компиляция модуля, 
+то макрос \texttt{?LOG(Arg)} развернётся в вызов печати текста
+\texttt{io:format/2} и обеспечит пользователя отладочным выводом в консоль.
+
+
+\section{Превращение аргументов макроса в строку}
+
+Запись вида \texttt{??Аргумент}, где \texttt{Аргумент} --- это параметр, передаваемый в макрос, развернётся в представление аргумента в строковом виде.
+
+\begin{erlang}
+-define(TESTCALL(Call), io:format("Call ~s: ~w~n", [??Call, Call])).
+
+?TESTCALL(myfunction(1,2)),
+?TESTCALL(you:function(2,1)),
+\end{erlang}
+
+\pagebreak
+Разворачивается в:
+
+\begin{erlang}
+io:format("Call ~s: ~w~n",
+          ["myfunction(1,2)", m:myfunction(1,2)]),
+io:format("Call ~s: ~w~n",
+          ["you:function(2,1)", you:function(2,1)]),
+\end{erlang}
+
+Таким образом, получается отладочный вывод как вызванной функции так и 
+результата.

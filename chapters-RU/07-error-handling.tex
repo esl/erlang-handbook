@@ -1,0 +1,233 @@
+\chapter{Обработка ошибок}
+\label{errorhandling}
+
+Эта глава описывает обработку ошибок внутри процесса. Такие ошибки известны ещё
+под названием \textbf{исключения}.
+
+
+\section{Классы исключений и причины ошибок}
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{55pt}|>{\raggedright}p{350pt}|}
+\hline
+\multicolumn{2}{|p{326pt}|}{Классы исключений}\tabularnewline
+\hline
+\texttt{error} &
+Ошибка времени выполнения, например, при применении оператора к недопустимым 
+типам аргументов. Ошибки времени выполнения могут быть вызваны программистом с
+помощью встроенной функции \texttt{erlang:error(Причина)} или 
+\texttt{erlang:error(Причина, Аргументы)} \tabularnewline
+\hline
+\texttt{exit}  &
+Процесс вызвал \texttt{exit(Причина)}, см. раздел \ref{processes:termination}
+о завершении процессов \tabularnewline
+\hline
+\texttt{throw}  & 
+Процесс вызвал \texttt{throw(Выражение)}, см. раздел 
+\ref{errorhandling:catchthrow} о бросках исключений\tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+Появление исключения приводит к аварийной остановке процесса, то есть его 
+исполнение останавливается и он и его данные удаляются из системы. Также это 
+действие называется \emph{уничтожением} (termination). После этого сигналы 
+выхода посылаются всем связанным процессам. Исключение состоит из класса, 
+причины выхода и копии стека вызовов. Стек вызовов можно сформировать и 
+получить в удобном виде с помощью функции \texttt{erlang:get\_stacktrace/0}.
+
+Ошибки времени исполнения и другие исключения могут не приводить к смерти 
+процесса, если использовать выражения \texttt{try} и \texttt{catch}.
+
+Для исключений, имеющих класс \texttt{error}, например для обычных ошибок 
+времени выполнения, \textbf{причиной выхода} будет кортеж \texttt{\{Причина, 
+Стек\}} где \texttt{Причина} --- это терм, указывающий более точно на тип 
+ошибки.
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{110pt}|>{\raggedright}p{320pt}|}
+\hline
+\multicolumn{2}{|p{326pt}|}{Причины выхода}\tabularnewline
+\hline
+\texttt{badarg}  & 
+Передан аргумент недопустимого типа. \tabularnewline
+\hline
+\texttt{badarith}  &
+Аргумент в арифметическом выражении имеет недопустимый тип. \tabularnewline
+\hline
+\texttt{\{badmatch, Значение\}}  & 
+Вычисление сопоставления с образцом прошло неудачно. \texttt{Значение} не совпало
+с образцом.
+\tabularnewline
+\hline
+\texttt{function\_clause}  & 
+Не найдено ни одного подходящего уравнения функции по образцам аргументов и
+охранных выражений при вычислении вызова функции. \tabularnewline
+\hline
+\texttt{\{case\_clause, Значение\}}  & 
+При вычислении выражения \texttt{case} \texttt{Значение} не совпало ни с чем. \tabularnewline
+\hline
+\texttt{if\_clause}  & 
+Ни одна из веток выражения \texttt{if} не оказалась равна \texttt{true}.
+\tabularnewline
+\hline
+\texttt{\{try\_clause, Value\}}  &
+При вычислении секции выражения \texttt{try} со \texttt{Значением} не совпала ни
+одна из веток. \tabularnewline
+\hline
+\texttt{undef}  & 
+Функция не была найдена при попытке исполнить вызов функции \tabularnewline
+\hline
+\texttt{\{badfun, Fun\}}  & 
+Что-то не так с анонимной функцией \texttt{Fun} \tabularnewline
+\hline
+\texttt{\{badarity, Fun\}}  & 
+Функция вызвана с неверным количеством аргументов. Значение \texttt{Fun} описывает
+и её и переданные аргументы \tabularnewline
+\hline
+\texttt{timeout\_value}  & 
+Значение таймаута в \texttt{receive}$...$\texttt{after} было вычислено и оказалось
+не целым 32-битным числом и не атомом \texttt{infinity} \tabularnewline
+\hline
+\texttt{noproc}  & 
+Попытка создать связь с несуществующим процессом \tabularnewline
+\hline
+\texttt{\{nocatch, Значение\}}  & 
+Попытка выполнить \texttt{throw} за пределами кода, защищённого оператором
+\texttt{catch}. \texttt{Значение} --- терм, который был брошен \tabularnewline
+\hline
+\texttt{system\_limit}  & Сработало одно из системных ограничений, заданных 
+реализацией виртуальной машины или операционной системы \tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+\texttt{Стек} --- это цепочка вызовов функций, которые исполнялись в тот момент,
+когда произошла ошибка, даётся в виде списка кортежей \texttt{\{Модуль, Имя, 
+Арность\}}, где первым идёт самый недавний вызов. Иногда самый последний вызов 
+вместо \texttt{Арности} будет содержать \texttt{Аргументы}: \texttt{\{Модуль, 
+Имя, Аргументы\}}.
+
+
+\section{Catch и throw}
+\label{errorhandling:catchthrow}
+\begin{erlangru}
+catch Выражение
+\end{erlangru}
+
+Такая запись возвращает результат вычисления \texttt{Выражения} если во время 
+вычисления не возникло исключение. В случае исключения возвращаемое значение 
+будет кортежем с информацией о нём.
+
+\begin{erlangru}
+{'EXIT', {Причина, Стек}}
+\end{erlangru}
+
+Такое исключение считается \emph{пойманным}. Непойманное исключение приведёт к 
+уничтожению процесса. Если исключение было вызвано вызовом функции 
+\texttt{exit(Терм)} то будет возвращён кортеж с причиной в виде 
+\texttt{\{'EXIT',Терм\}}. Если исключение возникло при вызове 
+\texttt{throw(Терм)}, тогда будет возвращено значение \texttt{Терма}.
+
+\texttt{catch 1+2} \resultingin \texttt{3}\\
+\texttt{catch 1+a } \resultingin \texttt{\{'EXIT',\{badarith,[...]\}\}}
+
+Оператор \texttt{catch} имеет низкий приоритет и выражения, использующие его 
+часто требуют заключения в блок \texttt{begin..end} или круглые скобки.
+
+\texttt{A = (catch 1+2)} \resultingin \texttt{3}
+
+Встроенная функция \texttt{throw(Выражение)} используется для 
+\emph{нелокального} выхода из функций. Её можно вызывать только под защитой
+\texttt{catch}, что возвратит результат вычисления \texttt{Выражения}.
+
+\texttt{catch begin 1,2,3,throw(four),5,6 end} \resultingin \texttt{four}
+
+Если \texttt{throw/1} вычисляется за пределами оператора \texttt{catch}, то 
+возникнет ошибка времени выполнения \texttt{nocatch}.
+
+Оператор \texttt{catch} не спасёт процесс от завершения по сигналу выхода из 
+другого связанного с ним процесса (если только не был включен режим перехвата 
+сигналов выхода, trap\_exit).
+
+
+\section{Try}
+\label{errorhandling:try}
+
+Выражение \texttt{try} способно различить различные классы исключений.  
+Следующий пример эмулирует поведение описанного чуть выше \texttt{catch
+Выражение}:
+
+\begin{erlang}
+try Expr
+catch
+    throw:Term -> Term;
+    exit:Reason -> {'EXIT', Reason};
+    error:Reason -> {'EXIT',{Reason, erlang:get_stacktrace()}}
+end
+\end{erlang}
+
+Полное описание \texttt{try} следующее:
+
+\begin{erlangru}
+try Выражение [of
+    Образец1 [when ОхранныеВыражения1] -> Тело1;
+    ...;
+    ОбразецN [when ОхранныеВыраженияN] -> ТелоN]
+[catch
+    [КлассОшибки1:]ОбразецИсключения1 [when ОхранаИсключения1] ->
+        ТелоИсключения1;
+    ...;
+    [КлассОшибкиN:]ОбразецИсключенияN [when ОхранаИсключенияN] ->
+        ТелоИсключенияN]
+[after ТелоПосле]
+end
+\end{erlangru}
+
+В наличии должны обязательно быть как минимум одна строка \texttt{catch} или 
+одно предложение \texttt{after}.  Может дополнительно использоваться оператор
+\texttt{of} после \texttt{Выражения}, который добавляет вычисление \texttt{case}
+к значению \texttt{Выражения}.
+
+\texttt{try} возвратит значение \texttt{Выражения}, если только не произойдёт 
+исключение во время его вычисления.  Тогда исключение \emph{ловится} и ряд 
+\texttt{ОбразцовИсключения} с подходящим \texttt{КлассомОшибки} сопоставляются
+один за другим с пойманным исключением.  Если \texttt{КлассОшибки} не указан, то
+подразумевается \texttt{throw}. Если сопоставление удачно проходит и 
+необязательные выражения \texttt{ОхраныИсключения} тоже равны \texttt{true}, то
+вычисляется соответствующее \texttt{ТелоИсключения} и его результат становится
+возвращаемым значением.
+
+Если не найдено подходящего \texttt{ОбразцаИсключения} с таким же 
+\texttt{КлассомОшибки} и выражениями \texttt{ОхраныИсключения}, равными 
+\texttt{true}, то исключение передаётся дальше, как если бы начальное 
+\texttt{Выражение} не было заключено в \texttt{try}.  Исключение, происходящее
+во время вычисления \texttt{ТелаИсключения} не будет поймано.
+
+Если ни один из \texttt{Образцов} не совпал, то произойдёт ошибка времени 
+исполнения \texttt{try\_clause}.
+
+Если определено, то \texttt{ТелоПосле} всегда вычисляется \textbf{после} всех 
+операций в\linebreak
+\texttt{try..catch}, независимо от возникновения ошибки. Его 
+возвращаемое значение игнорируется и не влияет на значение всего оператора 
+\texttt{try} (как если бы \texttt{after} не было). \texttt{ТелоПосле} 
+вычисляется даже если исключение произошло в \texttt{Теле} или 
+\texttt{ТелеИсключения}, в этом случае исключение передаётся выше по коду.
+
+%% The \texttt{AfterBody} is evaluated after either \texttt{Body} or
+%% \texttt{ExceptionBody} no matter which one. The evaluated value of the
+%% \texttt{AfterBody} is lost; the return value of the try expression is
+%% the same with an after section as without. Even if an exception occurs
+%% during evaluation of \texttt{Body} or \texttt{ExceptionBody}, the
+%% \texttt{AfterBody} is evaluated. In this case the exception is caught
+%% and passed on after the \texttt{AfterBody} has been evaluated, so the
+%% exception from the try expression is the same with an after section as
+%% without.
+
+Исключение, которое происходит во время вычисления \texttt{ТелаПосле} не 
+ловится, то есть если \texttt{ТелоПосле} вычислилось по причине исключения в 
+\texttt{Выражении}, \texttt{Теле} или \texttt{ТелеИсключения}, то оригинальное
+исключение будет потеряно и вместо него полёт вверх по стеку вызовов продолжит 
+уже новое исключение.
+

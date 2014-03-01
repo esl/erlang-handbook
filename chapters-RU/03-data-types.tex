@@ -1,0 +1,501 @@
+\chapter{Типы данных (термы)}
+\label{datatypes}
+
+
+\section{Унарные (одиночные) типы данных}
+
+
+\subsection{Атомы}
+\label{datatypes:atom}
+\textbf{Атом} --- это символьное имя, также известное, как \emph{литерал}.
+Атомы начинаются со строчной латинской буквы и могут содержать буквенно-цифровые
+символы, подчёркивания (\texttt{\_}) и символ \emph{at} (\texttt{@}).
+Как вариант, атомы могут быть указаны с помощью заключения в одиночные кавычки
+(\texttt{'}), это необходимо, если атом начинается с заглавной буквы, или 
+содержит другие символы, кроме подчёркиваний и \emph{at} (\texttt{@}). 
+Например:
+
+\begin{erlang}
+hello
+phone_number
+'Monday'
+'phone number'
+\end{erlang}
+
+\texttt{'Anything inside quotes \textbackslash n\textbackslash 012'}
+\hfill(см. раздел \ref{datatypes:escapeseq})
+
+
+\subsection{Истина и ложь}
+\label{datatypes:boolean}
+
+В Erlang нет специального типа данных для \textbf{логических} значений. Эту роль
+выполняют атомы \texttt{true} и \texttt{false}.
+
+\texttt{2 =< 3} \resultingin \texttt{true} \\
+\texttt{true or false} \resultingin \texttt{true}
+
+
+\subsection{Целые числа}
+\label{datatypes:integer}
+
+В дополнение к обычному способу записи \textbf{целых чисел} Erlang предлагает
+ещё ряд способов записи. Запись \texttt{\$Char} даёт числовое значение для 
+символа '\texttt{Char}' в кодировке Latin-1 (это также может быть и непечатный
+символ) и запись\linebreak
+\texttt{Base\#Value} --- даёт целое число, записанное с основанием
+\texttt{Base}, основание должно быть целым числом в диапазоне $2..36$.
+
+\texttt{42} \resultingin \texttt{42} \\
+\$A  \resultingin \texttt{65} \\
+\texttt{\$\textbackslash n} \resultingin \texttt{10}\hfill(see section \ref{datatypes:escapeseq}) \\
+\texttt{2\#101} \resultingin \texttt{5} \\
+\texttt{16\#1f} \resultingin \texttt{31}
+
+
+\subsection{Действительные с плавающей точкой}
+\label{datatypes:float}
+
+Действительное число \textbf{с плавающей точкой} записывается, как\linebreak
+\texttt{Основание}[\texttt{"e"Экспонента}], где \texttt{Основание} --- это
+действительное число в диапазоне от 0.01 до 10000 и \texttt{Экспонента} 
+(необязательное) --- это целое число со знаком, указывающее экспоненту (степень
+десятки, на которую множится \texttt{Основание}). Например:
+
+\texttt{2.3e-3} \resultingin \texttt{2.30000e-3}\hfill
+(соответствует $2.3 \cdot 10^{-3}$)
+
+
+\subsection{Ссылочные значения}
+\label{datatypes:reference}
+
+\textbf{Ссылка} --- это терм, значение которого является уникальным в системе 
+времени исполнения Erlang, который создаётся встроенной функцией 
+\texttt{make\_ref/0}. (Для дополнительной информации по встроенным функциям,
+или \emph{BIF}-ам, смотрите раздел \ref{functions:bifs}.)
+
+
+\subsection{Порты}
+\label{datatypes:port}
+
+\textbf{Идентификатор порта} указывает на открытый в системе порт (смотрите 
+главу \ref{ports} про порты).
+
+
+\subsection{Идентификаторы процессов (Pid)}
+\label{datatypes:pid}
+
+\textbf{Идентификатор процесса}, или \emph{pid}, указывает на процесс в системе 
+(смотрите главу \ref{processes} о процессах).
+
+
+\subsection{Анонимные функции}
+\label{datatypes:fun}
+
+Тип данных \emph{fun} идентифицирует \emph{анонимную функцию} или 
+\textbf{функциональный объект} (см. раздел \ref{functions:funs}).
+
+
+
+\section{Составные типы данных}
+
+
+\subsection{Кортежи}
+\label{datatypes:tuple}
+
+\textbf{Кортеж} --- это составной тип данных, который содержит 
+\textbf{фиксированное количество термов}, заключённое \{в фигурные скобки\}.
+Например:
+
+\begin{erlangru}
+{Терм1,...,ТермN}
+\end{erlangru}
+
+Каждый из \texttt{ТермX} в кортеже называется \textbf{элементом}. Количество 
+элементов называется \textbf{размером} данного кортежа.
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{220pt}|>{\raggedright}p{230pt}|}
+\hline
+\multicolumn{2}{|p{321pt}|}{BIF-функции для работы с кортежами}\tabularnewline
+\hline
+\texttt{size(Кортеж)} & 
+Возвращает размер \texttt{Кортежа}\tabularnewline
+\hline
+\texttt{element(N,Кортеж)} &
+Возвращает \texttt{N}\textsuperscript{ый} элемент в \texttt{Кортеже} 
+\tabularnewline
+\hline
+\texttt{setelement(N,Кортеж1,Выражение)} &
+Возвращает новый кортеж, скопированный из \texttt{Кортеж1}, в котором 
+\texttt{N}\textsuperscript{ый} элемент заменён новым значением 
+\texttt{Выражение}\tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+\texttt{P = \{adam, 24, \{july, 29\}\}} \resultingin \texttt{P} связано с 
+	\texttt{\{adam, 24, \{july, 29\}\}} \\
+\texttt{element(1, P)} \resultingin \texttt{adam} \\
+\texttt{element(3, P)} \resultingin \texttt{ \{july,29\}} \\
+\texttt{P2 = setelement(2, P, 25)} \resultingin \texttt{P2} связано с 
+	\texttt{\{adam, 25, \{july, 29\}\}} \\
+\texttt{size(P)} \resultingin \texttt{3} \\
+\texttt{size(\{\})} \resultingin \texttt{0} \\
+
+
+\subsection{Записи}
+\label{datatypes:record}
+
+\textbf{Запись} это \emph{именованный кортеж}, имеющий именованные элементы,
+которые называются \textbf{полями}. Тип записи определяется в виде атрибута 
+модуля, например:
+
+\begin{erlangru}
+-record(Запись, {Поле1 [= Значение1],
+                 ...
+                 ПолеN [= ЗначениеN]}).
+\end{erlangru}
+
+Здесь имя записи \texttt{Запись} и имена полей \texttt{ПолеХ} --- атомы и каждое
+\texttt{ПолеX} может получить необязательное значение по умолчанию
+\texttt{ЗначениеX}. Это определение может быть помещено в любом месте модуля 
+между определениями функций, но обязательно до первого использования. Если тип
+записи используется в нескольких модулях, рекомендуется поместить его в
+отдельный файл для включения.
+
+Новая запись с типом \texttt{Запись} создаётся с помощью следующего выражения:
+
+\begin{erlangru}
+#Запись{Поле1=Выражение1, ..., ПолеK=ВыражениеK [, _=ВыражениеL]}
+\end{erlangru}
+
+Поля не обязательно должны идти в том же порядке, как и в определении записи.
+Пропущенные поля получат свои соответствующие значения по умолчанию. Если 
+использована последняя запись (подчёркивание равно \texttt{ВыражениеL}), то все
+оставшиеся поля получат значение \texttt{ВыражениеL}. Поля без значений по
+умолчанию и пропущенные поля получат значение \texttt{undefined}.
+
+Значение поля можно получить используя выражение 
+\texttt{Переменная\#Запись.Поле}.
+
+\begin{erlang}
+-module(employee).
+-export([new/2]).
+-record(person, {name, age, employed=erixon}).
+
+new(Name, Age) -> #person{name=Name, age=Age}.
+\end{erlang}
+
+Здесь функция \texttt{employee:new/2} может быть использована в другом модуле,
+который также должен включить файл, содержащий определение использованной здесь
+записи \texttt{person}.
+
+\texttt{\{P = employee:new(ernie,44)\}} \resultingin \texttt{\{person, ernie, 
+	44, erixon\}} \\
+\texttt{P\#person.age} \resultingin \texttt{44} \\
+\texttt{P\#person.employed} \resultingin \texttt{erixon}
+
+При работе с записями в интерпретаторе Erlang, можно использовать 
+функции\linebreak
+\texttt{rd(ИмяЗаписи, ОпределениеЗаписи)} и \texttt{rr(Модуль)} для того, чтобы
+определить или загрузить новые определения записей. Подробнее читайте в
+документации\linebreak\emph{Erlang Reference Manual}.
+
+
+
+\subsection{Списки}
+\label{datatypes:list}
+
+\textbf{Список} --- это составной тип данных, который содержит \emph{переменное}
+количество \textbf{термов}, заключённое в квадратных скобках.
+
+\begin{erlangru}
+[Терм1,...,ТермN]
+\end{erlangru}
+
+Каждый \texttt{ТермX} в списке называется \textbf{элементом}.  Количество
+элементов в списке называется \textbf{длиной списка}. Как это принято в
+функциональном программировании, первый элемент называется \textbf{головой}
+списка, и остаток (начиная с 2\textsuperscript{го} элемента и до конца)
+называется \textbf{хвостом} списка. Заметьте, что отдельные элементы в списке
+не должны быть одинакового типа, хотя часто практикуется (и это, наверное, даже
+удобно), иметь в списке элементы одинакового типа --- когда приходится работать
+с элементами разных типов, обычно используются \textbf{записи}.
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{124pt}|>{\raggedright}p{290pt}|}
+\hline
+\multicolumn{2}{|p{321pt}|}{Встроенные функции для работы со списками}  
+\tabularnewline
+\hline
+\texttt{length(Список)} &
+Возвращает длину \texttt{Списка} \tabularnewline
+\hline
+\texttt{hd(Список)} &
+Возвращает 1\textsuperscript{й} элемент \texttt{Списка} (голову) \tabularnewline
+\hline
+\texttt{tl(Список)} &
+Возвращает \texttt{Список} без 1\textsuperscript{го} элемента (хвост) \tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+Оператор "<вертикальная черта"> (\textbar{}, также в некоторых книгах по ФП он 
+называется \texttt{cons}), отделяет ведущие элементы списка (один или более)
+от остальных элементов. Например:
+
+\texttt{[H | T]  = [1, 2, 3, 4, 5]} \resultingin \texttt{H=1} и 
+	\texttt{T=[2, 3, 4, 5]} \\
+\texttt{[X, Y | Z] = [a, b, c, d, e]} \resultingin \texttt{X=a},
+	\texttt{Y=b} и \texttt{Z=[c, d, e]}
+
+Список --- рекурсивная структура. Неявно список завершается ссылкой на пустой 
+список, то есть~\texttt{[a,b]} это то же самое, как и \texttt{[a,b|[]]}. 
+Список, выглядящий как \texttt{[a,b|c]} называется \textbf{плохо 
+сформированным} (badly formed) и такой записи следует избегать (потому что
+атом '\texttt{c}', завершающий структуру списка сам \emph{не} является списком).
+Списки натурально способствуют рекурсивному функциональному программированию.
+
+Например, следующая функция \texttt{sum} вычисляет сумму списка и функция 
+\texttt{double} умножает каждый элемент списка на 2, при этом конструируя и 
+возвращая новый список по ходу выполнения.
+
+\begin{erlang}
+sum([]) -> 0;
+sum([H | T]) -> H + sum(T).
+
+double([]) -> [];
+double([H | T]) -> [H*2 | double(T)].
+\end{erlang}
+
+Определения функций выше представляют \emph{сопоставление с образцом}, которое
+описано далее в главе \ref{patterns}. Образцы в такой записи часто встречаются 
+в рекурсивном программировании, неявно предоставляя "<базовый случай"> (для
+пустого списка в этих примерах).
+
+Для работы со списками, оператор \texttt{++} соединяет вместе два списка 
+(присоединяет второй аргумент к первому) и возвращает список-результат.  
+Оператор  \texttt{--} создаёт список, который является копией первого
+аргумента, за тем исключением, что для каждого элемента во втором списке его
+первое вхождение в результат (если такое было) удаляется.
+
+\texttt{[1,2,3] ++ [4,5]} \resultingin \texttt{[1,2,3,4,5]}
+\texttt{[1,2,3,2,1,2] -- [2,1,2]} \resultingin \texttt{[3,1,2]}
+
+Подборка функций, работающих со списками может быть найдена в модуле стандартной
+библиотеки с названием \texttt{lists}.
+
+
+\subsection{Строки}
+\label{datatypes:string}
+
+\textbf{Строки} --- это цепочки символов, заключённые между двойными кавычками,
+на самом деле они хранятся в памяти, как списки целых чисел --- символов.
+
+\texttt{"abcdefghi"} то же самое, как и 
+	\texttt{[97,98,99,100,101,102,103,104,105]}
+
+\texttt{""} то же самое, как и \texttt{[]}
+
+Две строки, записанные подряд без разделительных знаков и операторов будут 
+соединены в одну во время компиляции и не принесут дополнительных затрат по
+соединению во время исполнения.
+
+\texttt{"string" "42"} \resultingin \texttt{"string42"}
+
+
+\subsection{Двоичные данные}
+\label{datatypes:binary}
+
+\textbf{Двоичные данные} --- это блок нетипизированной памяти, по умолчанию 
+двоичные данные являются последовательностью 8-битных элементов (байтов).
+
+\begin{erlangru}
+<<Элемент1,...,ЭлементN>>
+\end{erlangru}
+
+Каждый \texttt{ЭлементX} указывается в виде
+
+\begin{erlangru}
+Значение[:Размер][/СписокСпецификацийТипа]
+\end{erlangru}
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{120pt}|>{\raggedright}p{120pt}|>{\raggedright}p{180pt}|}
+\hline
+\multicolumn{3}{|p{297pt}|}{Спецификация элемента двоичных данных} 
+\tabularnewline
+\hline
+\texttt{Значение} &
+\texttt{Размер} &
+\texttt{СписокСпецификацийТипа}\tabularnewline
+\hline
+Выражение должно вычисляться в целое, действительное число или двоичные 
+данные. & 
+Выражение должно вычисляться в целое число & 
+Последовательность необязательных спецификаторов типа, в любом порядке,
+разделённых дефисами (-)\tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+% page break at this point, so turned into two chunks.
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{90pt}|>{\raggedright}p{140pt}|>{\raggedright}p{200pt}|}
+\hline
+\multicolumn{3}{|p{297pt}|}{Спецификаторы типов}\tabularnewline
+\hline
+Тип данных &
+\texttt{integer} \textbar{} \texttt{float} \textbar{} \texttt{binary} &
+По умолчанию \texttt{integer}\tabularnewline
+\hline
+Наличие знака & 
+\texttt{signed} \textbar{} \texttt{unsigned} & 
+По умолчанию без знака, \texttt{unsigned}\tabularnewline
+\hline
+Порядок байтов (endianness) &
+\texttt{big} \textbar{} \texttt{little} \textbar{} \texttt{native} &
+Зависит от архитектуры процессора. По умолчанию \texttt{big}\tabularnewline
+\hline
+Единица измерения (группа битов) & 
+\texttt{unit:}\emph{ЦелоеЧисло} & 
+Разрешены значения от 1 до 256.
+По умолчанию 1 для целых и действительных чисел и 8 для двоичных данных 
+\tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+Значение \texttt{Размера} умножается на единицу измерения и даёт число бит, 
+которые может занять данный сегмент двоичных данных. Каждый сегмент может
+состоять из нуля или более битов, но общая сумма битов должна делиться нацело
+на 8, иначе во время  исполнения возникнет ошибка \texttt{badarg}. Также
+сегмент с типом \texttt{binary} должен иметь размер, делящийся нацело на 8.
+
+Двоичные данные не могут вкладываться друг в друга.
+
+\begin{erlang}
+<<1, 17, 42>>       % <<1, 17, 42>>
+<<"abc">>           % <<97, 98, 99>> (То же, что и <<$a, $b, $c>>)
+<<1, 17, 42:16>>    % <<1,17,0,42>>
+<<>>                % <<>>
+<<15:8/unit:10>>    % <<0,0,0,0,0,0,0,0,0,15>>
+<<(-1)/unsigned>>   % <<255>>
+\end{erlang}
+
+
+\section{Escape-последовательности}
+\label{datatypes:escapeseq}
+
+Escape-последовательности разрешено использовать в строках и атомах, которые 
+заключены в кавычки, они позволяют ввести в исходный текст программы символ,
+который другим способом ввести трудно или невозможно.
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{90pt}|>{\raggedright}p{280pt}|}
+\hline
+\multicolumn{2}{|p{321pt}|}{Escape-последовательности}\tabularnewline
+\hline
+\textbackslash{}b & Backspace (удаление слева)\tabularnewline
+\hline
+\textbackslash{}d & Delete (удаление справа)\tabularnewline
+\hline
+\textbackslash{}e & Escape\tabularnewline
+\hline
+\textbackslash{}f & Новая страница (при печати)\tabularnewline
+\hline
+\textbackslash{}n & Новая строка\tabularnewline
+\hline
+\textbackslash{}r & Возврат курсора в начало\tabularnewline
+\hline
+\textbackslash{}s & Пробел\tabularnewline
+\hline
+\textbackslash{}t & Табуляция\tabularnewline
+\hline
+\textbackslash{}v & Вертикальная табуляция\tabularnewline
+\hline
+\textbackslash{}XYZ, \textbackslash{}XY, \textbackslash{}X &
+Символ, записанный в восьмеричном представлении, как XYZ, XY или X\tabularnewline
+\hline
+\textbackslash{}\textasciicircum{}A .. \textbackslash{}\textasciicircum{}Z & 
+Комбинации клавиш от Ctrl-A до Ctrl-Z\tabularnewline
+\hline
+\textbackslash{}\textasciicircum{}a .. \textbackslash{}\textasciicircum{}z &
+Комбинации клавиш от Ctrl-A до Ctrl-Z\tabularnewline
+\hline
+\textbackslash{}' & Единичная кавычка \tabularnewline
+\hline
+\textbackslash{}\textbf{\texttt{"}} & Двойная кавычка \tabularnewline
+\hline
+\textbackslash{}\textbackslash{} & Обратная косая черта (\textbackslash) 
+\tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+
+\section{Преобразования типов}
+
+Erlang --- строго типизированный язык, то есть неявные автоматические 
+преобразования типов в нём не происходят. Но есть ряд встроенных в стандартную
+библиотеку функций, предназначенных для преобразования между типами данных
+при участии программиста:
+
+\begin{center}
+\begin{tabular}{|>{\raggedright}p{63pt}|>{\raggedright}p{30pt}|>{\raggedright}p{35pt}|>{\raggedright}p{21pt}|>{\raggedright}p{21pt}|>{\raggedright}p{21pt}|>{\raggedright}p{30pt}|>{\raggedright}p{21pt}|>{\raggedright}p{35pt}|}
+\hline
+\multicolumn{9}{|p{243pt}|}{Преобразования типов}\tabularnewline
+\hline
+ & atom & integer & float & pid & fun & tuple & list & binary\tabularnewline
+\hline
+atom &  & - & - & - & - & - & X & X\tabularnewline
+\hline
+integer & - &  & X & - & - & - & X & X\tabularnewline
+\hline
+float & - & X &  & - & - & - & X & X\tabularnewline
+\hline
+pid & - & - & - &  & - & - & X & X\tabularnewline
+\hline
+fun & - & - & - & - &  & - & X & X\tabularnewline
+\hline
+tuple & - & - & - & - & - &  & X & X\tabularnewline
+\hline
+list & X & X & X & X & X & X &  & X\tabularnewline
+\hline
+binary & X & X & X & X & X & X & X & \tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+Встроенная функция \texttt{float/1} переводит целые числа в числа с 
+плавающей точкой. Встроенные функции \texttt{round/1} и \texttt{trunc/1}
+переводят числа с плавающей точкой обратно в целые, округляя или отбрасывая
+дробную часть.
+
+Функции \texttt{Тип\_to\_list/1} и \texttt{list\_to\_Тип/1}
+переводят различные типы в списки (строки) и из списков.
+
+Функции \texttt{term\_to\_binary/1} и \texttt{binary\_to\_term/1} переводят 
+любое значение в закодированную двоичную форму и обратно (Подробнее: 
+\url{http://erlang.org/doc/apps/erts/erl_ext_dist.html}).
+
+\begin{erlang}
+atom_to_list(hello)        % "hello"
+list_to_atom("hello")      % hello
+float_to_list(7.0)         % "7.00000000000000000000e+00"
+list_to_float("7.000e+00") % 7.00000
+integer_to_list(77)        % "77"
+list_to_integer("77")      % 77
+tuple_to_list({a, b ,c})   % [a,b,c]
+list_to_tuple([a, b, c])   % {a,b,c}
+pid_to_list(self())        % "<0.25.0>"
+term_to_binary(<<17>>)     % <<131,109,0,0,0,1,17>>
+term_to_binary({a, b ,c})  % <<131,104,3,100,0,1,97,100,0,1,98,
+                           %   100,0,1,99>>
+binary_to_term(<<131,104,3,100,0,1,97,100,0,1,98,100,0,1,99>>)  
+                           % {a,b,c}
+term_to_binary(math:pi())  % <<131,99,51,46,49,52,49,53,57,50,54,
+                           % 53,51,...>>
+\end{erlang}
+
