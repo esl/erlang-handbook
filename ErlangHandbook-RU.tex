@@ -83,14 +83,14 @@
 {\Huge Настольная книга по Erlang}\\[0.1\baselineskip]
 \hspace{10pt}{\large{Бьярн Дэкер (Bjarne Däcker) и Роберт Вирдинг (Robert Virding)}}
 
-\vspace{20pt}
+\vspace{10pt}
 {\Large \textbf{Версия:}\\[0.2\baselineskip]
 \immediate\write18{git log -n1 | grep 'Date:' | sed 's/Date:   //g' > _revision.tex}
 \input{_revision}
 \immediate\write18{rm _revision.tex}
 }
 
-\vspace{20pt}
+\vspace{10pt}
 {\large Последняя версия этой книги находится по адресу:\\
 \url{http://opensource.erlang-solutions.com/erlang-handbook}}
 
@@ -108,7 +108,7 @@
 проекта}.
 %\end{tabular}
 
-\vspace{20pt}
+\vspace{10pt}
 \textbf{Соглашения}\\
 Спецификации синтаксиса задаются с помощью \texttt{этого моноширинного шрифта}.
 В квадратные скобки ([ ]) заключаются необязательные части. Термы, начинающиеся
@@ -118,7 +118,7 @@
 Вертикальная черта (\textbar{}) разделяет альтернативные варианты, как например 
 Integer \textbar{} Float.
 
-\vspace{20pt}
+\vspace{10pt}
 \textbf{Ошибки и улучшения}\\
 Это живой документ, пожалуйста присылайте исправления и рекомендации по улучшению
 содержимого используя систему учёта задач Github по адресу
@@ -127,7 +127,7 @@ Integer \textbar{} Float.
 вашими предлагаемыми исправлениями и предложениями. Новые ревизии этого документа
 будут публиковаться по мере накопления больших изменений.
 
-\vspace{20pt}
+\vspace{10pt}
 \includegraphics[scale=0.7]{includes/cc-by-sa.png}\\ Этот текст доступен согласно
 условиям лицензии Creative Commons Attribution-ShareAlike 3.0 License. Вы имеете
 право копировать, распространять и передавать эту книгу по условиям лицензии, 
@@ -144,18 +144,18 @@ Integer \textbar{} Float.
 %%%%%%
 %% Chapters
 
-%\input{chapters-RU/01-background}
-%\input{chapters-RU/02-structure-of-an-erlang-program}
-%\input{chapters-RU/03-data-types}
-%\input{chapters-RU/04-pattern-matching}
-%\input{chapters-RU/05-functions}
-%\input{chapters-RU/06-processes}
-%\input{chapters-RU/07-error-handling}
-%\input{chapters-RU/08-distributed-erlang}
+\input{chapters-RU/01-background}
+\input{chapters-RU/02-structure-of-an-erlang-program}
+\input{chapters-RU/03-data-types}
+\input{chapters-RU/04-pattern-matching}
+\input{chapters-RU/05-functions}
+\input{chapters-RU/06-processes}
+\input{chapters-RU/07-error-handling}
+\input{chapters-RU/08-distributed-erlang}
 \input{chapters-RU/09-ports-and-port-drivers}
-%\input{chapters-RU/10-code-loading}
-%\input{chapters-RU/11-macros}
-%\input{chapters-RU/12-further-reading}
+\input{chapters-RU/10-code-loading}
+\input{chapters-RU/11-macros}
+\input{chapters-RU/12-further-reading}
 
 
 \end{document}

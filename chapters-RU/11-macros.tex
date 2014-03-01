@@ -1,26 +1,25 @@
-\chapter{Macros}
+\chapter{Макросы}
 \label{macros}
 
-\section{Defining and using macros}
+\section{Определение и использование макросов}
 
-\begin{erlang}
--define(Const, Replacement).
--define(Func(Var1, ..., VarN), Replacement).
-\end{erlang}
+\begin{erlangru}
+-define(Константа, Замена).
+-define(Функция(Переменная1, ..., ПеременнаяN), Замена).
+\end{erlangru}
 
-A \textbf{macro} must be defined before it is used but a macro
-definition may be placed anywhere among the attributes and function
-declarations of a module. If a macro is used in several modules it is
-advisable to put the macro definition in an include file. A macro is
-used as follows:
+\textbf{Макрос} должен быть определён перед тем, как он используется, но 
+определение макроса можно поместить где угодно среди атрибутов и определений 
+функций в модуле.  Если макрос используется в нескольких модулях, рекомендуется 
+поместить его определение во включаемый файл.  Макрос используется так:
 
-\begin{erlang}
-?Const
-?Func(Arg1,...,ArgN)
-\end{erlang}
+\begin{erlangru}
+?Константа
+?Функция(Переменная1,...,ПеременнаяN)
+\end{erlangru}
 
-Macros are expanded during compilation. A macro reference
-\texttt{?Const} is replaced by \texttt{Replacement} like this:
+Макросы разворачиваются во время компиляции на самом раннем этапе.
+Ссылка на макрос \texttt{?Константа} будет заменена на текст \texttt{Замена} так:
 
 \begin{erlang}
 -define(TIMEOUT, 200).
@@ -29,17 +28,16 @@ call(Request) ->
     server:call(refserver, Request, ?TIMEOUT).
 \end{erlang}
 
-is expanded to:
+разворачивается перед компиляцией в:
 
 \begin{erlang}
 call(Request) ->
     server:call(refserver, Request, 200).
 \end{erlang}
 
-A macro reference \texttt{?Func(Arg1, ..., ArgN)} will be replaced by
-\texttt{Replacement}, where all occurrences of a variable \texttt{VarX}
-from the macro definition are replaced by the corresponding argument
-\texttt{ArgX}.
+Ссылка на макрос \texttt{?Функция(Аргумент1, ..., АргументN)} будет заменена на
+\texttt{Замену}, где все вхождения переменной \texttt{ПеременнаяX} из определения
+макроса будут заменены на соответствующий \texttt{АргументX}.
 
 \begin{erlang}
 -define(MACRO1(X, Y), {a, X, b, Y}).
@@ -49,7 +47,7 @@ bar(X) ->
     ?MACRO1(X, 123).
 \end{erlang}
 
-will be expanded to:
+будет развёрнуто в:
 
 \begin{erlang}
 bar(X) ->
@@ -57,52 +55,58 @@ bar(X) ->
     {a, X, b, 123}.
 \end{erlang}
 
-To view the result of macro expansion, a module can be compiled with
-the \texttt{`P'} option:
+Для просмотра результата разворачивания макросов, модуль можно скомпилировать с
+параметром \texttt{'P'} таким образом:
 
-\begin{erlang}
-compile:file(File, ['P']).
-\end{erlang}
+\begin{erlangru}
+compile:file(Файл, ['P']).
+\end{erlangru}
 
-This produces a listing of the parsed code after preprocessing and
-parse transforms, in the file \texttt{File.P}.
+Это производит распечатку разобранного кода после применения к нему предварительной
+обработки и трансформаций разбора (parse transform), в файле с именем 
+\texttt{Файл.P}.
 
 
-\section{Predefined macros}
+\section{Предопределённые макросы}
 
 \begin{center}
-\begin{tabular}{|>{\raggedright}p{103pt}|>{\raggedright}p{223pt}|}
+\begin{tabular}{|>{\raggedright}p{110pt}|>{\raggedright}p{250pt}|}
 \hline
-\multicolumn{2}{|p{326pt}|}{P{\large{}redefined} macros}\tabularnewline
+\multicolumn{2}{|p{330pt}|}{Предопределённые макросы}\tabularnewline
 \hline
-\texttt{?MODULE} & The name of the current module\tabularnewline
+\texttt{?MODULE} & 
+Атом, имя текущего модуля \tabularnewline
 \hline
-\texttt{?MODULE\_STRING} & The name of the current module, as a string\tabularnewline
+\texttt{?MODULE\_STRING} & 
+Строка, имя текущего модуля \tabularnewline
 \hline
-\texttt{?FILE} & The file name of the current module\tabularnewline
+\texttt{?FILE} & 
+Имя исходного файла текущего модуля \tabularnewline
 \hline
-\texttt{?LINE} & The current line number\tabularnewline
+\texttt{?LINE} & 
+Текущий номер строки \tabularnewline
 \hline
-\texttt{?MACHINE} & The machine name, 'BEAM'\tabularnewline
+\texttt{?MACHINE} & 
+Имя виртуальной машины, 'BEAM'\tabularnewline
 \hline
 \end{tabular}
 \end{center}
 
 
-\section{Flow Control in Macros}
+\section{Управление исполнением макросов}
 
 \begin{erlang}
--undef(Macro).      % This inhibits the macro definition.
+-undef(Macro).      % Это отменяет определённый ранее макрос
 
 -ifdef(Macro).
-    %% Lines that are evaluated if Macro was defined
+    %% Строки, которые будут скомпилированы, если Macro существует
 -else.
-    %% If the condition was false, these lines are evaluated instead.
+    %% Иначе будут скомпилированы эти строки
 -endif.
 \end{erlang}
 
-\texttt{ifndef(Macro)} can be used instead of \texttt{ifdef} and means
-the opposite.
+\texttt{ifndef(Macro)} можно использовать вместо \texttt{ifdef} и имеет обратный
+смысл.
 
 \begin{erlang}
 -ifdef(debug).
@@ -112,14 +116,14 @@ the opposite.
 -endif.
 \end{erlang}
 
-If \texttt{debug} is defined when the module is compiled,
-\texttt{?LOG(Arg)} will expand to a call to \texttt{io:format/2} and
-provide the user with some simple trace output.
+Если макрос \texttt{debug} определён в то время, когда идёт компиляция модуля, то
+макрос \texttt{?LOG(Arg)} развернётся в вызов печати текста \texttt{io:format/2}
+и обеспечит пользователя отладочным выводом в консоль.
 
 
-\section{Stringifying Macro Arguments}
-\texttt{??Arg}, where \texttt{Arg} is a macro argument expands to the
-argument in the form of a string.
+\section{Превращение аргументов макроса в строку}
+
+Запись вида \texttt{??Аргумент}, где \texttt{Аргумент} --- это параметр, передаваемый в макрос, развернётся в представление аргумента в строковом виде.
 
 \begin{erlang}
 -define(TESTCALL(Call), io:format("Call ~s: ~w~n", [??Call, Call])).
@@ -128,12 +132,11 @@ argument in the form of a string.
 ?TESTCALL(you:function(2,1)),
 \end{erlang}
 
-results in:
+Разворачивается в:
 
 \begin{erlang}
 io:format("Call ~s: ~w~n", ["myfunction(1,2)", m:myfunction(1,2)]),
 io:format("Call ~s: ~w~n", ["you:function(2,1)", you:function(2,1)]),
 \end{erlang}
 
-That is, a trace output with both the function called and the
-resulting value.
+Таким образом, получается отладочный вывод как вызванной функции так и результата.

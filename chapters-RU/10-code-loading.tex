@@ -1,30 +1,28 @@
-\chapter{Code loading}
+\chapter{Загрузка кода}
 \label{code}
 
-Erlang supports code updating in a running system. Code replacement is
-performed at module level.
+Erlang поддерживает обновление кода во время работы без остановки системы.  Замена
+кода выполняется на уровне модулей.
 
-The code of a module can exist in two versions in a system:
-\textbf{current} and \textbf{old}. When a module is
-loaded into the system for the first time, the code becomes
-\emph{current}. If a new instance of the module is loaded, the code
-of the previous instance becomes \emph{old} and the new instance
-becomes \emph{current}. Normally a module is automatically loaded
-the first time a function in it is called. If the module is already
-loaded then it must explicitly be loaded again to a new version.
+Код модуля может существовать в системе в двух версиях: \textbf{текущая} и
+\textbf{старая}. Когда модуль загружается в систему в первый раз, код становится
+\emph{текущим}.  Если загружается новая версия модуля, то код предыдущей версии,
+уже имеющийся в памяти, становится \emph{старым} и новая загруженная версия 
+становится \emph{текущей}.  Обычно модуль автоматически загружается, когда вызвана 
+одна из находящихся в нём функций.  Если модуль уже загружен, то он должен быть
+явно перезагружен в новую версию.
 
-Both old and current code are valid, and may be used
-concurrently. Fully qualified function calls will always refer to the
-current code. However, the old code may still be run by other
-processes.
+И старый и текущий код полностью функциональны и могут использоваться одновременно.
+Полностью определённые вызовы функций (с именем модуля) всегда ссылаются на текущую
+версию кода.  Однако старый код может продолжать исполняться другими процессами.
 
-If a third instance of the module is loaded, the code server will
-remove (\emph{purge}) the old code and any processes lingering in it
-are terminated. Then the third instance becomes \emph{current} and
-the previously current code becomes \emph{old}.
+Если загрузить третью версию загруженного модуля, то сервер кода удалит (операция 
+называется \emph{purge}) старый код и все процессы, всё ещё использующие его, 
+будут принудительно завершены.  Затем третья версия становится \emph{текущей} и
+предыдущий текущий код становится \emph{старым}.
 
-To change from old code to current code, a process must make a fully
-qualified function call.
+Чтобы перейти от старого кода к текущему, процесс должен выполнить один полностью
+определённый вызов функции (с именем модуля).
 
 \begin{erlang}
 -module(mod).
@@ -40,7 +38,7 @@ loop() ->
     end.
 \end{erlang}
 
-To make the process change code, send the message
-\texttt{code\_switch} to it. The process then will make a fully
-qualified call to \texttt{mod:loop()} and change to the current
-code. Note that \texttt{mod:loop/0} must be exported.
+Чтобы заставить процесс (в этом примере) сменить версию кода, отправьте ему
+сообщение \texttt{code\_switch}.  Процесс после этого выполнит полностью 
+определённый вызов \texttt{mod:loop()} и это переключит его на текущую версию кода.
+Заметьте, что \texttt{mod:loop/0} должна быть для этого экспортирована.
