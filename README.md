@@ -1,42 +1,28 @@
-# Настольная книга по Erlang
+# Erlang Handbook
 
-Изначально написанная Бьярном Дэкером (Bjarne Däcker) и позже пересмотренная 
-Робертом Вирдингом (Robert Virding), настольная книга по Erlang является 
-собранием возможностей языка и системы времени исполнения. Книга нацелена на людей
-с некоторым опытом программирования, и служит кратким введением в область знаний,
-касающуюся языка Erlang.
+Originally written by Bjarne Däcker and later revised by Robert Virding, the Erlang Handbook is a summary of the language features and the runtime system. It is aimed at people with some programming experience, serving as a quick introduction to the Erlang domain.
 
 
-## Где скачать
-Текущая версия может быть скачана [здесь][release].
+## Download
+The current release can be obtained [here][release].
 
-Настольная книга свёрстана с помощью системы LaTeX. Если вы хотите собрать книгу
-самостоятельно, вам поможет Makefile. Вам понадобится дополнительно установить 
-пакеты [minted] и [pygments] для того, чтобы магия раскраски исходных текстов 
-заработала, а также `xelatex`, поскольку русская версия использует Unicode шрифты,
-и, в отличие от английской, не работает со стандартными шрифтами LaTeX.
+The handbook is typeset using LaTeX. If you want to build from source, the Makefile will be your friend. You will need the [minted] package (and [pygments]) for the syntax highlighting magic to work.
 
 
-## Ошибки и улучшения
+## Errata and Improvements
 
-Это живой документ, пожалуйста присылайте исправления и рекомендации по улучшению
-содержимого используя [систему учёта задач][issue tracker]. Вы также можете создать 
-свою ветвь репозитория (fork) и прислать нам запрос на соединение ветвей (pull request) 
-с вашими предлагаемыми исправлениями и предложениями. Новые ревизии этого документа
-будут публиковаться по мере накопления больших изменений
+This is a live document so please file corrections and suggestions for improvement about the content using the [issue tracker]. You may also fork this repository and send a pull request with your suggested fixes and improvements. New revisions of this document will be published after major corrections.
 
 
-## Лицензия
+## License
 
 ![cc-by-sa](http://i.creativecommons.org/l/by-sa/3.0/88x31.png)
 
-Этот текст доступен согласно Creative Commons Attribution-ShareAlike 3.0 License. 
-Вы имеете право копировать, распространять и передавать его согласно условиям 
-лицензии, описанным [здесь][cc-license].
+This text is made available under a Creative Commons Attribution-ShareAlike 3.0 License. You are free to copy, distribute and transmit it under the license terms defined [here][cc-license].
 
 
 
-[release]: https://github.com/esl/erlang-handbook/raw/master/output/ErlangHandbook-RU.pdf
+[release]: https://github.com/esl/erlang-handbook/raw/master/output/ErlangHandbook.pdf
 [pygments]: http://pygments.org/
 [minted]: https://github.com/gpoore/minted
 [issue tracker]: https://github.com/esl/erlang-handbook/issues
