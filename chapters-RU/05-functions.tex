@@ -473,10 +473,10 @@ is_valid_signal(Signal) ->
 элементы являются результатом вычисления \texttt{Выражения} для каждой
 комбинации результирующих значений.
 
-\begin{minted}{console}
-> [{X, Y} || X <- [1,2,3,4,5,6], X > 4, Y <- [a,b,c]].
+\begin{erlang}
+1> [{X, Y} || X <- [1,2,3,4,5,6], X > 4, Y <- [a,b,c]].
 [{5,a},{5,b},{5,c},{6,a},{6,b},{6,c}]
-\end{minted}
+\end{erlang}
 
 
 \section{Охранные последовательности}
@@ -506,20 +506,30 @@ Erlang, поскольку важно, чтобы ход вычисления о
 \begin{center}
 \begin{tabular}{|>{\raggedright}p{210pt}|>{\raggedright}p{210pt}|}
 \hline
+
 \multicolumn{2}{|p{420pt}|}{Разрешённые охранные выражения:}\tabularnewline
 \hline
-\multicolumn{2}{|p{420pt}|}{Атом \texttt{true};}\tabularnewline
+\multicolumn{2}{|p{420pt}|}{Атом \texttt{true}; Другие константы (термы,
+	связанные переменные), все считаются равными \texttt{false};}\tabularnewline
 \hline
-\multicolumn{2}{|p{420pt}|}{Другие константы (термы, связанные переменные), все 
-	считаются равными \texttt{false};}\tabularnewline
-\hline
-\multicolumn{2}{|p{420pt}|}{Сравнения термов;}\tabularnewline
-\hline
-\multicolumn{2}{|p{420pt}|}{Арифметические и логические 
-	выражения;}\tabularnewline
-\hline
-\multicolumn{2}{|p{420pt}|}{Вызовы встроенных (BIF) функций, перечисленные 
-	ниже:}\tabularnewline
+\multicolumn{2}{|p{420pt}|}{Сравнения термов; Арифметические и логические 
+	выражения; Вызовы встроенных (BIF) функций, перечисленные ниже:}
+\tabularnewline
+%\multicolumn{2}{|p{420pt}|}{Разрешённые охранные выражения:}\tabularnewline
+%\hline
+%\multicolumn{2}{|p{420pt}|}{Атом \texttt{true};}\tabularnewline
+%\hline
+%\multicolumn{2}{|p{420pt}|}{Другие константы (термы, связанные переменные), все 
+%	считаются равными \texttt{false};}\tabularnewline
+%\hline
+%\multicolumn{2}{|p{420pt}|}{Сравнения термов;}\tabularnewline
+%\hline
+%\multicolumn{2}{|p{420pt}|}{Арифметические и логические 
+%	выражения;}\tabularnewline
+%\hline
+%\multicolumn{2}{|p{420pt}|}{Вызовы встроенных (BIF) функций, перечисленные 
+%	ниже:}\tabularnewline
+
 \hline
 Функции проверки типа & Другие позволенные функции:\tabularnewline
 \hline
@@ -617,7 +627,6 @@ fun (Аргумент1,...,АргументN) -> Имя(Аргумент1,...,А
 Выражение \texttt{fun Модуль:Функция/Арность} также разрешено, но только если 
 \texttt{Функция} экспортирована из \texttt{Модуля}.
 
-\pagebreak
 \begin{erlang}
 Fun1 = fun (X) -> X+1 end.
 Fun1(2)         % результат: 3
