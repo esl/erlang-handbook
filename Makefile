@@ -3,13 +3,13 @@ DOC_RU=ErlangHandbook-RU
 REV=`git log -n1 | grep 'Date:' | sed 's/Date:   //g'`
 
 .PHONY: all
-all: english russian
+all: english
 
 .PHONY: english
-english: $(DOC).pdf
+english: output/$(DOC).pdf
 
 .PHONY: russian
-russian: $(DOC_RU).pdf
+russian: output/$(DOC_RU).pdf
 
 .PHONY: release
 release: clean all
@@ -27,13 +27,14 @@ view:
 	evince $(DOC).pdf &
 
 XELATEX=xelatex -synctex=1 -interaction=nonstopmode --shell-escape
-$(DOC_RU).pdf: chapters-RU/*.tex $(DOC_RU).tex
+output/$(DOC_RU).pdf: chapters-RU/*.tex $(DOC_RU).tex
 	$(XELATEX) $(DOC_RU).tex && \
-	$(XELATEX) $(DOC_RU).tex && \
+	$(XELATEX) $(DOC_RU).tex; \
 	mv -f $(DOC_RU).pdf output/
 
 PDFLATEX=pdflatex -synctex=1 -interaction=nonstopmode --shell-escape
-$(DOC).pdf: chapters/*.tex $(DOC).tex
+output/$(DOC).pdf: chapters/*.tex $(DOC).tex
 	$(PDFLATEX) $(DOC).tex && \
-	$(PDFLATEX) $(DOC).tex && \
+	$(PDFLATEX) $(DOC).tex; \
 	mv -f $(DOC).pdf output/
+# NOTE the ; after pdflatex call, sometimes pdflatex ends with error but still produces the document
