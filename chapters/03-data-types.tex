@@ -216,13 +216,13 @@ The above definitions introduce \textit{pattern matching}, described in chapter 
 explicitly providing a ``base case'' (for the empty list in these examples).
 
 For working with lists, the operator \texttt{++} joins two lists together (appends the second argument to the first) and
-returns the resulting list.  The operator \texttt{--} produces a list that
+returns the resulting list.  The operator \texttt{-{}-} produces a list that
 is a copy of its first argument, except that for each element in
 the second argument, the first occurrence of this element (if any) in the resulting list is
 removed.
 
 \texttt{[1,2,3] ++ [4,5]} \resultingin \texttt{[1,2,3,4,5]}
-\texttt{[1,2,3,2,1,2] -- [2,1,2]} \resultingin \texttt{[3,1,2]}
+\texttt{[1,2,3,2,1,2] -{}- [2,1,2]} \resultingin \texttt{[3,1,2]}
 
 A collection of list processing functions can be found in the
 \texttt{STDLIB} module \texttt{lists}.
