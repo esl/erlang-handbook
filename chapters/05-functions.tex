@@ -575,6 +575,21 @@ Fun2 = fun (X) when X>=1000 -> big; (X) -> small end.
 Fun2(2000)      % big
 \end{erlang}
 
+Since a \texttt{fun} can be anonymous, i.e.~there is no function name in the 
+definition of the \texttt{fun}, the definition of a recursive \texttt{fun} has to be
+done in two steps.  This example shows how to define an anonymous \texttt{fun} 
+\texttt{sum(List)} (see section \ref{datatypes:list}) as a \texttt{fun}.
+
+\begin{erlang}
+Sum1 = fun ([], _Foo) -> 0;([H|T], Foo) -> H + Foo(T, Foo) end.
+Sum = fun (List) -> Sum1(List, Sum1) end.
+Sum([1,2,3,4,5])    % 15
+\end{erlang}
+
+The definition of \texttt{Sum} is done in a way such that it takes \textit{itself} as a parameter, matched to \texttt{\_Foo} (empty list) or \texttt{Foo},
+which it then calls recursively.  The definition of \texttt{Sum} calls \texttt{Sum1}, also passing \texttt{Sum1} as a parameter.
+
+
 Names in \texttt{funs}: In Erlang you can use a name inside a \texttt{fun} before the name has been
 defined. The syntax of \texttt{funs with names} allows a variable name to be
 consistently present before each argument list. This allows \texttt{funs} to be
@@ -586,8 +601,6 @@ Sum = fun Sum([])-> 0;Sum([H|T]) -> H + Sum(T) end.
 Sum([1,2,3,4,5])    % 15
 \end{erlang}
 
-The definition of \texttt{Sum1} is done in a way such that it takes \textit{itself} as a parameter, matched to \texttt{\_Foo} (empty list) or \texttt{Foo},
-which it then calls recursively.  The definition of \texttt{Sum} calls \texttt{Sum1}, also passing \texttt{Sum1} as a parameter.
 
 \section{BIFs --- Built-in functions}
 \label{functions:bifs}
