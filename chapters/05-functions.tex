@@ -575,7 +575,7 @@ Fun2 = fun (X) when X>=1000 -> big; (X) -> small end.
 Fun2(2000)      % big
 \end{erlang}
 
-Since a \texttt{fun} can be anonymous, i.e.~there is no function name in the 
+Anonymous \texttt{funs}: When a \texttt{fun} is anonymous, i.e.~there is no function name in the 
 definition of the \texttt{fun}, the definition of a recursive \texttt{fun} has to be
 done in two steps.  This example shows how to define an anonymous \texttt{fun} 
 \texttt{sum(List)} (see section \ref{datatypes:list}) as a \texttt{fun}.
