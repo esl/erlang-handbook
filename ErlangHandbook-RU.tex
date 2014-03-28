@@ -67,6 +67,8 @@
 %% typesetting for the "results in" notation used.
 \def\resultingin{$\quad\Rightarrow\quad$}
 
+\usepackage{wrapfig}
+
 \begin{document}
 
 %%%%%%
@@ -105,16 +107,14 @@
 \vfill
 
 \textbf{Главный редактор}\\[0.1\baselineskip]
-%\begin{tabular}{@{\hspace{3ex}}p{42em}}
 Омер Килич (Omer Kilic)
-%\end{tabular}
 
 \textbf{Прочие участники}\\[0.1\baselineskip]
-%\begin{tabular}{@{\hspace{3ex}}p{42em}}
+Перевод на русский: Дмитрий Литовченко (Dmytro Lytovchenko)
+
 Список людей, которые помогли с изменениями и исправлениями находится
 \href{https://github.com/esl/erlang-handbook/graphs/contributors}{в репозитории 
 проекта}.
-%\end{tabular}
 
 \vspace{10pt}
 \textbf{Соглашения}\\
@@ -136,10 +136,15 @@ Integer \textbar{} Float.
 будут публиковаться по мере накопления больших изменений.
 
 \vspace{10pt}
-\includegraphics[scale=0.7]{includes/cc-by-sa.png}\\ Этот текст доступен согласно
-условиям лицензии Creative Commons Attribution-ShareAlike 3.0 License. Вы имеете
-право копировать, распространять и передавать эту книгу по условиям лицензии, 
-описанным по адресу \url{http://creativecommons.org/licenses/by-sa/3.0}
+\begin{wrapfigure}[2]{l}{0.15\textwidth}
+	\vspace{-12pt}
+	\includegraphics[scale=0.7]{includes/cc-by-sa.png}
+	\vspace{-12pt}
+\end{wrapfigure}
+Этот текст доступен согласно условиям лицензии Creative Commons
+Attribution-ShareAlike 3.0 License. Вы имеете право копировать, распространять и
+передавать эту книгу по условиям лицензии,  описанным по адресу
+\url{http://creativecommons.org/licenses/by-sa/3.0}
 
 \newpage
 
