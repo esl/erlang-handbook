@@ -139,7 +139,7 @@ The fields need not be in the same order as in the record
 definition. Fields omitted will get their respective default
 values. If the final clause is used, omitted fields will get the value
 \texttt{ExprL}. Fields without default values and that are omitted
-will have an undefined value.
+will have their value set to the atom \texttt{undefined}.
 
 The value of a field is retrieved using the expression
 ``\texttt{Variable\#Rec.Field}''.
@@ -221,7 +221,7 @@ is a copy of its first argument, except that for each element in
 the second argument, the first occurrence of this element (if any) in the resulting list is
 removed.
 
-\texttt{[1,2,3] ++ [4,5]} \resultingin \texttt{[1,2,3,4,5]}
+\texttt{[1,2,3] ++ [4,5]} \resultingin \texttt{[1,2,3,4,5]} \\
 \texttt{[1,2,3,2,1,2] -{}- [2,1,2]} \resultingin \texttt{[3,1,2]}
 
 A collection of list processing functions can be found in the
@@ -231,7 +231,7 @@ A collection of list processing functions can be found in the
 \subsection{Strings}
 \label{datatypes:string}
 \textbf{Strings} are character strings enclosed within double quotes
-but are, in fact, stored as lists of characters.
+but are, in fact, stored as lists of integers.
 
 \texttt{"abcdefghi"} is the same as \texttt{[97,98,99,100,101,102,103,104,105]}
 
