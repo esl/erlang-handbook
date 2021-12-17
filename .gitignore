@@ -1,4 +1,3 @@
-
 # latex ignores
 *.aux
 *.log
@@ -37,3 +36,4 @@
 Thumbs.db
 .DS_Store
 *.pdf
+_minted-ErlangHandbook/
