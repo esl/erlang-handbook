@@ -363,7 +363,7 @@ is_greater_than(X, Y) ->
             true;
         true ->                 % works as an 'else' branch
             false
-    end
+    end.
 \end{erlang}
 
 It should be noted that pattern matching in function clauses can be used to replace \texttt{if} cases (most of the time).
@@ -380,7 +380,7 @@ case Expr of
         ...;
     PatternN [when GuardSeqN] ->
         BodyN                   % Note no semicolon (;) before end
-end
+end.
 \end{erlang}
 
 The expression \texttt{Expr} is evaluated and the patterns
